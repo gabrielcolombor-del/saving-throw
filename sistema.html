@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema ST | Saving Throw</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        /* Cor de pergaminho solicitada por você para Header e Footer */
+        .bg-parchment { background-color: #EBE3CB; }
+        .text-parchment-dark { color: #4A4435; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black">
+
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <a href="index.html" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                Saving Throw
+            </a>
+            
+            <nav class="flex flex-wrap items-center justify-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide">
+                <a href="oneshots.html" class="hover:opacity-70 transition-all">One Shots</a>
+                <a href="miniaturas.html" class="hover:opacity-70 transition-all">Miniaturas</a>
+                <a href="arsenal.html" class="hover:opacity-70 transition-all">Arsenal de RPG</a>
+                <a href="sistema.html" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-black pb-1">Sistema ST</a>
+            </nav>
+
+            <a href="https://wa.me/5527997947604" target="_blank" class="bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="bg-zinc-900 text-white py-24 border-b border-zinc-800 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#EBE3CB 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>
+                <p class="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto">
+                    Assista aos nossos vídeos tutoriais e entenda por que o Sistema Saving Throw é a melhor escolha para mesas dinâmicas, focadas em narrativa e combate tático.
+                </p>
+                <div class="inline-flex bg-zinc-800 border border-zinc-700 rounded-lg p-2 gap-2">
+                    <span class="px-4 py-2 bg-zinc-900 rounded text-sm font-bold uppercase tracking-wider text-amber-500">Módulo Básico</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-black">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <!-- Vídeo em destaque -->
+                <div class="mb-12 relative group/main">
+                    <div class="aspect-video w-full rounded-xl border border-zinc-800 shadow-2xl overflow-hidden relative bg-zinc-900">
+                        <div id="youtube-player" class="absolute inset-0 w-full h-full"></div>
+                    </div>
+                    <!-- Setas -->
+                    <button onclick="prevVideo()" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
+                        <i class="fa-solid fa-chevron-left text-lg"></i>
+                    </button>
+                    <button onclick="nextVideo()" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
+                        <i class="fa-solid fa-chevron-right text-lg"></i>
+                    </button>
+                    
+                    <div class="mt-4 flex flex-col md:flex-row justify-between items-center text-zinc-400 text-sm font-semibold uppercase tracking-wider bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+                        <span id="video-counter" class="mb-2 md:mb-0">Vídeo 1 de 4</span>
+                        <span class="text-amber-500 font-title text-xl" id="video-title">Carregando...</span>
+                    </div>
+                </div>
+
+                <!-- Grid de outros vídeos (Playlist) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="video-thumbnails">
+                    <!-- Gerados via JavaScript -->
+                </div>
+                
+                <div class="mt-20 text-center flex flex-wrap justify-center gap-6">
+                    <a href="./assets/ST%20-%20Manual%20Simplificado%202.0.pdf" download class="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg inline-flex items-center gap-3">
+                        <i class="fa-solid fa-download text-lg"></i> Baixar Manual Simplificado
+                    </a>
+                    <a href="https://simpleskans.com.br/dnd/5e/magias" target="_blank" class="bg-zinc-800 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg inline-flex items-center gap-3">
+                        <i class="fa-solid fa-book-open text-lg text-amber-500"></i> Compêndio de Magias
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-parchment text-black py-12 border-t border-black/10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-16 md:h-24 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-tiktok text-lg"></i>
+                </a>
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-black/10 text-center flex flex-col md:flex-row justify-between text-xs font-bold uppercase tracking-wider text-parchment-dark/70">
+            <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
+            <p class="mt-2 md:mt-0">Forjado de RPGista para RPGista.</p>
+        </div>
+    </footer>
+
+    <script>
+        const videos = [
+            { id: 'KBpAt6h4J2E', title: 'Como Jogar Saving Throw' },
+            { id: 'I1vuYvtpR5E', title: 'Criação de Personagens' },
+            { id: 'l8KDHynT7Hg', title: 'Combate e Ações' },
+            { id: 'w6doLh4ioPQ', title: 'Magia e Exploração' }
+        ];
+        
+        let currentIndex = 0;
+        let player;
+
+        function renderThumbnails() {
+            const container = document.getElementById('video-thumbnails');
+            container.innerHTML = videos.map((vid, index) => `
+                <div onclick="playVideo(${index})" class="group cursor-pointer flex flex-col gap-2">
+                    <div class="aspect-video w-full rounded-lg border-2 ${index === currentIndex ? 'border-amber-500' : 'border-zinc-800'} overflow-hidden relative shadow-lg transition-all">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10 ${index === currentIndex ? 'bg-black/0' : ''}"></div>
+                        <img src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" class="w-full h-full object-cover">
+                        ${index === currentIndex 
+                            ? `<div class="absolute inset-0 flex items-center justify-center z-20"><i class="fa-solid fa-play text-amber-500 text-3xl drop-shadow-lg opacity-80"></i></div>` 
+                            : `<div class="absolute inset-0 flex items-center justify-center z-20"><i class="fa-solid fa-play text-white text-2xl opacity-50 group-hover:opacity-100 transition-opacity"></i></div>`
+                        }
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-wider ${index === currentIndex ? 'text-amber-500' : 'text-zinc-500 group-hover:text-white'} text-center md:text-left mt-1">Aula 0${index + 1}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('video-counter').innerText = `Vídeo ${currentIndex + 1} de ${videos.length}`;
+            document.getElementById('video-title').innerText = videos[currentIndex].title;
+        }
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                videoId: videos[currentIndex].id,
+                playerVars: {
+                    'rel': 0,
+                    'autoplay': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+            renderThumbnails();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                nextVideo();
+            }
+        }
+
+        function playVideo(index) {
+            if (index >= 0 && index < videos.length) {
+                currentIndex = index;
+                player.loadVideoById(videos[currentIndex].id);
+                renderThumbnails();
+                
+                // Rolar a tela suavemente para cima do player em telas menores
+                if(window.innerWidth < 768) {
+                    document.getElementById('youtube-player').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function nextVideo() {
+            if (currentIndex < videos.length - 1) {
+                playVideo(currentIndex + 1);
+            } else {
+                playVideo(0); 
+            }
+        }
+
+        function prevVideo() {
+            if (currentIndex > 0) {
+                playVideo(currentIndex - 1);
+            } else {
+                playVideo(videos.length - 1); 
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miniaturas & Bestiário | Saving Throw</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        .bg-parchment { background-color: #EBE3CB; }
+        .text-parchment-dark { color: #4A4435; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black">
+
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <a href="index.html" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                Saving Throw
+            </a>
+            
+            <nav class="flex flex-wrap items-center justify-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide">
+                <a href="oneshots.html" class="hover:opacity-70 transition-all">One Shots</a>
+                <a href="miniaturas.html" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-black pb-1">Miniaturas</a>
+                <a href="arsenal.html" class="hover:opacity-70 transition-all">Arsenal de RPG</a>
+                <a href="sistema.html" class="hover:opacity-70 transition-all">Sistema ST</a>
+            </nav>
+
+            <a href="https://wa.me/5527997947604" target="_blank" class="bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="bg-zinc-900 text-white py-20 border-b border-zinc-800 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#EBE3CB 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas Avulsas</h1>
+                <p class="text-zinc-400 text-lg mb-4 max-w-2xl mx-auto">
+                    Peças de resina 8K, pintadas artisticamente à mão. Do menor goblin ao dragão mais imponente.
+                </p>
+            </div>
+        </section>
+
+        <section class="py-20 bg-white text-black">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Produto 1 -->
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1612038933090-e79bda303a7d?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="font-title text-2xl mb-2">Heróis Padrão</h3>
+                            <p class="text-zinc-600 text-sm mb-4">Escolha entre Guerreiro, Mago, Ladino ou Clérigo. Modelos já pré-definidos com pintura profissional.</p>
+                            <a href="https://wa.me/5527997947604?text=Olá!%20Gostaria%20de%20saber%20o%20valor%20dos%20Heróis%20Padrão." target="_blank" class="w-full bg-black text-white font-bold uppercase text-sm py-3 rounded text-center block hover:bg-zinc-800 transition-all">Consultar Valor</a>
+                        </div>
+                    </div>
+
+                    <!-- Produto 2 -->
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1622313762347-3c09fe5f2719?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="font-title text-2xl mb-2">Bestiário Clássico</h3>
+                            <p class="text-zinc-600 text-sm mb-4">Orcs, Goblins, Esqueletos e Zumbis. Monte seu exército para aterrorizar a vida dos seus jogadores.</p>
+                            <a href="https://wa.me/5527997947604?text=Olá!%20Gostaria%20de%20saber%20o%20valor%20dos%20monstros%20do%20bestiário." target="_blank" class="w-full bg-black text-white font-bold uppercase text-sm py-3 rounded text-center block hover:bg-zinc-800 transition-all">Consultar Valor</a>
+                        </div>
+                    </div>
+
+                    <!-- Produto 3 -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 relative">
+                        <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">Premium</div>
+                        <div class="w-full h-64 bg-zinc-800 flex items-center justify-center p-4">
+                            <span class="text-zinc-500 font-title text-xl text-center">[Foto do Dragão ou Boss]</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-title text-2xl mb-2">Chefes & Dragões</h3>
+                            <p class="text-zinc-600 text-sm mb-4">Peças massivas em bases de 50mm ou mais. Um verdadeiro centro de mesa que impõe respeito na rolagem de iniciativa.</p>
+                            <a href="https://wa.me/5527997947604?text=Olá!%20Gostaria%20de%20fazer%20um%20orçamento%20de%20um%20Boss/Dragão." target="_blank" class="w-full bg-amber-600 text-white font-bold uppercase text-sm py-3 rounded text-center block hover:bg-amber-700 transition-all">Orçamento Específico</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-16 text-center border-t border-zinc-200 pt-16">
+                    <h2 class="font-title text-3xl mb-4">Não encontrou o que procurava?</h2>
+                    <p class="text-zinc-600 max-w-2xl mx-auto mb-8">Trabalhamos com impressão sob demanda. Envie a referência do monstro ou personagem que você precisa e faremos o orçamento da impressão e pintura artística.</p>
+                    <a href="https://wa.me/5527997947604?text=Olá!%20Eu%20tenho%20uma%20ideia%20específica%20de%20miniatura%20e%20queria%20verificar%20se%20é%20possível%20fazer." target="_blank" class="inline-flex bg-zinc-900 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-black transition-all shadow-lg items-center gap-3">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Criar Pedido Especial
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-parchment text-black py-12 border-t border-black/10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-16 md:h-24 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-tiktok text-lg"></i>
+                </a>
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-black/10 text-center flex flex-col md:flex-row justify-between text-xs font-bold uppercase tracking-wider text-parchment-dark/70">
+            <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
+            <p class="mt-2 md:mt-0">Forjado de RPGista para RPGista.</p>
+        </div>
+    </footer>
+</body>
+</html>
