@@ -80,26 +80,27 @@
                     <div class="w-full md:w-1/2 flex flex-col justify-center">
                         <span class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-2">Aventura Completa</span>
                         <h2 class="font-title text-4xl md:text-5xl mb-6">O Preço do Herdeiro</h2>
-                        <p class="text-zinc-600 mb-6">Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros principais da campanha prontas para ir para o tabuleiro.</p>
+                        <p class="text-zinc-600 mb-6">Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.</p>
                         
                         <div class="bg-zinc-50 p-6 rounded-xl border border-zinc-200 mb-8 shadow-sm">
-                            <h3 class="font-bold uppercase tracking-wide mb-4 text-sm text-zinc-500">O que está incluso:</h3>
+                            <h3 class="font-bold uppercase tracking-wide mb-4 text-sm text-zinc-500">Conteúdo do Combo:</h3>
                             <ul class="space-y-2 mb-6 text-zinc-700">
-                                <li>✔️ 1x Livreto da Aventura (Impresso)</li>
-                                <li>✔️ 3x Miniaturas de Cultistas Escala 35mm</li>
-                                <li>✔️ 1x Miniatura do Boss (Herdeiro Corrompido)</li>
+                                <li>✔️ 1x Livreto Físico da Aventura (Impresso)</li>
+                                <li>✔️ 4x Miniaturas de Monstros & NPCs da Aventura (3x Cultistas + 1x Boss)</li>
+                                <li>✔️ 4x Miniaturas de Heróis (Padrão ou Customizados, conforme o Kit)</li>
                             </ul>
                             
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Escolha seu Combo:</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Escolha seu Kit & Pintura:</label>
                             <select id="select-kit" onchange="atualizarPrecoKit()" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="monstros" data-preco="149,90">Apenas Monstros & NPCs (História Inclusa)</option>
-                                <option value="padrao" data-preco="229,90">Monstros + 4 Heróis Padrão (História Inclusa)</option>
-                                <option value="lendario" data-preco="319,90">⚔️ Kit Lendário: Monstros + 4 Heróis Customizados</option>
+                                <option value="classico-sem-pintura" data-preco="169,90">Kit Clássico (Monstros & Heróis Sem Pintura)</option>
+                                <option value="classico-com-pintura" data-preco="269,90">Kit Clássico (Monstros & Heróis Com Pintura Artística)</option>
+                                <option value="lendario-sem-pintura" data-preco="249,90">⚔️ Kit Lendário (Heróis Personalizados Sem Pintura - Monstros Sem Pintura)</option>
+                                <option value="lendario-com-pintura" data-preco="349,90">⚔️ Kit Lendário (Heróis Personalizados Com Pintura Artística - Monstros Sem Pintura)</option>
                             </select>
                             
                             <div class="flex justify-between items-baseline mb-4">
                                 <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
-                                <span id="preco-kit" class="text-3xl font-black">R$ 149,90</span>
+                                <span id="preco-kit" class="text-3xl font-black">R$ 169,90</span>
                             </div>
                             <button onclick="enviarPedidoKit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase text-sm py-4 px-4 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
                                 <i class="fa-brands fa-whatsapp text-lg"></i> Encomendar via WhatsApp
