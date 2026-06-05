@@ -149,9 +149,10 @@
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-1">Escolha os componentes físicos:</label>
                                     <select id="select-kit" onchange="atualizarPrecoKit()" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer">
-                                        <option value="monstros" data-preco="149,90">Apenas Monstros & NPCs (História Inclusa)</option>
-                                        <option value="padrao" data-preco="229,90">Monstros + 4 Heróis Padrão (História Inclusa)</option>
-                                        <option value="lendario" data-preco="319,90">⚔️ Kit Lendário: Monstros + 4 Heróis Customizados</option>
+                                        <option value="classico-sem-pintura" data-preco="169,90">Kit Clássico (Monstros & Heróis Sem Pintura)</option>
+                                        <option value="classico-com-pintura" data-preco="269,90">Kit Clássico (Monstros & Heróis Com Pintura Artística)</option>
+                                        <option value="lendario-sem-pintura" data-preco="249,90">⚔️ Kit Lendário (Heróis Personalizados Sem Pintura)</option>
+                                        <option value="lendario-com-pintura" data-preco="349,90">⚔️ Kit Lendário (Heróis Personalizados Com Pintura Artística)</option>
                                     </select>
                                 </div>
                             </div>
@@ -160,7 +161,7 @@
                         <div class="border-t border-zinc-200 pt-4 mt-4">
                             <div class="flex justify-between items-baseline mb-4">
                                 <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
-                                <span id="preco-kit" class="text-2xl font-black transition-all">R$ 149,90</span>
+                                <span id="preco-kit" class="text-2xl font-black transition-all">R$ 169,90</span>
                             </div>
                             <a href="oneshots.html" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 px-4 rounded transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
                                 <i class="fa-solid fa-eye text-base"></i> Ver Detalhes do Kit
