@@ -61,11 +61,11 @@
     </header>
 
     <main>
-        <section class="bg-zinc-900 text-white py-20 border-b border-zinc-800 relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#EBE3CB 1px, transparent 1px); background-size: 30px 30px;"></div>
+        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/minis.png');">
+            <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas & Bestiário</h1>
-                <p class="text-zinc-400 text-lg mb-4 max-w-2xl mx-auto">
+                <p class="text-[#EBE3CB]/80 text-lg mb-4 max-w-2xl mx-auto leading-relaxed">
                     Peças de Resina Premium, pintadas artisticamente à mão. Do menor goblin ao dragão mais imponente.
                 </p>
             </div>
@@ -73,199 +73,80 @@
 
         <section class="py-20 bg-white text-black">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    <!-- Destaque Principal: Miniatura Personalizada -->
-                    <div class="lg:col-span-3 md:col-span-2 bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative">
-                        <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
-                        <!-- Container para o Slider de Imagens -->
-                        <div class="w-full lg:w-1/2 h-80 lg:h-auto relative overflow-hidden flex justify-center">
-                            <!-- Imagem 1 (Base/Relativa para manter o fluxo de layout) -->
-                            <img id="slider-img-1" src="./assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" class="relative w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100 z-0">
+                <!-- Destaque Principal: Miniatura Personalizada -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20">
+                    <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
+                    <!-- Container para o Slider de Imagens -->
+                    <div class="w-full lg:w-1/2 h-80 lg:h-auto relative overflow-hidden flex justify-center">
+                        <!-- Imagem 1 (Base/Relativa para manter o fluxo de layout) -->
+                        <img id="slider-img-1" src="./assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" class="relative w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100 z-0">
+                        
+                        <!-- Imagem 2 (Absoluta para sobreposição e transição suave) -->
+                        <img id="slider-img-2" src="./assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none z-0">
+                    </div>
+                    <div class="p-8 flex flex-col justify-between lg:w-1/2">
+                        <div>
+                            <span class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Serviço Exclusivo</span>
+                            <h3 class="font-title text-4xl mb-3 text-parchment-dark">Dê Vida ao Seu Personagem</h3>
+                            <p class="text-zinc-700 text-sm mb-6 leading-relaxed">
+                                Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma <strong>Caixa de MDF de Luxo</strong> gravada a laser com o nome, classe e símbolos do seu herói.
+                            </p>
+                        </div>
+                        
+                        <div class="border-t border-amber-200 pt-6">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
+                            <select id="select-personalizada" onchange="atualizarPreco('personalizada')" class="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
+                                <option value="sem-pintura" data-preco="89,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
+                                <option value="com-pintura" data-preco="139,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
+                            </select>
                             
-                            <!-- Imagem 2 (Absoluta para sobreposição e transição suave) -->
-                            <img id="slider-img-2" src="./assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none z-0">
-                        </div>
-                        <div class="p-8 flex flex-col justify-between lg:w-1/2">
-                            <div>
-                                <span class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Serviço Exclusivo</span>
-                                <h3 class="font-title text-4xl mb-3 text-parchment-dark">Dê Vida ao Seu Personagem</h3>
-                                <p class="text-zinc-700 text-sm mb-6 leading-relaxed">
-                                    Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma <strong>Caixa de MDF de Luxo</strong> gravada a laser com o nome, classe e símbolos do seu herói.
-                                </p>
-                            </div>
-                            
-                            <div class="border-t border-amber-200 pt-6">
-                                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                                <select id="select-personalizada" onchange="atualizarPreco('personalizada')" class="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
-                                    <option value="sem-pintura" data-preco="89,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                    <option value="com-pintura" data-preco="139,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
-                                </select>
-                                
-                                <div class="flex justify-between items-baseline mb-4">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
-                                    <span id="preco-personalizada" class="text-3xl font-black text-amber-700">R$ 89,90</span>
-                                </div>
-                                <button onclick="enviarPedido('personalizada')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-4 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-base"></i> Encomendar Meu Herói
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Produto 2: Heróis Padrão -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1612038933090-e79bda303a7d?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Aventureiros</span>
-                                <h3 class="font-title text-2xl mb-2">Heróis Padrão</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Escolha entre Guerreiro, Mago, Ladino ou Clérigo. Modelos em Resina Premium com poses heroicas clássicas.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-herois" onchange="atualizarPreco('herois')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="29,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                <option value="com-pintura" data-preco="69,90">Com Pintura Artística (Pintado profissionalmente à mão)</option>
-                            </select>
                             <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor Unitário:</span>
-                                <span id="preco-herois" class="text-2xl font-black">R$ 29,90</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
+                                <span id="preco-personalizada" class="text-3xl font-black text-amber-700">R$ 89,90</span>
                             </div>
-                            <button onclick="enviarPedido('herois')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
+                            <button onclick="enviarPedido('personalizada')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-4 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
+                                <i class="fa-solid fa-wand-magic-sparkles text-base"></i> Encomendar Meu Herói
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Produto 3: Bestiário Clássico -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1605847444195-22300080d21d?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Monstros</span>
-                                <h3 class="font-title text-2xl mb-2">Bestiário Clássico</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Orcs, Goblins, Esqueletos e Zumbis em Resina Premium. Monte seus encontros e povoe suas masmorras.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-bestiario" onchange="atualizarPreco('bestiario')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="24,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                <option value="com-pintura" data-preco="59,90">Com Pintura Artística (Pintado profissionalmente à mão)</option>
-                            </select>
-                            <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor Unitário:</span>
-                                <span id="preco-bestiario" class="text-2xl font-black">R$ 24,90</span>
-                            </div>
-                            <button onclick="enviarPedido('bestiario')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
-                        </div>
-                    </div>
-
-                    <!-- Produto 4: Chefes & Dragões -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1560942485-b2a11cc13456?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Chefes de Fase</span>
-                                <h3 class="font-title text-2xl mb-2">Chefes & Dragões</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Criaturas massivas em bases de 50mm ou maiores. Peças imponentes em Resina Premium prontas para a rolagem de iniciativa.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-chefes" onchange="atualizarPreco('chefes')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="99,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                <option value="com-pintura" data-preco="229,90">Com Pintura Artística (Pintado profissionalmente à mão)</option>
-                            </select>
-                            <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor Unitário:</span>
-                                <span id="preco-chefes" class="text-2xl font-black">R$ 99,90</span>
-                            </div>
-                            <button onclick="enviarPedido('chefes')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
-                        </div>
-                    </div>
-
-                    <!-- Produto 5: Combo Bando de Orcs -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1618836528751-24da03ec41dd?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Combos (Bundles)</span>
-                                <h3 class="font-title text-2xl mb-2">Bando de Orcs</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Combo contendo 5 miniaturas de orcs (líder de guerra, arqueiros e berserkers) em Resina Premium.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-orcs" onchange="atualizarPreco('orcs')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="99,90">Sem Pintura (Modelos cinzas prontos para pintar)</option>
-                                <option value="com-pintura" data-preco="249,90">Com Pintura Artística (Pintados profissionalmente à mão)</option>
-                            </select>
-                            <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Combo:</span>
-                                <span id="preco-orcs" class="text-2xl font-black">R$ 99,90</span>
-                            </div>
-                            <button onclick="enviarPedido('orcs')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
-                        </div>
-                    </div>
-
-                    <!-- Produto 6: Combo Grupo de Goblins -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1594744803329-e58b31de215f?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Combos (Bundles)</span>
-                                <h3 class="font-title text-2xl mb-2">Grupo de Goblins</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Pacote ágil com 6 miniaturas de goblins (arqueiros, guerreiros e ladinos) em Resina Premium prontas para o combate.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-goblins" onchange="atualizarPreco('goblins')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="89,90">Sem Pintura (Modelos cinzas prontos para pintar)</option>
-                                <option value="com-pintura" data-preco="219,90">Com Pintura Artística (Pintados profissionalmente à mão)</option>
-                            </select>
-                            <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Combo:</span>
-                                <span id="preco-goblins" class="text-2xl font-black">R$ 89,90</span>
-                            </div>
-                            <button onclick="enviarPedido('goblins')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
-                        </div>
-                    </div>
-
-                    <!-- Produto 7: Combo Pack NPCs de Taverna -->
-                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <div>
-                            <img src="https://images.unsplash.com/photo-1580234810907-b40315b76418?q=80&w=600&auto=format&fit=crop" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <span class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-1 block">Combos (Bundles)</span>
-                                <h3 class="font-title text-2xl mb-2">Pack NPCs de Taverna</h3>
-                                <p class="text-zinc-600 text-sm mb-4">Conjunto com 4 miniaturas de RPG (taverneiro, bardo e civis) em Resina Premium para enriquecer sua narrativa.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 pt-0">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-npcs" onchange="atualizarPreco('npcs')" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="79,90">Sem Pintura (Modelos cinzas prontos para pintar)</option>
-                                <option value="com-pintura" data-preco="179,90">Com Pintura Artística (Pintados profissionalmente à mão)</option>
-                            </select>
-                            <div class="flex justify-between items-baseline mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Combo:</span>
-                                <span id="preco-npcs" class="text-2xl font-black">R$ 79,90</span>
-                            </div>
-                            <button onclick="enviarPedido('npcs')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 rounded text-center block transition-all">Encomendar via WhatsApp</button>
-                        </div>
-                    </div>
-
                 </div>
-                
-                <div class="mt-16 text-center border-t border-zinc-200 pt-16">
-                    <h2 class="font-title text-3xl mb-4">Não encontrou o que procurava?</h2>
-                    <p class="text-zinc-600 max-w-2xl mx-auto mb-8">Trabalhamos com impressão sob demanda. Envie a referência do monstro ou personagem que você precisa e faremos o orçamento da impressão e pintura artística.</p>
-                    <a href="https://wa.me/5527997947604?text=Olá!%20Eu%20tenho%20uma%20ideia%20específica%20de%20miniatura%20e%20queria%20verificar%20se%20é%20possível%20fazer." target="_blank" class="inline-flex bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded transition-all shadow-lg items-center gap-3">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Criar Pedido Especial
-                    </a>
+
+                <!-- Nova Seção: Crie seu Kit Personalizado -->
+                <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-8 md:p-12 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="max-w-3xl mx-auto text-center mb-10">
+                        <span class="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Totalmente sob Medida</span>
+                        <h2 class="font-title text-4xl mb-4 text-zinc-950">Crie seu Kit Personalizado</h2>
+                        <h3 class="text-lg font-semibold text-zinc-700 mb-4">Kits sob demanda com e sem pintura</h3>
+                        <p class="text-zinc-600 text-sm md:text-base leading-relaxed">
+                            Tem uma ideia de aventura pronta, uma lista de encontros da sua campanha ou já possui os arquivos 3D das miniaturas? Traga sua ideia ou arquivos prontos para nós! Nós cuidamos da fabricação sob demanda para você ter o seu kit físico completo pronto para o combate.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                        <div class="bg-white p-6 rounded-lg border border-zinc-100 shadow-xs">
+                            <div class="text-3xl mb-4">💡</div>
+                            <h4 class="font-bold text-lg mb-2">1. Traga sua Ideia ou STL</h4>
+                            <p class="text-zinc-505 text-xs leading-relaxed text-zinc-500">Você pode trazer sua lista de monstros/personagens ou nos enviar diretamente os arquivos digitais 3D (.STL) para impressão.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-zinc-100 shadow-xs">
+                            <div class="text-3xl mb-4">🎨</div>
+                            <h4 class="font-bold text-lg mb-2">2. Com ou Sem Pintura</h4>
+                            <p class="text-zinc-505 text-xs leading-relaxed text-zinc-500">Fabricamos as miniaturas em Resina Premium na cor cinza (prontas para pintar) ou aplicamos nossa pintura artística manual profissional.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-zinc-100 shadow-xs">
+                            <div class="text-3xl mb-4">📦</div>
+                            <h4 class="font-bold text-lg mb-2">3. Encomenda Sob Demanda</h4>
+                            <p class="text-zinc-505 text-xs leading-relaxed text-zinc-500">Produzimos desde uma única miniatura de boss colossal até combos volumosos de bestiário com preços sob medida.</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="https://wa.me/5527997947604?text=Olá!%20Tenho%20uma%20ideia/arquivos%20prontos%20para%20um%20kit%20de%20miniaturas%20personalizado%20e%20gostaria%20de%20fazer%20um%20orçamento." target="_blank" class="inline-flex bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-8 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
+                            <i class="fa-solid fa-comments text-base"></i> Encomendar Meu Kit via WhatsApp
+                        </a>
+                    </div>
                 </div>
+
             </div>
         </section>
     </main>
@@ -299,41 +180,11 @@
             personalizada: {
                 "sem-pintura": "89,90",
                 "com-pintura": "139,90"
-            },
-            herois: {
-                "sem-pintura": "29,90",
-                "com-pintura": "69,90"
-            },
-            bestiario: {
-                "sem-pintura": "24,90",
-                "com-pintura": "59,90"
-            },
-            chefes: {
-                "sem-pintura": "99,90",
-                "com-pintura": "229,90"
-            },
-            orcs: {
-                "sem-pintura": "99,90",
-                "com-pintura": "249,90"
-            },
-            goblins: {
-                "sem-pintura": "89,90",
-                "com-pintura": "219,90"
-            },
-            npcs: {
-                "sem-pintura": "79,90",
-                "com-pintura": "179,90"
             }
         };
 
         const nomesProdutos = {
-            personalizada: "Miniatura Personalizada (Dê Vida ao Seu Herói)",
-            herois: "Heróis Padrão",
-            bestiario: "Bestiário Clássico",
-            chefes: "Chefes & Dragões",
-            orcs: "Bando de Orcs (Combo - 5 Miniaturas)",
-            goblins: "Grupo de Goblins (Combo - 6 Miniaturas)",
-            npcs: "Pack NPCs de Taverna (Combo - 4 Miniaturas)"
+            personalizada: "Miniatura Personalizada (Dê Vida ao Seu Herói)"
         };
 
         function atualizarPreco(produto) {
