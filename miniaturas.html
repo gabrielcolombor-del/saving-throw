@@ -78,7 +78,14 @@
                     <!-- Destaque Principal: Miniatura Personalizada -->
                     <div class="lg:col-span-3 md:col-span-2 bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative">
                         <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
-                        <img src="https://images.unsplash.com/photo-1622313762347-3c09fe5f2719?q=80&w=800&auto=format&fit=crop" class="w-full lg:w-1/2 h-80 lg:h-auto object-cover">
+                        <!-- Container para o Slider de Imagens -->
+                        <div class="w-full lg:w-1/2 h-80 lg:h-auto relative overflow-hidden flex justify-center">
+                            <!-- Imagem 1 (Base/Relativa para manter o fluxo de layout) -->
+                            <img id="slider-img-1" src="./assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" class="relative w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100 z-0">
+                            
+                            <!-- Imagem 2 (Absoluta para sobreposição e transição suave) -->
+                            <img id="slider-img-2" src="./assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none z-0">
+                        </div>
                         <div class="p-8 flex flex-col justify-between lg:w-1/2">
                             <div>
                                 <span class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Serviço Exclusivo</span>
@@ -92,7 +99,7 @@
                                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
                                 <select id="select-personalizada" onchange="atualizarPreco('personalizada')" class="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
                                     <option value="sem-pintura" data-preco="89,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                    <option value="com-pintura" data-preco="189,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
+                                    <option value="com-pintura" data-preco="139,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
                                 </select>
                                 
                                 <div class="flex justify-between items-baseline mb-4">
@@ -291,7 +298,7 @@
         const precos = {
             personalizada: {
                 "sem-pintura": "89,90",
-                "com-pintura": "189,90"
+                "com-pintura": "139,90"
             },
             herois: {
                 "sem-pintura": "29,90",
@@ -368,6 +375,25 @@
                 menuIcon.classList.replace('fa-bars', 'fa-xmark');
             }
         });
+
+        // Slider da Miniatura Personalizada (Alterna a cada 6s)
+        const slide1 = document.getElementById('slider-img-1');
+        const slide2 = document.getElementById('slider-img-2');
+        let currentSlide = 1;
+
+        if (slide1 && slide2) {
+            setInterval(() => {
+                if (currentSlide === 1) {
+                    slide1.classList.replace('opacity-100', 'opacity-0');
+                    slide2.classList.replace('opacity-0', 'opacity-100');
+                    currentSlide = 2;
+                } else {
+                    slide2.classList.replace('opacity-100', 'opacity-0');
+                    slide1.classList.replace('opacity-0', 'opacity-100');
+                    currentSlide = 1;
+                }
+            }, 6000);
+        }
     </script>
 </body>
 </html>
