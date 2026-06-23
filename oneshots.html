@@ -61,7 +61,7 @@
     </header>
 
     <main>
-        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/one shots.jpg'); background-position: center 75%;">
+        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/one shots.jpg'); background-position: center 85%;">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Kits de Aventura</h1>
@@ -156,7 +156,9 @@
             const textoOpcao = opcaoSelecionada.text;
             const preco = opcaoSelecionada.dataset.preco;
             
-            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar o *Kit de Aventura Completo: O Preço do Herdeiro*.\n\n*Opção Selecionada:* ${textoOpcao}\n*Valor Estimado:* R$ ${preco}\n\nComo procedemos com o pagamento e envio?`;
+            const textoOpcaoLimpo = textoOpcao.split('(')[0].trim();
+            
+            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar o *Kit de Aventura Completo: O Preço do Herdeiro*.\n\n*Opção Selecionada:* ${textoOpcaoLimpo}\n*Valor Estimado:* R$ ${preco}\n\nComo procedemos com o pagamento e envio?`;
             const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
             window.open(urlWhatsApp, '_blank');
         }

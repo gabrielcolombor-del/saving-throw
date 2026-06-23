@@ -118,7 +118,7 @@
                     <p class="text-zinc-700 text-lg mb-10">
                         Sua miniatura será entregue acompanhada de uma <strong>Caixa de MDF de Luxo</strong>, cortada e gravada a laser com o nome, classe e os símbolos do seu herói. É o baú do tesouro definitivo para guardar o seu avatar.
                     </p>
-                    <a href="https://wa.me/5527997947604?text=Olá!%20Gostaria%20de%20encomendar%20uma%20miniatura%20personalizada%20na%20caixa%20de%20MDF." target="_blank" class="inline-flex bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-8 py-4 rounded shadow-xl items-center gap-3 group font-bold uppercase text-sm tracking-wider">
+                    <a href="https://wa.me/5527997947604?text=Ol%C3%A1!%20Gostaria%20de%20encomendar%20uma%20miniatura%20personalizada%20na%20caixa%20de%20MDF." target="_blank" class="inline-flex bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-8 py-4 rounded shadow-xl items-center gap-3 group font-bold uppercase text-sm tracking-wider">
                         <i class="fa-solid fa-wand-magic-sparkles text-lg group-hover:text-amber-500 transition-colors"></i> Encomendar Meu Herói
                     </a>
                 </div>
@@ -254,7 +254,9 @@
             const textoOpcao = opcaoSelecionada.text;
             const preco = opcaoSelecionada.dataset.preco;
             
-            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar o *Kit de Aventura Completo: O Preço do Herdeiro*.\n\n*Opção Selecionada:* ${textoOpcao}\n*Valor Estimado:* R$ ${preco}\n\nComo procedemos com o pagamento e envio?`;
+            const textoOpcaoLimpo = textoOpcao.split('(')[0].trim();
+            
+            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar o *Kit de Aventura Completo: O Preço do Herdeiro*.\n\n*Opção Selecionada:* ${textoOpcaoLimpo}\n*Valor Estimado:* R$ ${preco}\n\nComo procedemos com o pagamento e envio?`;
             
             const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
             

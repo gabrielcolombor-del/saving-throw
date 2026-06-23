@@ -61,7 +61,7 @@
     </header>
 
     <main>
-        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/minis.png'); background-position: center 35%;">
+        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/minis.png'); background-position: center 20%;">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas & Bestiário</h1>
@@ -141,7 +141,7 @@
                     </div>
 
                     <div class="text-center">
-                        <a href="https://wa.me/5527997947604?text=Olá!%20Tenho%20uma%20ideia/arquivos%20prontos%20para%20um%20kit%20de%20miniaturas%20personalizado%20e%20gostaria%20de%20fazer%20um%20orçamento." target="_blank" class="inline-flex bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-8 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
+                        <a href="https://wa.me/5527997947604?text=Ol%C3%A1!%20Tenho%20uma%20ideia%2Farquivos%20prontos%20para%20um%20kit%20de%20miniaturas%20personalizado%20e%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" class="inline-flex bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-8 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
                             <i class="fa-solid fa-comments text-base"></i> Encomendar Meu Kit via WhatsApp
                         </a>
                     </div>
@@ -210,7 +210,10 @@
             const valor = precos[produto][opcaoSelecionada];
             const nome = nomesProdutos[produto];
             
-            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar:\n*Produto:* ${nome}\n*Opção:* ${textoOpcao}\n*Valor Estimado:* R$ ${valor}\n\nComo procedemos com o pagamento e envio?`;
+            const nomeLimpo = nome.split('(')[0].trim();
+            const textoOpcaoLimpo = textoOpcao.split('(')[0].trim();
+            
+            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar:\n*Produto:* ${nomeLimpo}\n*Opção:* ${textoOpcaoLimpo}\n*Valor Estimado:* R$ ${valor}\n\nComo procedemos com o pagamento e envio?`;
             const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
             window.open(urlWhatsApp, '_blank');
         }
