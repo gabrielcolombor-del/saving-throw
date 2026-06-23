@@ -77,12 +77,33 @@
                 <div class="max-w-2xl mx-auto">
                     <!-- Escudo do Mestre Personalizado -->
                     <div class="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                        <img src="./assets/imagens/escudo_mestre.png" alt="Escudo do Mestre Personalizado" class="w-full h-80 object-cover">
+                        <!-- Slider do Produto -->
+                        <div class="relative w-full h-80 group overflow-hidden bg-zinc-100">
+                            <!-- Wrapper das Imagens -->
+                            <div id="slider-wrapper" class="flex w-full h-full transition-transform duration-500 ease-out">
+                                <img src="./assets/imagens/escudo_mestre.png" alt="Escudo do Mestre Personalizado - Foto 1" class="w-full h-full object-cover flex-shrink-0">
+                                <img src="./assets/imagens/escudo_mestre2.png" alt="Escudo do Mestre Personalizado - Foto 2" class="w-full h-full object-cover flex-shrink-0">
+                            </div>
+                            
+                            <!-- Setas de Navegação (Suaves, aparecem no hover) -->
+                            <button id="prev-slide" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 backdrop-blur-xs select-none" aria-label="Foto anterior">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button id="next-slide" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 backdrop-blur-xs select-none" aria-label="Próxima foto">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                            
+                            <!-- Bolinhas Indicadoras (Suaves) -->
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                                <button type="button" class="slider-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all duration-300 cursor-pointer" data-slide="0" aria-label="Ir para foto 1"></button>
+                                <button type="button" class="slider-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all duration-300 cursor-pointer" data-slide="1" aria-label="Ir para foto 2"></button>
+                            </div>
+                        </div>
                         <div class="p-6 flex flex-col justify-between flex-grow">
                             <div class="mb-6">
                                 <span class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-1 block">Gerenciamento de Mesa</span>
                                 <h4 class="font-title text-2xl mb-2">Escudo do Mestre Personalizado</h4>
-                                <p class="text-zinc-600 text-sm mb-6 leading-relaxed">O centro de comando definitivo para o mestre. Estrutura de madeira entalhada em corte a laser de altíssima precisão, com espaços imantados para suas tabelas de consulta rápida.</p>
+                                <p class="text-zinc-600 text-sm mb-6 leading-relaxed">O centro de comando definitivo para o mestre. Estrutura de madeira entalhada em corte a laser de altíssima precisão, com tiras de elástico na parte de trás para prender suas folhas de consulta rápida.</p>
                             </div>
                             <div>
                                 <span class="font-black text-xl block mb-3">R$ 299,90</span>
@@ -131,6 +152,47 @@
                 menuIcon.classList.replace('fa-bars', 'fa-xmark');
             }
         });
+
+        // Slider para o Escudo do Mestre
+        const sliderWrapper = document.getElementById('slider-wrapper');
+        const prevBtn = document.getElementById('prev-slide');
+        const nextBtn = document.getElementById('next-slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+        const totalSlides = dots.length;
+
+        function updateSlider() {
+            sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.remove('bg-white/40');
+                    dot.classList.add('bg-white', 'scale-110');
+                } else {
+                    dot.classList.remove('bg-white', 'scale-110');
+                    dot.classList.add('bg-white/40');
+                }
+            });
+        }
+
+        prevBtn.addEventListener('click', function() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        });
+
+        nextBtn.addEventListener('click', function() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        });
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                currentSlide = parseInt(this.getAttribute('data-slide'));
+                updateSlider();
+            });
+        });
+
+        // Inicializa o slider
+        updateSlider();
     </script>
 </body>
 </html>
