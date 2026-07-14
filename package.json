@@ -1,0 +1,17 @@
+{
+  "name": "saving-throw-api",
+  "version": "1.0.0",
+  "description": "API e Banco de Dados para Habilidades e Feitiços do Saving Throw",
+  "main": "api/spells.js",
+  "scripts": {
+    "seed": "node scripts/seed-db.js",
+    "parse-pdf": "node scripts/parse-phb.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "pdf-parse": "^1.1.1"
+  }
+}

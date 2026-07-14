@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades & Feitiços | Saving Throw</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        .bg-parchment { background-color: #EBE3CB; }
+        .text-parchment-dark { color: #4A4435; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black">
+
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex justify-between items-center w-full md:w-auto">
+                <a href="index.html" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                    Saving Throw
+                </a>
+                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+                <nav class="flex flex-col md:flex-row items-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
+                    <a href="oneshots.html" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">One Shots</a>
+                    <a href="miniaturas.html" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Miniaturas</a>
+                    <a href="arsenal.html" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Arsenal de RPG</a>
+                    <a href="sistema.html" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Sistema ST</a>
+                    <a href="habilidades.html" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-amber-600 pb-1 md:border-black w-full py-2 md:py-0 md:whitespace-nowrap">Habilidades & Feitiços</a>
+                </nav>
+
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Banner da Seção -->
+        <section class="relative bg-cover bg-center text-white py-16 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/banner_st.png');">
+            <div class="absolute inset-0 bg-black/75"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-4">Habilidades & Feitiços</h1>
+                <p class="text-[#EBE3CB]/80 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                    Consulte o Grimório Arcano e Divino de D&D 5e. Escolha a sua classe e o seu ciclo máximo de magia para encontrar todos os feitiços disponíveis.
+                </p>
+            </div>
+        </section>
+
+        <!-- Seção de Filtros e Grimório -->
+        <section class="py-12 bg-black min-h-[600px]">
+            <div class="container mx-auto px-4 max-w-6xl">
+                
+                <!-- Card de Filtros -->
+                <div class="bg-zinc-900/50 border border-zinc-850 p-6 rounded-xl mb-8 shadow-2xl backdrop-blur-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Seleção de Classe -->
+                        <div class="flex flex-col">
+                            <label for="class-select" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
+                                <i class="fa-solid fa-hat-wizard mr-1"></i> Classe do Personagem
+                            </label>
+                            <select id="class-select" class="bg-zinc-950 border border-zinc-800 text-white rounded px-3 py-2.5 outline-none focus:border-amber-600 transition-all text-sm font-medium cursor-pointer">
+                                <option value="Mago" selected>Mago (Wizard)</option>
+                                <option value="Clérigo">Clérigo (Cleric)</option>
+                                <option value="Druida">Druida (Druid)</option>
+                                <option value="Bardo">Bardo (Bard)</option>
+                                <option value="Bruxo">Bruxo (Warlock)</option>
+                                <option value="Feiticeiro">Feiticeiro (Sorcerer)</option>
+                                <option value="Paladino">Paladino (Paladin)</option>
+                                <option value="Patrulheiro">Patrulheiro (Ranger)</option>
+                            </select>
+                        </div>
+
+                        <!-- Seleção de Ciclo Máximo -->
+                        <div class="flex flex-col">
+                            <label for="cycle-select" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Ciclo de Magia Máximo
+                            </label>
+                            <select id="cycle-select" class="bg-zinc-950 border border-zinc-800 text-white rounded px-3 py-2.5 outline-none focus:border-amber-600 transition-all text-sm font-medium cursor-pointer">
+                                <option value="0">Truques (Ciclo 0)</option>
+                                <option value="1">1º Ciclo (Nível 1)</option>
+                                <option value="2">2º Ciclo (Nível 2)</option>
+                                <option value="3" selected>3º Ciclo (Nível 3 e abaixo)</option>
+                                <option value="4">4º Ciclo (Nível 4 e abaixo)</option>
+                                <option value="5">5º Ciclo (Nível 5 e abaixo)</option>
+                                <option value="6">6º Ciclo (Nível 6 e abaixo)</option>
+                                <option value="7">7º Ciclo (Nível 7 e abaixo)</option>
+                                <option value="8">8º Ciclo (Nível 8 e abaixo)</option>
+                                <option value="9">9º Ciclo (Nível 9 e abaixo)</option>
+                            </select>
+                        </div>
+
+                        <!-- Busca de Magias -->
+                        <div class="flex flex-col">
+                            <label for="search-input" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
+                                <i class="fa-solid fa-magnifying-glass mr-1"></i> Pesquisar pelo Nome
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="search-input" placeholder="Ex: Bola de Fogo..." class="w-full bg-zinc-950 border border-zinc-800 text-white rounded pl-10 pr-3 py-2.5 outline-none focus:border-amber-600 transition-all text-sm font-medium">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-zinc-500 text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Geral / Contador -->
+                <div class="flex justify-between items-center mb-6 px-1">
+                    <span id="results-count" class="text-xs font-bold uppercase tracking-widest text-[#EBE3CB]/60">
+                        Carregando Grimório...
+                    </span>
+                    <span id="source-badge" class="hidden text-[10px] px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-500 font-mono">
+                        -
+                    </span>
+                </div>
+
+                <!-- Estado de Carregamento (Loading) -->
+                <div id="loading" class="flex flex-col items-center justify-center py-20">
+                    <div class="w-12 h-12 border-4 border-amber-600/20 border-t-amber-600 rounded-full animate-spin mb-4"></div>
+                    <p class="text-zinc-500 text-sm font-medium uppercase tracking-wider">Buscando magias nos pergaminhos...</p>
+                </div>
+
+                <!-- Grimório / Resultados das Magias -->
+                <div id="spells-container" class="hidden space-y-8">
+                    <!-- Gerado dinamicamente via JS -->
+                </div>
+
+                <!-- Estado Vazio (Empty State) -->
+                <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-center">
+                    <i class="fa-solid fa-box-open text-zinc-700 text-5xl mb-6"></i>
+                    <h3 class="text-2xl font-title text-[#EBE3CB] mb-2">Nenhuma magia encontrada</h3>
+                    <p class="text-zinc-500 max-w-sm text-sm">Nenhum feitiço corresponde aos filtros selecionados. Tente aumentar o ciclo ou limpar o campo de pesquisa.</p>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-parchment text-black py-12 border-t border-black/10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-16 md:h-24 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-tiktok text-lg"></i>
+                </a>
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-black/10 text-center flex flex-col md:flex-row justify-between text-xs font-bold uppercase tracking-wider text-parchment-dark/70">
+            <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
+            <p class="mt-2 md:mt-0">Forjado de RPGista para RPGista.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Elementos do DOM
+        const classSelect = document.getElementById('class-select');
+        const cycleSelect = document.getElementById('cycle-select');
+        const searchInput = document.getElementById('search-input');
+        const spellsContainer = document.getElementById('spells-container');
+        const loadingDiv = document.getElementById('loading');
+        const emptyStateDiv = document.getElementById('empty-state');
+        const resultsCountSpan = document.getElementById('results-count');
+        const sourceBadge = document.getElementById('source-badge');
+
+        let allLoadedSpells = [];
+
+        // Nomes dos ciclos formatados
+        const cycleNames = {
+            0: 'Truques (Ciclo 0)',
+            1: '1º Ciclo',
+            2: '2º Ciclo',
+            3: '3º Ciclo',
+            4: '4º Ciclo',
+            5: '5º Ciclo',
+            6: '6º Ciclo',
+            7: '7º Ciclo',
+            8: '8º Ciclo',
+            9: '9º Ciclo'
+        };
+
+        // Função para carregar magias
+        async function fetchSpells() {
+            showLoading(true);
+            const className = classSelect.value;
+            const cycle = cycleSelect.value;
+
+            try {
+                // Tenta buscar da API primeiro
+                const response = await fetch(`/api/spells?class=${encodeURIComponent(className)}&cycle=${cycle}`);
+                
+                if (!response.ok) {
+                    throw new Error('Falha na resposta do servidor');
+                }
+                
+                const data = await response.json();
+                allLoadedSpells = data.spells || [];
+                
+                sourceBadge.innerText = data.source === 'postgresql' ? 'POSTGRESQL' : 'LOCAL JSON';
+                sourceBadge.classList.remove('hidden');
+                
+                renderSpellsList();
+            } catch (err) {
+                console.warn('Erro ao consultar API serverless, acionando fallback estático local:', err.message);
+                // Caso falhe (por exemplo, arquivo aberto localmente sem servidor),
+                // tenta carregar o arquivo estático diretamente do repositório
+                try {
+                    const fallbackResponse = await fetch('./assets/spells-pt.json');
+                    if (!fallbackResponse.ok) {
+                        throw new Error('Fallback JSON não encontrado');
+                    }
+                    const spells = await fallbackResponse.json();
+                    
+                    // Filtrar no cliente
+                    allLoadedSpells = spells.filter(spell => {
+                        const classMatch = spell.classes && spell.classes.some(c => c.toLowerCase() === className.toLowerCase());
+                        const levelMatch = spell.level <= parseInt(cycle, 10);
+                        return classMatch && levelMatch;
+                    });
+
+                    // Ordenar por ciclo e nome
+                    allLoadedSpells.sort((a, b) => {
+                        if (a.level !== b.level) return a.level - b.level;
+                        return a.name.localeCompare(b.name, 'pt-BR');
+                    });
+
+                    sourceBadge.innerText = 'STATIC FILE';
+                    sourceBadge.classList.remove('hidden');
+                    
+                    renderSpellsList();
+                } catch (fallbackErr) {
+                    console.error('Falha geral no carregamento:', fallbackErr);
+                    showErrorState();
+                }
+            }
+        }
+
+        // Renderização HTML das Magias Agrupadas por Ciclo
+        function renderSpellsList() {
+            showLoading(false);
+            
+            const query = searchInput.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            
+            // Filtragem pelo termo de busca
+            const filteredSpells = allLoadedSpells.filter(spell => {
+                if (!query) return true;
+                const normalizedSpellName = spell.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                return normalizedSpellName.includes(query);
+            });
+
+            if (filteredSpells.length === 0) {
+                spellsContainer.classList.add('hidden');
+                emptyStateDiv.classList.remove('hidden');
+                resultsCountSpan.innerText = '0 magias encontradas';
+                return;
+            }
+
+            emptyStateDiv.classList.add('hidden');
+            spellsContainer.classList.remove('hidden');
+            resultsCountSpan.innerText = `${filteredSpells.length} ${filteredSpells.length === 1 ? 'magia encontrada' : 'magias encontradas'}`;
+
+            // Agrupar por ciclo
+            const grouped = {};
+            filteredSpells.forEach(spell => {
+                const lvl = spell.level;
+                if (!grouped[lvl]) grouped[lvl] = [];
+                grouped[lvl].push(spell);
+            });
+
+            // Gerar HTML das seções de ciclos
+            let html = '';
+            
+            // Ordena os ciclos do maior selecionado para o menor (ex: 3 -> 2 -> 1 -> 0)
+            const sortedCycles = Object.keys(grouped).map(Number).sort((a, b) => b - a);
+
+            sortedCycles.forEach(level => {
+                const spellsInGroup = grouped[level];
+                
+                html += `
+                    <div class="mb-10">
+                        <div class="border-b border-zinc-800 pb-2 mb-6 flex items-center justify-between">
+                            <h2 class="text-2xl font-title text-amber-500 uppercase tracking-wide">
+                                ${cycleNames[level]}
+                            </h2>
+                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-850 font-bold text-zinc-400">
+                                ${spellsInGroup.length} ${spellsInGroup.length === 1 ? 'magia' : 'magias'}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            ${spellsInGroup.map(spell => renderSpellCard(spell)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            spellsContainer.innerHTML = html;
+        }
+
+        // HTML Card Individual de Magia
+        function renderSpellCard(spell) {
+            const hasHighLevel = spell.high_level && spell.high_level.trim().length > 0;
+            return `
+                <div class="bg-zinc-950/80 border border-zinc-850 rounded-lg overflow-hidden shadow transition-all duration-300 hover:border-amber-600/30">
+                    <!-- Cabeçalho do Card (Clicável) -->
+                    <button onclick="toggleSpellCollapse(${spell.id})" class="w-full text-left p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer focus:outline-none hover:bg-zinc-900/30 transition-colors">
+                        <div>
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <h3 class="text-xl font-bold uppercase tracking-tight text-white">${spell.name}</h3>
+                                <span class="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded bg-amber-600/10 border border-amber-600/30 text-amber-500">
+                                    ${spell.school}
+                                </span>
+                            </div>
+                            <!-- Tags rápidas de tempo e alcance -->
+                            <div class="flex gap-4 mt-2 text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+                                <span><i class="fa-solid fa-clock mr-1 text-amber-600/70"></i> ${spell.casting_time}</span>
+                                <span><i class="fa-solid fa-location-crosshairs mr-1 text-amber-600/70"></i> ${spell.range}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-zinc-500 font-bold uppercase tracking-widest md:block hidden">Ver detalhes</span>
+                            <div id="arrow-icon-${spell.id}" class="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-850 flex items-center justify-center text-zinc-400 transition-transform duration-300">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Detalhes do Grimório (Sanfona/Acordeão) -->
+                    <div id="spell-details-${spell.id}" class="hidden border-t border-zinc-900 bg-zinc-900/15 p-6 transition-all">
+                        <!-- Ficha Técnica Completa -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm p-4 bg-zinc-950/40 rounded border border-zinc-900/50">
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Tempo de Conjuração</span>
+                                <span class="text-zinc-300 font-medium">${spell.casting_time}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Alcance</span>
+                                <span class="text-zinc-300 font-medium">${spell.range}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Componentes</span>
+                                <span class="text-zinc-300 font-medium">${spell.components || 'Nenhum'}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Duração</span>
+                                <span class="text-zinc-300 font-medium">${spell.duration}</span>
+                            </div>
+                        </div>
+
+                        <!-- Descrição Textual -->
+                        <div class="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap space-y-4">
+                            <p>${spell.description}</p>
+                        </div>
+
+                        <!-- Seção Em Níveis Superiores -->
+                        ${hasHighLevel ? `
+                            <div class="mt-6 p-4 rounded-lg bg-amber-600/5 border border-amber-600/15 text-sm">
+                                <strong class="block text-amber-500 font-semibold uppercase tracking-wider text-xs mb-2">
+                                    <i class="fa-solid fa-angles-up mr-1"></i> Em Níveis Superiores
+                                </strong>
+                                <p class="text-zinc-300 italic">${spell.high_level}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Controlar recolhimento / expansão do acordeão
+        function toggleSpellCollapse(spellId) {
+            const detailsDiv = document.getElementById(`spell-details-${spellId}`);
+            const arrowDiv = document.getElementById(`arrow-icon-${spellId}`);
+            
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                arrowDiv.classList.add('rotate-180', 'text-amber-500', 'border-amber-600/30');
+            } else {
+                detailsDiv.classList.add('hidden');
+                arrowDiv.classList.remove('rotate-180', 'text-amber-500', 'border-amber-600/30');
+            }
+        }
+
+        // Loading states
+        function showLoading(isLoading) {
+            if (isLoading) {
+                loadingDiv.classList.remove('hidden');
+                spellsContainer.classList.add('hidden');
+                emptyStateDiv.classList.add('hidden');
+                resultsCountSpan.innerText = 'Buscando pergaminhos...';
+            } else {
+                loadingDiv.classList.add('hidden');
+            }
+        }
+
+        function showErrorState() {
+            showLoading(false);
+            spellsContainer.classList.add('hidden');
+            emptyStateDiv.classList.remove('hidden');
+            resultsCountSpan.innerText = 'Erro ao carregar';
+            emptyStateDiv.querySelector('h3').innerText = 'Erro de grimório';
+            emptyStateDiv.querySelector('p').innerText = 'Houve uma falha ao abrir a base de dados de magias. Verifique a conexão do servidor.';
+        }
+
+        // Listeners de Eventos
+        classSelect.addEventListener('change', fetchSpells);
+        cycleSelect.addEventListener('change', fetchSpells);
+        searchInput.addEventListener('input', renderSpellsList);
+
+        // Menu Hamburguer Responsivo
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            const navContent = document.getElementById('nav-content');
+            const menuIcon = this.querySelector('i');
+            navContent.classList.toggle('hidden');
+            if (navContent.classList.contains('hidden')) {
+                menuIcon.classList.replace('fa-xmark', 'fa-bars');
+            } else {
+                menuIcon.classList.replace('fa-bars', 'fa-xmark');
+            }
+        });
+
+        // Inicializar
+        fetchSpells();
+    </script>
+</body>
+</html>
