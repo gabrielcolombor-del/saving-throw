@@ -16,6 +16,10 @@
             font-family: 'Alsina';
             src: url('./assets/Alsina.TTF') format('truetype');
         }
+        @font-face {
+            font-family: 'Louis George Cafe';
+            src: url('./assets/LouisGeorgeCafe.ttf') format('truetype');
+        }
         
         body {
             font-family: 'Alsina', sans-serif !important;
@@ -25,6 +29,10 @@
         h1, h2, h3, .font-title {
             font-family: 'Shindler', serif !important;
             font-weight: normal;
+        }
+
+        .font-louis {
+            font-family: 'Louis George Cafe', sans-serif !important;
         }
 
         .bg-parchment { background-color: #EBE3CB; }
@@ -395,24 +403,24 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm p-4 bg-zinc-950/40 rounded border border-zinc-900/50">
                             <div>
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Tempo de Conjuração</span>
-                                <span class="text-zinc-300 font-medium">${spell.casting_time}</span>
+                                <span class="text-zinc-300 font-medium font-louis">${spell.casting_time}</span>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Alcance</span>
-                                <span class="text-zinc-300 font-medium">${spell.range}</span>
+                                <span class="text-zinc-300 font-medium font-louis">${spell.range}</span>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Componentes</span>
-                                <span class="text-zinc-300 font-medium">${spell.components || 'Nenhum'}</span>
+                                <span class="text-zinc-300 font-medium font-louis">${spell.components || 'Nenhum'}</span>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-500/70 mb-1">Duração</span>
-                                <span class="text-zinc-300 font-medium">${spell.duration}</span>
+                                <span class="text-zinc-300 font-medium font-louis">${spell.duration}</span>
                             </div>
                         </div>
 
                         <!-- Descrição Textual -->
-                        <div class="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap space-y-4">
+                        <div class="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap space-y-4 font-louis">
                             <p>${spell.description}</p>
                         </div>
 
@@ -422,7 +430,7 @@
                                 <strong class="block text-amber-500 font-semibold uppercase tracking-wider text-xs mb-2">
                                     <i class="fa-solid fa-angles-up mr-1"></i> Em Níveis Superiores
                                 </strong>
-                                <p class="text-zinc-300 italic">${spell.high_level}</p>
+                                <p class="text-zinc-300 italic font-louis">${spell.high_level}</p>
                             </div>
                         ` : ''}
                     </div>
