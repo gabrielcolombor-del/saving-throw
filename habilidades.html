@@ -79,7 +79,7 @@
                 
                 <!-- Card de Filtros -->
                 <div class="bg-zinc-900/50 border border-zinc-850 p-6 rounded-xl mb-8 shadow-2xl backdrop-blur-sm">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Seleção de Classe -->
                         <div class="flex flex-col">
                             <label for="class-select" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
@@ -100,7 +100,7 @@
                         <!-- Seleção de Ciclo Máximo -->
                         <div class="flex flex-col">
                             <label for="cycle-select" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
-                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Ciclo de Magia Máximo
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Ciclo Máximo
                             </label>
                             <select id="cycle-select" class="bg-zinc-950 border border-zinc-800 text-white rounded px-3 py-2.5 outline-none focus:border-amber-600 transition-all text-sm font-medium cursor-pointer">
                                 <option value="0">Truques (Ciclo 0)</option>
@@ -113,6 +113,24 @@
                                 <option value="7">7º Ciclo (Nível 7 e abaixo)</option>
                                 <option value="8">8º Ciclo (Nível 8 e abaixo)</option>
                                 <option value="9">9º Ciclo (Nível 9 e abaixo)</option>
+                            </select>
+                        </div>
+
+                        <!-- Seleção de Escola de Magia -->
+                        <div class="flex flex-col">
+                            <label for="school-select" class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
+                                <i class="fa-solid fa-scroll mr-1"></i> Escola de Magia
+                            </label>
+                            <select id="school-select" class="bg-zinc-950 border border-zinc-800 text-white rounded px-3 py-2.5 outline-none focus:border-amber-600 transition-all text-sm font-medium cursor-pointer">
+                                <option value="Todas" selected>Todas as Escolas</option>
+                                <option value="Abjuração">Abjuração</option>
+                                <option value="Adivinhação">Adivinhação</option>
+                                <option value="Conjuração">Conjuração</option>
+                                <option value="Encantamento">Encantamento</option>
+                                <option value="Evocação">Evocação</option>
+                                <option value="Ilusão">Ilusão</option>
+                                <option value="Necromancia">Necromancia</option>
+                                <option value="Transmutação">Transmutação</option>
                             </select>
                         </div>
 
@@ -189,6 +207,7 @@
         // Elementos do DOM
         const classSelect = document.getElementById('class-select');
         const cycleSelect = document.getElementById('cycle-select');
+        const schoolSelect = document.getElementById('school-select');
         const searchInput = document.getElementById('search-input');
         const spellsContainer = document.getElementById('spells-container');
         const loadingDiv = document.getElementById('loading');
@@ -273,12 +292,24 @@
             showLoading(false);
             
             const query = searchInput.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            const schoolVal = schoolSelect.value;
             
-            // Filtragem pelo termo de busca
+            // Filtragem pelo termo de busca e escola de magia
             const filteredSpells = allLoadedSpells.filter(spell => {
-                if (!query) return true;
-                const normalizedSpellName = spell.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                return normalizedSpellName.includes(query);
+                // Filtro por Nome
+                if (query) {
+                    const normalizedSpellName = spell.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    if (!normalizedSpellName.includes(query)) return false;
+                }
+                
+                // Filtro por Escola de Magia
+                if (schoolVal !== 'Todas') {
+                    const normSpellSchool = spell.school.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const normFilterSchool = schoolVal.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    if (normSpellSchool !== normFilterSchool) return false;
+                }
+                
+                return true;
             });
 
             if (filteredSpells.length === 0) {
@@ -437,6 +468,7 @@
         // Listeners de Eventos
         classSelect.addEventListener('change', fetchSpells);
         cycleSelect.addEventListener('change', fetchSpells);
+        schoolSelect.addEventListener('change', renderSpellsList);
         searchInput.addEventListener('input', renderSpellsList);
 
         // Menu Hamburguer Responsivo
