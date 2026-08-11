@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
-    <meta name="description" content="Soundboard interativo otimizado para mobile e desktop com caixa de favoritos em cards, atalhos de teclado e mixer de áudio para RPG.">
+    <meta name="description" content="Soundboard interativo com login Google/E-mail, perfis de mesas de RPG personalizáveis, atalhos e áudios reais para Mestres.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+
+    <!-- Google Identity Services API (Google Login) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <style>
         @font-face {
             font-family: 'Shindler';
@@ -33,64 +37,45 @@
         .text-parchment-dark { color: #4A4435; }
         .transition-all { transition: all 0.25s ease; }
 
-        /* Otimizações Mobile para Barra de Rolagem de Categorias */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animação do visualizador de áudio */
-        .equalizer-bar {
-            animation: bounce 1.2s ease-in-out infinite alternate;
-        }
+        .equalizer-bar { animation: bounce 1.2s ease-in-out infinite alternate; }
         .equalizer-bar:nth-child(2) { animation-delay: 0.2s; }
         .equalizer-bar:nth-child(3) { animation-delay: 0.4s; }
 
-        @keyframes bounce {
-            0% { height: 4px; }
-            100% { height: 18px; }
-        }
+        @keyframes bounce { 0% { height: 4px; } 100% { height: 18px; } }
 
-        /* Efeito visual quando dispara o som */
         .sfx-active {
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
             border-color: #f59e0b !important;
             transform: scale(0.95);
         }
 
-        /* Estilo dos slots e dropzones */
         .drop-target-active {
             border-color: #f59e0b !important;
             background-color: rgba(245, 158, 11, 0.15) !important;
             transform: scale(1.02);
         }
 
-        /* Glow para os cards de ambiente ativos */
         .ambient-card-active {
             border-color: #f59e0b !important;
             background: linear-gradient(135deg, rgba(39, 39, 42, 0.95), rgba(217, 119, 6, 0.25)) !important;
             box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
         }
 
-        /* Touch Drag & Drop */
-        [draggable="true"] {
-            cursor: grab;
-            touch-action: manipulation;
-        }
-        [draggable="true"]:active {
-            cursor: grabbing;
-            opacity: 0.7;
-        }
+        [draggable="true"] { cursor: grab; touch-action: manipulation; }
+        [draggable="true"]:active { cursor: grabbing; opacity: 0.7; }
     </style>
 </head>
 <body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <!-- Top Banner -->
-    <div class="hidden sm:block bg-amber-600 text-black text-xs sm:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
-        🎲 Mesa do Mestre: Arraste Efeitos para Atalhos 1 a 9 e Misture Múltiplas Músicas Ambientes
+    <!-- ANÚNCIO DE LOGIN NO INÍCIO DA PÁGINA -->
+    <div id="login-announcement-banner" class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-black text-xs sm:text-sm font-bold py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 shadow-md">
+        <span>🔑 Faça login com Google ou E-mail para salvar seus favoritos, atalhos e criar perfis para diferentes mesas de RPG!</span>
+        <button id="banner-login-btn" class="bg-black text-amber-400 hover:bg-zinc-900 border border-black/20 font-bold uppercase text-[11px] tracking-wider px-3.5 py-1 rounded-lg transition-all cursor-pointer shrink-0">
+            Entrar / Cadastrar
+        </button>
     </div>
 
     <!-- Header Navigation -->
@@ -115,15 +100,18 @@
                     <a href="sons" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-amber-600 pb-1 md:border-black w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
                 </nav>
 
-                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
-                </a>
+                <!-- Botão de Conta / Usuário Logado -->
+                <div id="user-header-area" class="w-full md:w-auto flex items-center justify-center">
+                    <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-user-gear text-sm"></i> Minha Conta
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="flex-grow">
-        <!-- Hero Section -->
+        <!-- Hero Section & Master Control -->
         <section class="relative w-full py-6 sm:py-10 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
             <div class="container mx-auto px-4 max-w-6xl text-center">
                 <span class="inline-flex items-center gap-2 text-amber-500 text-[11px] sm:text-xs font-black tracking-widest uppercase mb-2 px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/30">
@@ -133,13 +121,41 @@
                     Estúdio Sonoro da Mesa
                 </h1>
                 <p class="text-[#EBE3CB] text-xs sm:text-sm max-w-3xl mx-auto mb-5 px-2">
-                    Monte sua mesa: Toque sons com 1 toque no celular ou pelas teclas <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-[10px]">1</kbd> a <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-[10px]">9</kbd>. Clique na estrela ⭐ para favoritar!
+                    Monte sua mesa: Alterne entre perfis de diferentes mesas de RPG. Clique na estrela ⭐ para favoritar ou arraste para os atalhos!
                 </p>
 
-                <!-- BARRA MASTER DE ÁUDIO & PAINEL DE MÚSICAS TOCANDO (OTIMIZADO PARA MOBILE) -->
-                <div class="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-3 text-left">
+                <!-- BARRA MASTER DE ÁUDIO & GERENCIADOR DE PERFIS DE MESAS -->
+                <div class="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
                     
-                    <!-- Linha 1: Volume Master e Botões Principais -->
+                    <!-- LINHA DE GERENCIAMENTO DE PERFIS DE MESAS DE RPG -->
+                    <div class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3" id="table-profiles-section">
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 border border-amber-500/40">
+                                <i class="fa-solid fa-dice-d20"></i>
+                            </div>
+                            <div class="min-w-0 flex-grow md:flex-grow-0">
+                                <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Perfil de Mesa Ativa</span>
+                                <select id="table-profile-select" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500 cursor-pointer w-full md:w-64">
+                                    <option value="default_mesa">Mesa 1: Aventura Principal</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Ação do Perfil de Mesa -->
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                            <button id="add-table-btn" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-plus text-amber-400"></i> Nova Mesa
+                            </button>
+                            <button id="rename-table-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Renomear Mesa">
+                                <i class="fa-solid fa-pen text-zinc-400"></i>
+                            </button>
+                            <button id="delete-table-btn" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Excluir Mesa">
+                                <i class="fa-solid fa-trash text-red-400"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Linha Volume Master e Controles -->
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
                         <div class="flex items-center gap-3 w-full sm:w-auto justify-between">
                             <div class="flex items-center gap-2.5">
@@ -164,7 +180,7 @@
                         </div>
                     </div>
 
-                    <!-- Linha 2: Painel de Músicas Ambientes Tocando no Momento -->
+                    <!-- Músicas Ambientes Tocando no Momento -->
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs uppercase tracking-wider text-amber-400 font-bold flex items-center gap-2">
@@ -173,7 +189,6 @@
                             <span class="text-[11px] text-zinc-400" id="active-tracks-count">0 faixas tocando</span>
                         </div>
 
-                        <!-- Container das Faixas Ativas -->
                         <div id="active-tracks-container" class="min-h-[48px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2 flex flex-col gap-2">
                             <div class="text-zinc-500 text-xs italic py-2 text-center" id="no-active-tracks-msg">
                                 Nenhuma música ambiente tocando. Clique em uma faixa abaixo para iniciar!
@@ -185,34 +200,32 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (OCULTA NO MOBILE / VISÍVEL NO DESKTOP APENAS) -->
+        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (OCULTA NO MOBILE / VISÍVEL APENAS DESKTOP) -->
         <section class="hidden sm:block py-5 sm:py-6 bg-zinc-950 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-1">
                     <h2 class="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
                         <i class="fa-solid fa-keyboard"></i> Atalhos Rápidos no Teclado (Teclas 1 a 9)
                     </h2>
-                    <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado.</p>
+                    <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado da mesa ativa.</p>
                 </div>
 
-                <!-- Grid de Slots 1 a 9 -->
                 <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3" id="quick-slots-container">
                     <!-- Gerado Dinamicamente via JavaScript -->
                 </div>
             </div>
         </section>
 
-        <!-- SEÇÃO: BOX DE FAVORITOS DO MESTRE (FORMATO CARDS NO MOBILE E DESKTOP) -->
+        <!-- SEÇÃO: BOX DE FAVORITOS DA MESA -->
         <section class="py-5 sm:py-6 bg-zinc-900/60 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-base sm:text-lg text-amber-400 font-title uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Sessão
+                        <i class="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Mesa
                     </h2>
-                    <span class="text-[11px] text-zinc-400">Arraste sons para cá ou clique na estrela ⭐</span>
+                    <span class="text-[11px] text-zinc-400">Arraste sons para cá ou toque na ⭐</span>
                 </div>
 
-                <!-- Grid de Favoritos em Formato de Cards Pequenos (Modelo dos Atalhos) -->
                 <div id="favorites-box" class="min-h-[90px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-xl p-3 transition-all grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2.5 sm:gap-3">
                     <div class="col-span-full text-zinc-500 text-xs italic py-3 text-center w-full" id="fav-empty-msg">
                         <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Clique na ⭐ para adicionar!
@@ -221,11 +234,9 @@
             </div>
         </section>
 
-        <!-- FILTROS E BUSCA (BARRA SCROLLÁVEL NO MOBILE) -->
+        <!-- FILTROS E BUSCA -->
         <section class="py-3.5 sm:py-4 bg-zinc-950 border-b border-zinc-900 sticky top-[60px] sm:top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
             <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-3">
-                
-                <!-- Categorias Scrolláveis no Celular -->
                 <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1 flex-nowrap" id="category-filters">
                     <button data-cat="all" class="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         Todos
@@ -247,7 +258,6 @@
                     </button>
                 </div>
 
-                <!-- Busca -->
                 <div class="relative w-full md:w-64 shrink-0">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
                     <input type="text" id="search-input" placeholder="Buscar efeito..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
@@ -255,7 +265,7 @@
             </div>
         </section>
 
-        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL COM PAGINAÇÃO 3 FILEIRAS / 12 POR PÁGINA) -->
+        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL COM PAGINAÇÃO MÁXIMO 3 FILEIRAS) -->
         <section class="py-8 sm:py-10 bg-black border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex items-center justify-between mb-5">
@@ -268,20 +278,16 @@
                     <span class="text-xs text-zinc-400 font-mono hidden sm:inline" id="sfx-count-label">40 efeitos encontrados</span>
                 </div>
 
-                <!-- Grid Limita 3 Fileiras (12 cards por página) -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px]" id="sfx-catalog-grid">
                     <!-- Preenchido via JavaScript -->
                 </div>
 
-                <!-- CONTROLES DE PAGINAÇÃO MOBILE FRIENDLY -->
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900" id="pagination-container">
                     <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-chevron-left text-xs"></i> Anterior
                     </button>
 
-                    <div class="flex items-center gap-1.5" id="page-numbers-container">
-                        <!-- Números de página -->
-                    </div>
+                    <div class="flex items-center gap-1.5" id="page-numbers-container"></div>
 
                     <button id="next-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
                         Próximo <i class="fa-solid fa-chevron-right text-xs"></i>
@@ -297,19 +303,84 @@
                     <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
                         <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
                     </h2>
-                    <p class="text-zinc-400 text-xs sm:text-sm mt-1">Toque para iniciar. Misture várias faixas ao mesmo tempo (ex: Floresta + Fogueira)!</p>
+                    <p class="text-zinc-400 text-xs sm:text-sm mt-1">Toque para iniciar. Misture várias faixas ao mesmo tempo!</p>
                 </div>
 
-                <!-- Grid de Ambientes em Loop -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid">
-                    <!-- Preenchido Dinamicamente via JS -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid"></div>
 
-                <!-- Container Dinâmico de Players YouTube Ocultos -->
                 <div id="youtube-players-container" class="hidden"></div>
             </div>
         </section>
     </main>
+
+    <!-- MODAL DE LOGIN / CADASTRO -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-amber-600/40 rounded-2xl p-6 max-w-md w-full relative shadow-2xl">
+            <button id="close-auth-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-title text-amber-400 uppercase">Conta de Mestre</h3>
+                <p class="text-xs text-zinc-400 mt-1">Faça login para salvar seus atalhos e criar perfis para suas mesas.</p>
+            </div>
+
+            <!-- Abas Login / Cadastro -->
+            <div class="flex border-b border-zinc-800 mb-5">
+                <button id="tab-login" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer">
+                    Entrar
+                </button>
+                <button id="tab-register" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer">
+                    Criar Conta
+                </button>
+            </div>
+
+            <!-- Google Sign-In Container -->
+            <div class="mb-5 flex flex-col items-center justify-center">
+                <div id="g_id_onload"
+                     data-client_id="845239103984-fakegoogleclientid.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLoginResponse"
+                     data-auto_prompt="false">
+                </div>
+
+                <button id="custom-google-btn" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl border border-zinc-700 flex items-center justify-center gap-3 transition-all cursor-pointer text-xs">
+                    <i class="fa-brands fa-google text-red-400 text-sm"></i> Continuar com o Google
+                </button>
+            </div>
+
+            <div class="relative flex py-2 items-center mb-4">
+                <div class="flex-grow border-t border-zinc-800"></div>
+                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">ou com E-mail</span>
+                <div class="flex-grow border-t border-zinc-800"></div>
+            </div>
+
+            <!-- Formulário E-mail / Senha -->
+            <form id="auth-form" class="space-y-3">
+                <div id="name-field-group" class="hidden">
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Seu Nome / Apelido de Mestre</label>
+                    <input type="text" id="auth-name" placeholder="Ex: Mestre Gabriel" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">E-mail</label>
+                    <input type="email" id="auth-email" required placeholder="seu@email.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Senha</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-1"></div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer">
+                    Entrar
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-parchment text-black py-8 sm:py-12 border-t border-black/10 mt-auto">
@@ -332,7 +403,7 @@
     <!-- IFrame API do YouTube -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
-    <!-- Scripts do Estúdio Sonoro -->
+    <!-- Scripts do Estúdio Sonoro e Sistema de Login / Perfis -->
     <script>
         // Menu Mobile Toggle
         const menuBtn = document.getElementById('menu-btn');
@@ -396,7 +467,6 @@
             { id: 'monstro-mordida', name: 'Mordida de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20mordida%20monstro.mp3', icon: 'fa-skull' }
         ];
 
-        // MÚSICAS AMBIENTES PERSONALIZADAS PELO USUÁRIO
         const ambientData = [
             { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
             { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
@@ -412,25 +482,363 @@
             { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'ambiente', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
         ];
 
-        // Estado do Player, Slots e Paginação (12 itens = 3 fileiras por página)
-        const ITEMS_PER_PAGE = 12;
-        let currentPage = 1;
+        // ==========================================
+        // SISTEMA DE USUÁRIO E GERENCIADOR DE MESAS (PROFILES)
+        // ==========================================
 
-        let quickSlots = JSON.parse(localStorage.getItem('st_quick_slots')) || {
-            '1': 'combate-corte-lamina',
-            '2': 'magia-fireball',
-            '3': 'combate-golpe-forte-espada',
-            '4': 'amb-grito-horror',
-            '5': 'monstro-rosnado-1',
-            '6': 'amb-abrindo-porta',
-            '7': 'magia-relampago',
-            '8': 'amb-moedas',
-            '9': 'magia-cura'
+        let currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
+        let tableProfiles = JSON.parse(localStorage.getItem('st_table_profiles')) || [
+            {
+                id: 'default_mesa',
+                name: 'Mesa 1: Aventura Principal',
+                favorites: ['combate-corte-lamina', 'magia-fireball', 'amb-grito-horror'],
+                quick_slots: { '1': 'combate-corte-lamina', '2': 'magia-fireball', '3': 'combate-golpe-forte-espada' }
+            }
+        ];
+        let activeProfileId = localStorage.getItem('st_active_profile') || 'default_mesa';
+
+        function getActiveProfile() {
+            let p = tableProfiles.find(item => item.id === activeProfileId);
+            if (!p && tableProfiles.length > 0) {
+                p = tableProfiles[0];
+                activeProfileId = p.id;
+            }
+            return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], quick_slots: {} };
+        }
+
+        let favoriteSounds = getActiveProfile().favorites || [];
+        let quickSlots = getActiveProfile().quick_slots || {};
+
+        function syncActiveProfileChanges() {
+            const p = getActiveProfile();
+            p.favorites = favoriteSounds;
+            p.quick_slots = quickSlots;
+            localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+            localStorage.setItem('st_active_profile', activeProfileId);
+
+            // Tentar salvar no servidor se o usuário estiver logado
+            if (currentUser && currentUser.id) {
+                fetch('/api/gm-profiles?action=save_profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id,
+                        profileId: p.id,
+                        name: p.name,
+                        favorites: p.favorites,
+                        quickSlots: p.quick_slots
+                    })
+                }).catch(e => console.log('Sync server err:', e));
+            }
+        }
+
+        function renderTableProfilesUI() {
+            const select = document.getElementById('table-profile-select');
+            if (!select) return;
+
+            select.innerHTML = '';
+            tableProfiles.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                if (p.id === activeProfileId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // Eventos do Gerenciador de Mesas
+        const profileSelect = document.getElementById('table-profile-select');
+        const addTableBtn = document.getElementById('add-table-btn');
+        const renameTableBtn = document.getElementById('rename-table-btn');
+        const deleteTableBtn = document.getElementById('delete-table-btn');
+
+        if (profileSelect) {
+            profileSelect.addEventListener('change', (e) => {
+                activeProfileId = e.target.value;
+                const p = getActiveProfile();
+                favoriteSounds = p.favorites || [];
+                quickSlots = p.quick_slots || {};
+                localStorage.setItem('st_active_profile', activeProfileId);
+
+                renderQuickSlots();
+                renderFavorites();
+                renderSFXCatalog();
+            });
+        }
+
+        if (addTableBtn) {
+            addTableBtn.addEventListener('click', () => {
+                const name = prompt('Digite o nome da nova Mesa de RPG (ex: Mesa 2: A Caverna do Dragão):');
+                if (name && name.trim()) {
+                    const newId = `mesa_${Date.now()}`;
+                    const newProfile = {
+                        id: newId,
+                        name: name.trim(),
+                        favorites: ['combate-corte-lamina', 'magia-cura'],
+                        quick_slots: { '1': 'combate-corte-lamina', '2': 'magia-cura' }
+                    };
+                    tableProfiles.push(newProfile);
+                    activeProfileId = newId;
+                    favoriteSounds = newProfile.favorites;
+                    quickSlots = newProfile.quick_slots;
+
+                    syncActiveProfileChanges();
+                    renderTableProfilesUI();
+                    renderQuickSlots();
+                    renderFavorites();
+                    renderSFXCatalog();
+                }
+            });
+        }
+
+        if (renameTableBtn) {
+            renameTableBtn.addEventListener('click', () => {
+                const p = getActiveProfile();
+                const newName = prompt('Digite o novo nome para esta Mesa:', p.name);
+                if (newName && newName.trim()) {
+                    p.name = newName.trim();
+                    syncActiveProfileChanges();
+                    renderTableProfilesUI();
+                }
+            });
+        }
+
+        if (deleteTableBtn) {
+            deleteTableBtn.addEventListener('click', () => {
+                if (tableProfiles.length <= 1) {
+                    alert('Você deve manter pelo menos uma mesa cadastrada!');
+                    return;
+                }
+                const p = getActiveProfile();
+                if (confirm(`Tem certeza que deseja excluir o perfil da mesa "${p.name}"?`)) {
+                    tableProfiles = tableProfiles.filter(item => item.id !== p.id);
+                    activeProfileId = tableProfiles[0].id;
+                    const nextP = getActiveProfile();
+                    favoriteSounds = nextP.favorites || [];
+                    quickSlots = nextP.quick_slots || {};
+
+                    if (currentUser && currentUser.id) {
+                        fetch('/api/gm-profiles?action=delete_profile', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: currentUser.id, profileId: p.id })
+                        }).catch(e => console.log('Delete profile err:', e));
+                    }
+
+                    syncActiveProfileChanges();
+                    renderTableProfilesUI();
+                    renderQuickSlots();
+                    renderFavorites();
+                    renderSFXCatalog();
+                }
+            });
+        }
+
+        // ==========================================
+        // UI DE LOGIN E ANÚNCIO
+        // ==========================================
+
+        const banner = document.getElementById('login-announcement-banner');
+        const userHeaderArea = document.getElementById('user-header-area');
+        const authModal = document.getElementById('auth-modal');
+        const closeAuthModalBtn = document.getElementById('close-auth-modal');
+        const bannerLoginBtn = document.getElementById('banner-login-btn');
+        const navLoginBtn = document.getElementById('nav-login-btn');
+
+        function updateAuthUI() {
+            if (currentUser) {
+                if (banner) banner.classList.add('hidden');
+                if (userHeaderArea) {
+                    userHeaderArea.innerHTML = `
+                        <div class="flex items-center gap-2 bg-black text-[#EBE3CB] px-3 py-1.5 rounded-lg border border-amber-600/40 text-xs">
+                            <i class="fa-solid fa-user-shield text-amber-400 text-sm"></i>
+                            <span class="font-bold font-mono truncate max-w-[120px]">${currentUser.name || 'Mestre'}</span>
+                            <button id="logout-btn" class="ml-2 text-zinc-400 hover:text-red-400 font-bold uppercase text-[10px] cursor-pointer" title="Sair da Conta">
+                                <i class="fa-solid fa-right-from-bracket"></i> Sair
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+                }
+            } else {
+                if (banner) banner.classList.remove('hidden');
+                if (userHeaderArea) {
+                    userHeaderArea.innerHTML = `
+                        <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-user-gear text-sm"></i> Entrar
+                        </button>
+                    `;
+                    document.getElementById('nav-login-btn')?.addEventListener('click', openAuthModal);
+                }
+            }
+        }
+
+        function openAuthModal() {
+            if (authModal) authModal.classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            if (authModal) authModal.classList.add('hidden');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('st_user');
+            updateAuthUI();
+        }
+
+        if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
+        if (closeAuthModalBtn) closeAuthModalBtn.addEventListener('click', closeAuthModal);
+
+        // Abas do Modal de Auth
+        let authMode = 'login';
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const nameFieldGroup = document.getElementById('name-field-group');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+
+        if (tabLogin && tabRegister) {
+            tabLogin.addEventListener('click', () => {
+                authMode = 'login';
+                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer';
+                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer';
+                nameFieldGroup.classList.add('hidden');
+                authSubmitBtn.textContent = 'Entrar';
+            });
+            tabRegister.addEventListener('click', () => {
+                authMode = 'register';
+                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer';
+                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer';
+                nameFieldGroup.classList.remove('hidden');
+                authSubmitBtn.textContent = 'Criar Conta de Mestre';
+            });
+        }
+
+        // Formulário de E-mail/Senha
+        const authForm = document.getElementById('auth-form');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+
+        if (authForm) {
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                const name = document.getElementById('auth-name').value;
+                if (authErrorMsg) authErrorMsg.classList.add('hidden');
+
+                const endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
+
+                try {
+                    const resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, name })
+                    });
+                    const data = await resp.json();
+
+                    if (!resp.ok || data.error) {
+                        if (authErrorMsg) {
+                            authErrorMsg.textContent = data.error || 'Erro ao processar.';
+                            authErrorMsg.classList.remove('hidden');
+                        }
+                        return;
+                    }
+
+                    currentUser = data.user;
+                    localStorage.setItem('st_user', JSON.stringify(currentUser));
+                    if (data.profiles && data.profiles.length > 0) {
+                        tableProfiles = data.profiles;
+                        activeProfileId = tableProfiles[0].id;
+                        favoriteSounds = tableProfiles[0].favorites || [];
+                        quickSlots = tableProfiles[0].quick_slots || {};
+                        localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+                        localStorage.setItem('st_active_profile', activeProfileId);
+                    }
+
+                    updateAuthUI();
+                    renderTableProfilesUI();
+                    renderQuickSlots();
+                    renderFavorites();
+                    renderSFXCatalog();
+                    closeAuthModal();
+                } catch (err) {
+                    if (authErrorMsg) {
+                        authErrorMsg.textContent = 'Modo Offline: Conta ativada localmente!';
+                        authErrorMsg.classList.remove('hidden');
+                    }
+                    currentUser = { id: `local_${Date.now()}`, email, name: name || 'Mestre' };
+                    localStorage.setItem('st_user', JSON.stringify(currentUser));
+                    updateAuthUI();
+                    closeAuthModal();
+                }
+            });
+        }
+
+        // Google Sign-In Callback
+        window.handleGoogleLoginResponse = async function(response) {
+            try {
+                const token = response.credential;
+                // decodificar JWT simples
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                
+                const resp = await fetch('/api/gm-profiles?action=google_login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        googleId: payload.sub,
+                        email: payload.email,
+                        name: payload.name,
+                        avatarUrl: payload.picture
+                    })
+                });
+                const data = await resp.json();
+
+                currentUser = data.user || { id: payload.sub, email: payload.email, name: payload.name };
+                localStorage.setItem('st_user', JSON.stringify(currentUser));
+
+                if (data.profiles && data.profiles.length > 0) {
+                    tableProfiles = data.profiles;
+                    activeProfileId = tableProfiles[0].id;
+                    favoriteSounds = tableProfiles[0].favorites || [];
+                    quickSlots = tableProfiles[0].quick_slots || {};
+                    localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+                    localStorage.setItem('st_active_profile', activeProfileId);
+                }
+
+                updateAuthUI();
+                renderTableProfilesUI();
+                renderQuickSlots();
+                renderFavorites();
+                renderSFXCatalog();
+                closeAuthModal();
+            } catch (err) {
+                console.error('Google login error:', err);
+            }
         };
 
-        let favoriteSounds = JSON.parse(localStorage.getItem('st_favorite_sounds')) || ['combate-corte-lamina', 'magia-fireball', 'amb-grito-horror'];
+        const customGoogleBtn = document.getElementById('custom-google-btn');
+        if (customGoogleBtn) {
+            customGoogleBtn.addEventListener('click', () => {
+                if (window.google && window.google.accounts && window.google.accounts.id) {
+                    window.google.accounts.id.prompt();
+                } else {
+                    const name = prompt('Simulação Login Google: Digite seu Nome de Mestre:');
+                    if (name) {
+                        currentUser = { id: `google_sim_${Date.now()}`, email: 'mestre@google.com', name: name };
+                        localStorage.setItem('st_user', JSON.stringify(currentUser));
+                        updateAuthUI();
+                        closeAuthModal();
+                    }
+                }
+            });
+        }
 
+        // ==========================================
         // CONTROLES DE ÁUDIO REAL (.MP3)
+        // ==========================================
+
+        const ITEMS_PER_PAGE = 12;
+        let currentPage = 1;
         let masterVolumeValue = 0.8;
         let isMasterMuted = false;
 
@@ -443,7 +851,6 @@
             audio.play().catch(err => console.log('Autoplay audio err:', err));
         }
 
-        // RENDERIZAR SLOTS 1-9 (SOMENTE NO DESKTOP)
         function renderQuickSlots() {
             const container = document.getElementById('quick-slots-container');
             if (!container) return;
@@ -495,7 +902,7 @@
                     const droppedSfxId = e.dataTransfer.getData('text/plain');
                     if (droppedSfxId) {
                         quickSlots[i] = droppedSfxId;
-                        localStorage.setItem('st_quick_slots', JSON.stringify(quickSlots));
+                        syncActiveProfileChanges();
                         renderQuickSlots();
                     }
                 });
@@ -504,7 +911,6 @@
             }
         }
 
-        // RENDERIZAR FAVORITOS EM FORMATO DE CARDS PEQUENOS (MESMO MODELO DOS ATALHOS NO MOBILE E DESKTOP)
         function renderFavorites() {
             const box = document.getElementById('favorites-box');
             const emptyMsg = document.getElementById('fav-empty-msg');
@@ -538,7 +944,7 @@
                     if (e.target.closest('.remove-fav')) {
                         e.stopPropagation();
                         favoriteSounds = favoriteSounds.filter(favId => favId !== sfx.id);
-                        localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                        syncActiveProfileChanges();
                         renderFavorites();
                         renderSFXCatalog();
                     } else {
@@ -557,14 +963,13 @@
                 const droppedSfxId = e.dataTransfer.getData('text/plain');
                 if (droppedSfxId && !favoriteSounds.includes(droppedSfxId)) {
                     favoriteSounds.push(droppedSfxId);
-                    localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                    syncActiveProfileChanges();
                     renderFavorites();
                     renderSFXCatalog();
                 }
             });
         }
 
-        // RENDERIZAR CATÁLOGO DE SFX COM PAGINAÇÃO (MÁXIMO 3 FILEIRAS / 12 CARDS POR PÁGINA)
         let currentCat = 'all';
         let currentSearch = '';
 
@@ -627,7 +1032,7 @@
                         } else {
                             favoriteSounds.push(sfx.id);
                         }
-                        localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                        syncActiveProfileChanges();
                         renderFavorites();
                         renderSFXCatalog();
                     });
@@ -643,7 +1048,6 @@
             renderPagination(totalPages);
         }
 
-        // CONTROLES DE PAGINAÇÃO
         function renderPagination(totalPages) {
             const prevBtn = document.getElementById('prev-page-btn');
             const nextBtn = document.getElementById('next-page-btn');
@@ -992,7 +1396,7 @@
                     '8': 'amb-moedas',
                     '9': 'magia-cura'
                 };
-                localStorage.setItem('st_quick_slots', JSON.stringify(quickSlots));
+                syncActiveProfileChanges();
                 renderQuickSlots();
             });
         }
@@ -1042,6 +1446,8 @@
 
         // INICIALIZAÇÃO DA PÁGINA
         document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+            renderTableProfilesUI();
             renderQuickSlots();
             renderFavorites();
             renderSFXCatalog();
