@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
-    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos e player de músicas ambientes do YouTube para Mestres de RPG.">
+    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos e mixer de músicas ambientes simultâneas para Mestres de RPG.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
@@ -80,7 +80,7 @@
 
     <!-- Top Banner -->
     <div class="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
-        🎲 Mesa do Mestre: Arraste os Efeitos para os Atalhos 1 a 9 e Toque Músicas do YouTube
+        🎲 Mesa do Mestre: Arraste Efeitos para Atalhos 1 a 9 e Misture Múltiplas Músicas Ambientes
     </div>
 
     <!-- Header Navigation -->
@@ -114,51 +114,73 @@
 
     <main class="flex-grow">
         <!-- Hero Section -->
-        <section class="relative w-full py-10 md:py-14 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
+        <section class="relative w-full py-8 md:py-12 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
             <div class="container mx-auto px-4 max-w-6xl text-center">
                 <span class="inline-flex items-center gap-2 text-amber-500 text-xs font-black tracking-widest uppercase mb-3 px-4 py-1.5 bg-amber-500/10 rounded-full border border-amber-500/30">
                     <i class="fa-solid fa-sliders"></i> Painel Interativo do Mestre
                 </span>
-                <h1 class="text-3xl md:text-5xl uppercase tracking-tight mb-3 text-white font-title">
+                <h1 class="text-3xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
                     Estúdio Sonoro da Mesa
                 </h1>
-                <p class="text-[#EBE3CB] text-sm md:text-base max-w-3xl mx-auto mb-6">
-                    <strong>Monte sua mesa:</strong> Arraste qualquer efeito sonoro do catálogo para a <strong>Barra de Atalhos (1-9)</strong> ou para a <strong>Box de Favoritos</strong>. Toque músicas ambientes em loop ou adicione seus próprios links do YouTube!
+                <p class="text-[#EBE3CB] text-xs md:text-sm max-w-3xl mx-auto mb-6">
+                    Monte sua mesa: Arraste efeitos sonoros para os atalhos <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-xs">1</kbd> a <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-xs">9</kbd> ou para a Box de Favoritos. Misture simultaneamente faixas de áudio e músicas para a sessão.
                 </p>
 
-                <!-- Control Bar -->
-                <div class="bg-zinc-900/90 backdrop-blur-md border border-amber-600/30 rounded-2xl p-4 max-w-4xl mx-auto shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
-                        <div class="flex items-center gap-3">
-                            <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700" title="Silenciar / Ativar Áudio Geral">
-                                <i class="fa-solid fa-volume-high" id="master-mute-icon"></i>
-                            </button>
-                            <div class="text-left">
-                                <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Volume Master</span>
-                                <span class="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
+                <!-- BARRA MASTER DE ÁUDIO & PAINEL DE MÚSICAS TOCANDO -->
+                <div class="bg-zinc-900/90 backdrop-blur-md border border-amber-600/30 rounded-2xl p-4 md:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
+                    
+                    <!-- Linha 1: Volume Master e Botões Principais -->
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 pb-3 border-b border-zinc-800/80">
+                        <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+                            <div class="flex items-center gap-3">
+                                <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700" title="Silenciar / Ativar Áudio Geral">
+                                    <i class="fa-solid fa-volume-high" id="master-mute-icon"></i>
+                                </button>
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Volume Master</span>
+                                    <span class="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
+                                </div>
                             </div>
+                            <input type="range" id="master-volume" min="0" max="100" value="80" class="w-28 md:w-40 accent-amber-500 cursor-pointer">
                         </div>
-                        <input type="range" id="master-volume" min="0" max="100" value="80" class="w-28 md:w-40 accent-amber-500 cursor-pointer">
+
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+                            <button id="stop-all-btn" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-xs tracking-wider px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer hover:scale-105">
+                                <i class="fa-solid fa-square"></i> Parar Todos os Sons
+                            </button>
+                            <button id="reset-slots-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar Atalhos
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
-                        <button id="stop-all-btn" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-xs tracking-wider px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer hover:scale-105">
-                            <i class="fa-solid fa-square"></i> Parar Todos os Sons
-                        </button>
-                        <button id="reset-slots-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar Atalhos
-                        </button>
+                    <!-- Linha 2: Painel de Músicas Ambientes Tocando no Momento -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs uppercase tracking-wider text-amber-400 font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-compact-disc animate-spin text-amber-500" style="animation-duration: 4s;"></i> Músicas Ambientes Ativas no Momento
+                            </span>
+                            <span class="text-[11px] text-zinc-400" id="active-tracks-count">0 faixas tocando</span>
+                        </div>
+
+                        <!-- Container das Faixas Ativas -->
+                        <div id="active-tracks-container" class="min-h-[50px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2.5 flex flex-col gap-2">
+                            <div class="text-zinc-500 text-xs italic py-2 text-center" id="no-active-tracks-msg">
+                                Nenhuma música ambiente tocando no momento. Clique em uma faixa abaixo para iniciar a mixagem!
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (SLOTS 1 a 9 VIA DRAG & DROP) -->
-        <section class="py-8 bg-zinc-950 border-b border-zinc-900">
+        <section class="py-6 bg-zinc-950 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
                     <div>
-                        <h2 class="text-xl md:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
+                        <h2 class="text-xl text-amber-500 font-title uppercase flex items-center gap-2">
                             <i class="fa-solid fa-keyboard"></i> Barra de Atalhos Rápidos (Teclas 1 a 9)
                         </h2>
                         <p class="text-zinc-400 text-xs">Arraste qualquer som do catálogo e solte em uma das caixas para definir o atalho do teclado.</p>
@@ -182,8 +204,8 @@
                     <span class="text-xs text-zinc-400">Arraste sons para cá ou clique na estrela ⭐</span>
                 </div>
 
-                <div id="favorites-box" class="min-h-[90px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-2xl p-3 transition-all flex flex-wrap items-center gap-3">
-                    <div class="text-zinc-500 text-xs italic py-4 text-center w-full" id="fav-empty-msg">
+                <div id="favorites-box" class="min-h-[80px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-2xl p-3 transition-all flex flex-wrap items-center gap-3">
+                    <div class="text-zinc-500 text-xs italic py-3 text-center w-full" id="fav-empty-msg">
                         <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Arraste um card ou clique na ⭐ para adicionar!
                     </div>
                 </div>
@@ -191,7 +213,7 @@
         </section>
 
         <!-- FILTROS E BUSCA -->
-        <section class="py-6 bg-zinc-950 border-b border-zinc-900 sticky top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
+        <section class="py-5 bg-zinc-950 border-b border-zinc-900 sticky top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
             <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
                 <!-- Categorias -->
                 <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-center md:justify-start" id="category-filters">
@@ -205,7 +227,7 @@
                         <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magias
                     </button>
                     <button data-cat="ambientes" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambientes
+                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambientes & Suspense
                     </button>
                     <button data-cat="natureza" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
                         <i class="fa-solid fa-cloud-bolt text-cyan-400 mr-1"></i> Natureza
@@ -232,7 +254,7 @@
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-2xl text-amber-500 font-title uppercase flex items-center gap-3">
-                            <i class="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
+                            <i class="fa-solid fa-bolt"></i> Efeitos Sonoros Rápidos (SFX)
                         </h2>
                         <p class="text-zinc-400 text-xs">Clique no botão para tocar o som. Arraste qualquer card para a barra de atalhos acima!</p>
                     </div>
@@ -244,24 +266,14 @@
             </div>
         </section>
 
-        <!-- SEÇÃO SEPARADA: MÚSICAS & AMBIENTES EM LOOP (COM SUPORTE A YOUTUBE) -->
+        <!-- SEÇÃO SEPARADA: MÚSICAS & PAISAGENS AMBIENTES -->
         <section class="py-12 bg-zinc-950">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <div>
-                        <h2 class="text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-3">
-                            <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
-                        </h2>
-                        <p class="text-zinc-400 text-sm mt-1">Acionamento simples por botões. Adicione também os seus links de vídeos do YouTube!</p>
-                    </div>
-
-                    <!-- Botão de Adicionar Vídeo do YouTube -->
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="yt-link-input" placeholder="Cole o Link do YouTube aqui..." class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 w-64">
-                        <button id="add-yt-btn" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                            <i class="fa-brands fa-youtube text-base"></i> Adicionar
-                        </button>
-                    </div>
+                <div class="mb-8">
+                    <h2 class="text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-3">
+                        <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
+                    </h2>
+                    <p class="text-zinc-400 text-sm mt-1">Acionamento simples por botões. Você pode tocar múltiplas faixas ao mesmo tempo (ex: Floresta Mística + Fogueira)!</p>
                 </div>
 
                 <!-- Grid de Ambientes em Loop -->
@@ -269,10 +281,8 @@
                     <!-- Preenchido Dinamicamente via JS -->
                 </div>
 
-                <!-- Player YouTube Oculto em Background -->
-                <div class="hidden">
-                    <div id="youtube-audio-player"></div>
-                </div>
+                <!-- Container Dinâmico de Players YouTube Ocultos -->
+                <div id="youtube-players-container" class="hidden"></div>
             </div>
         </section>
     </main>
@@ -338,12 +348,18 @@
             { id: 'grito', name: 'Brado de Bárbaro', category: 'monstros', icon: 'fa-bullhorn', color: 'orange' }
         ];
 
-        // Músicas Ambientes Padrão (com suporte a YouTube IDs)
-        let ambientData = [
-            { id: 'combate', name: 'Combate Épico', category: 'combate', icon: 'fa-drum', desc: 'Batalha & Tambores', ytId: '3jZ5vnv-LZc' },
+        // MÚSICAS AMBIENTES PERSONALIZADAS PELO USUÁRIO (LISTA OFICIAL)
+        const ambientData = [
+            { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
+            { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambientes', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
+            { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambientes', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
+            { id: 'investigacao-suspense', name: 'Investigação Suspense', category: 'ambientes', icon: 'fa-magnifying-glass', desc: 'Investigação & Tensão', ytId: 'l-vpJVMWUvk' },
+            { id: 'combate-1', name: 'Combate 1', category: 'combate', icon: 'fa-swords', desc: 'Batalha Épica 1', ytId: 't3B802PIuB0' },
+            { id: 'combate-2', name: 'Combate 2', category: 'combate', icon: 'fa-drum', desc: 'Batalha Épica 2', ytId: 'm-1S1V1PZHA' },
+            { id: 'combate-3', name: 'Combate 3', category: 'combate', icon: 'fa-shield-halved', desc: 'Batalha Épica 3', ytId: 'sd1Otp7s1Fk' },
+            { id: 'combate-4', name: 'Combate 4', category: 'combate', icon: 'fa-bolt', desc: 'Batalha Épica 4', ytId: 'NHuRniA3F6s' },
             { id: 'taverna', name: 'Taverna Animada', category: 'taverna', icon: 'fa-beer-mug-empty', desc: 'Risadas & Alaúde', ytId: 'roABNwbjZf4' },
             { id: 'floresta', name: 'Floresta Mística', category: 'natureza', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
-            { id: 'masmorra', name: 'Masmorra Sombria', category: 'ambientes', icon: 'fa-dungeon', desc: 'Gotas & Eco Misterioso', ytId: 'v8Jt_28E46s' },
             { id: 'chuva', name: 'Tempestade & Chuva', category: 'natureza', icon: 'fa-cloud-showers-heavy', desc: 'Chuva Forte & Trovões', ytId: 'mPZkdNFkNps' },
             { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'natureza', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
         ];
@@ -548,7 +564,6 @@
                     break;
                 }
                 default: {
-                    // Fallback tone
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.frequency.setValueAtTime(440, now);
@@ -573,7 +588,7 @@
                 const sfx = sfxData.find(s => s.id === sfxId);
 
                 const slot = document.createElement('div');
-                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-3 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[90px]';
+                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-3 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[85px]';
                 slot.setAttribute('data-slot', i);
 
                 if (sfx) {
@@ -591,7 +606,6 @@
                     `;
                 }
 
-                // Disparar som ao clicar no slot
                 slot.addEventListener('click', () => {
                     if (sfxId) {
                         playSFX(sfxId);
@@ -600,7 +614,6 @@
                     }
                 });
 
-                // HTML5 Drag & Drop
                 slot.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     slot.classList.add('drop-target-active');
@@ -631,7 +644,6 @@
             const emptyMsg = document.getElementById('fav-empty-msg');
             if (!box) return;
 
-            // Limpar botões antigos de favoritos
             box.querySelectorAll('.fav-item').forEach(el => el.remove());
 
             if (favoriteSounds.length === 0) {
@@ -670,7 +682,6 @@
                 box.appendChild(item);
             });
 
-            // Drag & Drop no box de favoritos
             box.addEventListener('dragover', (e) => e.preventDefault());
             box.addEventListener('drop', (e) => {
                 e.preventDefault();
@@ -709,7 +720,6 @@
                     <span class="text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.category}</span>
                 `;
 
-                // Tocar SFX ao clicar
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.fav-star')) return;
                     playSFX(sfx.id);
@@ -717,7 +727,6 @@
                     setTimeout(() => card.classList.remove('sfx-active'), 200);
                 });
 
-                // Toggle Estrela Favorito
                 const starBtn = card.querySelector('.fav-star');
                 starBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -731,7 +740,6 @@
                     renderSFXCatalog();
                 });
 
-                // Drag Start
                 card.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('text/plain', sfx.id);
                 });
@@ -740,15 +748,119 @@
             });
         }
 
-        // RENDERIZAR MÚSICAS AMBIENTES
+        // ==========================================
+        // MOTOR MULTICANAL DE MÚSICAS AMBIENTES (SIMULTÂNEAS)
+        // ==========================================
+
+        const activeTracks = {}; // Guarda { ambId: { player, vol, isPaused, ambObj } }
+        let isYTApiReady = false;
+
+        function onYouTubeIframeAPIReady() {
+            isYTApiReady = true;
+        }
+
+        // RENDERIZAR PAINEL DE FAIXAS ATIVAS NO CABEÇALHO MASTER
+        function renderActiveTracksHeaderPanel() {
+            const container = document.getElementById('active-tracks-container');
+            const noMsg = document.getElementById('no-active-tracks-msg');
+            const countLabel = document.getElementById('active-tracks-count');
+            if (!container) return;
+
+            container.querySelectorAll('.active-track-bar').forEach(el => el.remove());
+            const keys = Object.keys(activeTracks);
+
+            if (countLabel) countLabel.textContent = `${keys.length} ${keys.length === 1 ? 'faixa tocando' : 'faixas tocando'}`;
+
+            if (keys.length === 0) {
+                if (noMsg) noMsg.classList.remove('hidden');
+                return;
+            } else {
+                if (noMsg) noMsg.classList.add('hidden');
+            }
+
+            keys.forEach(ambId => {
+                const track = activeTracks[ambId];
+                const amb = track.ambObj;
+
+                const bar = document.createElement('div');
+                bar.className = 'active-track-bar bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs';
+                
+                bar.innerHTML = `
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${amb.icon}"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-white block leading-tight">${amb.name}</span>
+                            <span class="text-[10px] text-zinc-400 uppercase">${amb.desc || 'Música Ambiente'}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-zinc-400 uppercase font-bold">Vol</span>
+                            <input type="range" class="active-track-vol w-24 accent-amber-500 cursor-pointer" min="0" max="100" value="${track.vol}">
+                            <span class="text-[10px] text-amber-400 font-bold w-6 text-right">${track.vol}%</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5">
+                            <button class="active-track-toggle w-8 h-8 rounded-lg ${track.isPaused ? 'bg-zinc-800 text-zinc-300' : 'bg-amber-600 text-black'} font-bold flex items-center justify-center transition-all cursor-pointer">
+                                <i class="fa-solid ${track.isPaused ? 'fa-play' : 'fa-pause'}"></i>
+                            </button>
+                            <button class="active-track-stop w-8 h-8 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-800/80 hover:text-white border border-red-800/40 font-bold flex items-center justify-center transition-all cursor-pointer" title="Fechar Faixa">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Volume slider na barra master
+                const volInput = bar.querySelector('.active-track-vol');
+                volInput.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value);
+                    track.vol = val;
+                    bar.querySelector('span.w-6').textContent = `${val}%`;
+                    updateTrackVolume(ambId);
+
+                    // Sincronizar slider no card do catálogo
+                    const card = document.querySelector(`.ambient-card[data-ambient="${ambId}"]`);
+                    if (card) {
+                        const cardSlider = card.querySelector('.ambient-vol');
+                        if (cardSlider) cardSlider.value = val;
+                        const cardValLabel = card.querySelector('.ambient-vol-val');
+                        if (cardValLabel) cardValLabel.textContent = `${val}%`;
+                    }
+                });
+
+                // Toggle Play/Pause na barra master
+                const toggleBtn = bar.querySelector('.active-track-toggle');
+                toggleBtn.addEventListener('click', () => {
+                    togglePlayPauseTrack(ambId);
+                });
+
+                // Fechar/Parar faixa na barra master
+                const stopBtn = bar.querySelector('.active-track-stop');
+                stopBtn.addEventListener('click', () => {
+                    stopAmbientTrack(ambId);
+                });
+
+                container.appendChild(bar);
+            });
+        }
+
+        // RENDERIZAR GRID DE CARDS AMBIENTES NO CORPO DA PÁGINA
         function renderAmbients() {
             const grid = document.getElementById('ambient-grid');
             if (!grid) return;
             grid.innerHTML = '';
 
             ambientData.forEach(amb => {
+                const isPlaying = !!activeTracks[amb.id];
+                const isPaused = isPlaying && activeTracks[amb.id].isPaused;
+                const volVal = isPlaying ? activeTracks[amb.id].vol : 70;
+
                 const card = document.createElement('div');
-                card.className = 'ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 transition-all hover:border-amber-600/40 relative overflow-hidden';
+                card.className = `ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 transition-all hover:border-amber-600/40 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
                 card.setAttribute('data-ambient', amb.id);
                 card.setAttribute('data-category', amb.category);
 
@@ -760,147 +872,131 @@
                             </div>
                             <div>
                                 <h3 class="font-bold text-white text-base leading-tight">${amb.name}</h3>
-                                <span class="text-xs text-zinc-400 uppercase tracking-wider">${amb.desc || 'Ambiente em Loop'}</span>
+                                <span class="text-xs text-zinc-400 uppercase tracking-wider">${amb.desc || 'Música Ambiente'}</span>
                             </div>
                         </div>
-                        <div class="equalizer hidden flex items-end gap-1 h-4" id="eq-${amb.id}">
+                        <div class="equalizer ${isPlaying && !isPaused ? '' : 'hidden'} flex items-end gap-1 h-4" id="eq-${amb.id}">
                             <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
                             <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
                             <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <button class="ambient-play-btn w-12 h-12 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold flex items-center justify-center text-xl transition-all cursor-pointer shadow-lg shrink-0" title="Tocar / Pausar">
-                            <i class="fa-solid fa-play ml-0.5"></i>
+                        <button class="ambient-play-btn w-12 h-12 rounded-xl ${isPlaying && !isPaused ? 'bg-amber-500' : 'bg-amber-600'} hover:bg-amber-500 text-black font-bold flex items-center justify-center text-xl transition-all cursor-pointer shadow-lg shrink-0" title="Tocar / Pausar">
+                            <i class="fa-solid ${isPlaying && !isPaused ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
                         </button>
                         <div class="flex-grow">
                             <div class="flex justify-between text-xs text-zinc-400 mb-1 font-semibold">
                                 <span>Volume</span>
-                                <span class="ambient-vol-val">70%</span>
+                                <span class="ambient-vol-val">${volVal}%</span>
                             </div>
-                            <input type="range" class="ambient-vol w-full accent-amber-500 cursor-pointer" min="0" max="100" value="70">
+                            <input type="range" class="ambient-vol w-full accent-amber-500 cursor-pointer" min="0" max="100" value="${volVal}">
                         </div>
                     </div>
                 `;
 
                 const playBtn = card.querySelector('.ambient-play-btn');
                 const volSlider = card.querySelector('.ambient-vol');
-                const eq = card.querySelector('.equalizer');
-                const playIcon = playBtn.querySelector('i');
 
                 playBtn.addEventListener('click', () => {
-                    toggleAmbientTrack(amb, playBtn, playIcon, card, eq, volSlider.value);
+                    if (activeTracks[amb.id]) {
+                        togglePlayPauseTrack(amb.id);
+                    } else {
+                        startAmbientTrack(amb, volSlider.value);
+                    }
                 });
 
                 volSlider.addEventListener('input', (e) => {
-                    const val = e.target.value;
+                    const val = parseInt(e.target.value);
                     card.querySelector('.ambient-vol-val').textContent = `${val}%`;
-                    setAmbientVolume(amb.id, val);
+                    if (activeTracks[amb.id]) {
+                        activeTracks[amb.id].vol = val;
+                        updateTrackVolume(amb.id);
+                        renderActiveTracksHeaderPanel();
+                    }
                 });
 
                 grid.appendChild(card);
             });
         }
 
-        // ==========================================
-        // PLAYER DE ÁUDIO DO YOUTUBE & CONTROLES
-        // ==========================================
+        // CONTROLE INDIVIDUAL DE CADA FAIXA MULTICANAL
+        function startAmbientTrack(amb, initialVol) {
+            initAudioContext();
+            const playersDiv = document.getElementById('youtube-players-container');
+            const playerId = `yt-player-${amb.id}`;
 
-        let ytPlayer = null;
-        let activeAmbientId = null;
+            let playerElem = document.getElementById(playerId);
+            if (!playerElem) {
+                playerElem = document.createElement('div');
+                playerElem.id = playerId;
+                playersDiv.appendChild(playerElem);
+            }
 
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('youtube-audio-player', {
+            const newPlayer = new YT.Player(playerId, {
                 height: '0',
                 width: '0',
-                videoId: '3jZ5vnv-LZc', // ID Inicial
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1
-                }
-            });
-        }
-
-        function toggleAmbientTrack(amb, btn, icon, card, eq, vol) {
-            initAudioContext();
-
-            if (activeAmbientId === amb.id) {
-                // Pausar
-                if (ytPlayer && ytPlayer.pauseVideo) {
-                    ytPlayer.pauseVideo();
-                }
-                activeAmbientId = null;
-                icon.className = 'fa-solid fa-play ml-0.5';
-                btn.classList.replace('bg-amber-500', 'bg-amber-600');
-                card.classList.remove('ambient-card-active');
-                if (eq) eq.classList.add('hidden');
-            } else {
-                // Parar anterior se houver
-                document.querySelectorAll('.ambient-card').forEach(c => {
-                    c.classList.remove('ambient-card-active');
-                    const b = c.querySelector('.ambient-play-btn');
-                    if (b) {
-                        b.querySelector('i').className = 'fa-solid fa-play ml-0.5';
-                        b.classList.replace('bg-amber-500', 'bg-amber-600');
+                videoId: amb.ytId,
+                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': amb.ytId },
+                events: {
+                    'onReady': (event) => {
+                        const calcVol = Math.round(initialVol * (masterVolumeValue / 1));
+                        event.target.setVolume(isMasterMuted ? 0 : calcVol);
+                        event.target.playVideo();
                     }
-                    const e = c.querySelector('.equalizer');
-                    if (e) e.classList.add('hidden');
-                });
-
-                // Carregar novo vídeo do YouTube
-                activeAmbientId = amb.id;
-                icon.className = 'fa-solid fa-pause';
-                btn.classList.replace('bg-amber-600', 'bg-amber-500');
-                card.classList.add('ambient-card-active');
-                if (eq) eq.classList.remove('hidden');
-
-                if (ytPlayer && ytPlayer.loadVideoById) {
-                    ytPlayer.loadVideoById(amb.ytId || '3jZ5vnv-LZc');
-                    ytPlayer.setVolume(vol * (masterVolumeValue / 1));
-                    ytPlayer.playVideo();
-                }
-            }
-        }
-
-        function setAmbientVolume(ambId, val) {
-            if (activeAmbientId === ambId && ytPlayer && ytPlayer.setVolume) {
-                ytPlayer.setVolume(val * (masterVolumeValue / 1));
-            }
-        }
-
-        // ADICIONAR VÍDEO DO YOUTUBE VIA LINK
-        const addYtBtn = document.getElementById('add-yt-btn');
-        const ytInput = document.getElementById('yt-link-input');
-
-        function extractYtId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-
-        if (addYtBtn && ytInput) {
-            addYtBtn.addEventListener('click', () => {
-                const url = ytInput.value.trim();
-                const ytId = extractYtId(url);
-
-                if (ytId) {
-                    const newAmb = {
-                        id: `custom-${Date.now()}`,
-                        name: 'Trilha Personalizada',
-                        category: 'ambientes',
-                        icon: 'fa-compact-disc',
-                        desc: 'Vídeo do YouTube',
-                        ytId: ytId
-                    };
-                    ambientData.unshift(newAmb);
-                    renderAmbients();
-                    ytInput.value = '';
-                    alert('Música do YouTube adicionada com sucesso!');
-                } else {
-                    alert('Por favor, insira um link válido do YouTube (ex: https://www.youtube.com/watch?v=...)');
                 }
             });
+
+            activeTracks[amb.id] = {
+                player: newPlayer,
+                vol: parseInt(initialVol),
+                isPaused: false,
+                ambObj: amb
+            };
+
+            renderAmbients();
+            renderActiveTracksHeaderPanel();
+        }
+
+        function togglePlayPauseTrack(ambId) {
+            const track = activeTracks[ambId];
+            if (!track) return;
+
+            if (track.isPaused) {
+                track.isPaused = false;
+                if (track.player && track.player.playVideo) {
+                    track.player.playVideo();
+                }
+            } else {
+                track.isPaused = true;
+                if (track.player && track.player.pauseVideo) {
+                    track.player.pauseVideo();
+                }
+            }
+            renderAmbients();
+            renderActiveTracksHeaderPanel();
+        }
+
+        function stopAmbientTrack(ambId) {
+            const track = activeTracks[ambId];
+            if (track) {
+                if (track.player && track.player.destroy) {
+                    track.player.destroy();
+                }
+                const elem = document.getElementById(`yt-player-${ambId}`);
+                if (elem) elem.remove();
+                delete activeTracks[ambId];
+            }
+            renderAmbients();
+            renderActiveTracksHeaderPanel();
+        }
+
+        function updateTrackVolume(ambId) {
+            const track = activeTracks[ambId];
+            if (track && track.player && track.player.setVolume) {
+                const calcVol = Math.round(track.vol * (masterVolumeValue / 1));
+                track.player.setVolume(isMasterMuted ? 0 : calcVol);
+            }
         }
 
         // CONTROLES MASTER & RESET
@@ -919,9 +1015,7 @@
                 if (masterGain && !isMasterMuted) {
                     masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
                 }
-                if (activeAmbientId && ytPlayer && ytPlayer.setVolume) {
-                    ytPlayer.setVolume(e.target.value);
-                }
+                Object.keys(activeTracks).forEach(ambId => updateTrackVolume(ambId));
             });
         }
 
@@ -932,30 +1026,28 @@
                 if (isMasterMuted) {
                     masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
                     masterMuteIcon.className = 'fa-solid fa-volume-xmark text-red-500';
-                    if (ytPlayer && ytPlayer.mute) ytPlayer.mute();
+                    Object.keys(activeTracks).forEach(ambId => {
+                        if (activeTracks[ambId].player && activeTracks[ambId].player.mute) {
+                            activeTracks[ambId].player.mute();
+                        }
+                    });
                 } else {
                     masterGain.gain.setValueAtTime(masterVolumeValue, audioCtx.currentTime);
                     masterMuteIcon.className = 'fa-solid fa-volume-high text-amber-500';
-                    if (ytPlayer && ytPlayer.unMute) ytPlayer.unMute();
+                    Object.keys(activeTracks).forEach(ambId => {
+                        if (activeTracks[ambId].player && activeTracks[ambId].player.unMute) {
+                            activeTracks[ambId].player.unMute();
+                            updateTrackVolume(ambId);
+                        }
+                    });
                 }
             });
         }
 
         if (stopAllBtn) {
             stopAllBtn.addEventListener('click', () => {
-                if (ytPlayer && ytPlayer.stopVideo) {
-                    ytPlayer.stopVideo();
-                }
-                activeAmbientId = null;
-                document.querySelectorAll('.ambient-card').forEach(card => {
-                    card.classList.remove('ambient-card-active');
-                    const btn = card.querySelector('.ambient-play-btn');
-                    if (btn) {
-                        btn.querySelector('i').className = 'fa-solid fa-play ml-0.5';
-                        btn.classList.replace('bg-amber-500', 'bg-amber-600');
-                    }
-                    const eq = card.querySelector('.equalizer');
-                    if (eq) eq.classList.add('hidden');
+                Object.keys(activeTracks).forEach(ambId => {
+                    stopAmbientTrack(ambId);
                 });
             });
         }
@@ -1042,6 +1134,7 @@
             renderFavorites();
             renderSFXCatalog();
             renderAmbients();
+            renderActiveTracksHeaderPanel();
         });
     </script>
 </body>
