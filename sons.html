@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
+    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos e player de músicas ambientes do YouTube para Mestres de RPG.">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        .bg-parchment { background-color: #EBE3CB; }
+        .text-parchment-dark { color: #4A4435; }
+        .transition-all { transition: all 0.3s ease; }
+
+        /* Animação do visualizador de áudio */
+        .equalizer-bar {
+            animation: bounce 1.2s ease-in-out infinite alternate;
+        }
+        .equalizer-bar:nth-child(2) { animation-delay: 0.2s; }
+        .equalizer-bar:nth-child(3) { animation-delay: 0.4s; }
+        .equalizer-bar:nth-child(4) { animation-delay: 0.1s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 18px; }
+        }
+
+        /* Efeito visual quando dispara o som */
+        .sfx-active {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
+            border-color: #f59e0b !important;
+            transform: scale(0.96);
+        }
+
+        /* Estilo dos slots e dropzones */
+        .drop-target-active {
+            border-color: #f59e0b !important;
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            transform: scale(1.02);
+        }
+
+        /* Glow para os cards de ambiente ativos */
+        .ambient-card-active {
+            border-color: #f59e0b !important;
+            background: linear-gradient(135deg, rgba(39, 39, 42, 0.9), rgba(217, 119, 6, 0.2)) !important;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+        }
+
+        /* Animação de arrastar */
+        [draggable="true"] {
+            cursor: grab;
+        }
+        [draggable="true"]:active {
+            cursor: grabbing;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between">
+
+    <!-- Top Banner -->
+    <div class="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
+        🎲 Mesa do Mestre: Arraste os Efeitos para os Atalhos 1 a 9 e Toque Músicas do YouTube
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex justify-between items-center w-full md:w-auto">
+                <a href="/" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                    Saving Throw
+                </a>
+                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer" aria-label="Abrir Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+                <nav class="flex flex-col md:flex-row items-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
+                    <a href="oneshots" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">One Shots</a>
+                    <a href="miniaturas" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Miniaturas</a>
+                    <a href="arsenal" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Arsenal de RPG</a>
+                    <a href="sistema" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Sistema ST</a>
+                    <a href="habilidades" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Habilidades & Feitiços</a>
+                    <a href="sons" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-amber-600 pb-1 md:border-black w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
+                </nav>
+
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative w-full py-10 md:py-14 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
+            <div class="container mx-auto px-4 max-w-6xl text-center">
+                <span class="inline-flex items-center gap-2 text-amber-500 text-xs font-black tracking-widest uppercase mb-3 px-4 py-1.5 bg-amber-500/10 rounded-full border border-amber-500/30">
+                    <i class="fa-solid fa-sliders"></i> Painel Interativo do Mestre
+                </span>
+                <h1 class="text-3xl md:text-5xl uppercase tracking-tight mb-3 text-white font-title">
+                    Estúdio Sonoro da Mesa
+                </h1>
+                <p class="text-[#EBE3CB] text-sm md:text-base max-w-3xl mx-auto mb-6">
+                    <strong>Monte sua mesa:</strong> Arraste qualquer efeito sonoro do catálogo para a <strong>Barra de Atalhos (1-9)</strong> ou para a <strong>Box de Favoritos</strong>. Toque músicas ambientes em loop ou adicione seus próprios links do YouTube!
+                </p>
+
+                <!-- Control Bar -->
+                <div class="bg-zinc-900/90 backdrop-blur-md border border-amber-600/30 rounded-2xl p-4 max-w-4xl mx-auto shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+                        <div class="flex items-center gap-3">
+                            <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700" title="Silenciar / Ativar Áudio Geral">
+                                <i class="fa-solid fa-volume-high" id="master-mute-icon"></i>
+                            </button>
+                            <div class="text-left">
+                                <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Volume Master</span>
+                                <span class="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
+                            </div>
+                        </div>
+                        <input type="range" id="master-volume" min="0" max="100" value="80" class="w-28 md:w-40 accent-amber-500 cursor-pointer">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
+                        <button id="stop-all-btn" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-xs tracking-wider px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer hover:scale-105">
+                            <i class="fa-solid fa-square"></i> Parar Todos os Sons
+                        </button>
+                        <button id="reset-slots-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar Atalhos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (SLOTS 1 a 9 VIA DRAG & DROP) -->
+        <section class="py-8 bg-zinc-950 border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                    <div>
+                        <h2 class="text-xl md:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-keyboard"></i> Barra de Atalhos Rápidos (Teclas 1 a 9)
+                        </h2>
+                        <p class="text-zinc-400 text-xs">Arraste qualquer som do catálogo e solte em uma das caixas para definir o atalho do teclado.</p>
+                    </div>
+                </div>
+
+                <!-- Grid de Slots 1 a 9 -->
+                <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3" id="quick-slots-container">
+                    <!-- Gerado Dinamicamente via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: BOX DE FAVORITOS DO MESTRE -->
+        <section class="py-6 bg-zinc-900/60 border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg text-amber-400 font-title uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Sessão
+                    </h2>
+                    <span class="text-xs text-zinc-400">Arraste sons para cá ou clique na estrela ⭐</span>
+                </div>
+
+                <div id="favorites-box" class="min-h-[90px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-2xl p-3 transition-all flex flex-wrap items-center gap-3">
+                    <div class="text-zinc-500 text-xs italic py-4 text-center w-full" id="fav-empty-msg">
+                        <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Arraste um card ou clique na ⭐ para adicionar!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTROS E BUSCA -->
+        <section class="py-6 bg-zinc-950 border-b border-zinc-900 sticky top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
+            <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Categorias -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-center md:justify-start" id="category-filters">
+                    <button data-cat="all" class="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        Todos
+                    </button>
+                    <button data-cat="combate" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-swords text-amber-500 mr-1"></i> Combate
+                    </button>
+                    <button data-cat="magias" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magias
+                    </button>
+                    <button data-cat="ambientes" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambientes
+                    </button>
+                    <button data-cat="natureza" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-cloud-bolt text-cyan-400 mr-1"></i> Natureza
+                    </button>
+                    <button data-cat="monstros" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-dragon text-red-400 mr-1"></i> Monstros
+                    </button>
+                    <button data-cat="taverna" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna & Cidade
+                    </button>
+                </div>
+
+                <!-- Busca -->
+                <div class="relative w-full md:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"></i>
+                    <input type="text" id="search-input" placeholder="Buscar efeito ou ambiente..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL) -->
+        <section class="py-10 bg-black border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl text-amber-500 font-title uppercase flex items-center gap-3">
+                            <i class="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
+                        </h2>
+                        <p class="text-zinc-400 text-xs">Clique no botão para tocar o som. Arraste qualquer card para a barra de atalhos acima!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4" id="sfx-catalog-grid">
+                    <!-- Cards de SFX com recurso Drag & Drop -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO SEPARADA: MÚSICAS & AMBIENTES EM LOOP (COM SUPORTE A YOUTUBE) -->
+        <section class="py-12 bg-zinc-950">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-3">
+                            <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
+                        </h2>
+                        <p class="text-zinc-400 text-sm mt-1">Acionamento simples por botões. Adicione também os seus links de vídeos do YouTube!</p>
+                    </div>
+
+                    <!-- Botão de Adicionar Vídeo do YouTube -->
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="yt-link-input" placeholder="Cole o Link do YouTube aqui..." class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 w-64">
+                        <button id="add-yt-btn" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                            <i class="fa-brands fa-youtube text-base"></i> Adicionar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid de Ambientes em Loop -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ambient-grid">
+                    <!-- Preenchido Dinamicamente via JS -->
+                </div>
+
+                <!-- Player YouTube Oculto em Background -->
+                <div class="hidden">
+                    <div id="youtube-audio-player"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-parchment text-black py-12 border-t border-black/10 mt-auto">
+        <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div>
+                <a href="/" class="text-2xl font-title tracking-wide font-bold">Saving Throw</a>
+                <p class="text-sm text-zinc-700 mt-1">Boutique Premium de RPG & Acessórios Artesanais para Mestres e Jogadores.</p>
+            </div>
+            <div class="flex flex-wrap justify-center items-center gap-6 font-semibold text-xs uppercase tracking-wide">
+                <a href="oneshots" class="hover:opacity-70">One Shots</a>
+                <a href="miniaturas" class="hover:opacity-70">Miniaturas</a>
+                <a href="arsenal" class="hover:opacity-70">Arsenal</a>
+                <a href="sistema" class="hover:opacity-70 text-amber-700">Sistema ST</a>
+                <a href="habilidades" class="hover:opacity-70">Habilidades</a>
+                <a href="sons" class="hover:opacity-70 text-amber-700">Efeitos Sonoros</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- IFrame API do YouTube -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- Scripts do Estúdio Sonoro -->
+    <script>
+        // Menu Mobile Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const navContent = document.getElementById('nav-content');
+        if (menuBtn && navContent) {
+            menuBtn.addEventListener('click', function() {
+                const menuIcon = this.querySelector('i');
+                navContent.classList.toggle('hidden');
+                if (navContent.classList.contains('hidden')) {
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                } else {
+                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+                }
+            });
+        }
+
+        // ==========================================
+        // BASE DE DADOS DOS EFEITOS SONOROS (SFX)
+        // ==========================================
+
+        const sfxData = [
+            { id: 'espada', name: 'Golpe de Espada', category: 'combate', icon: 'fa-swords', color: 'red' },
+            { id: 'fogo', name: 'Bola de Fogo', category: 'magias', icon: 'fa-fire-flame-curved', color: 'orange' },
+            { id: 'critico', name: 'Acerto Crítico!', category: 'combate', icon: 'fa-dice-d20', color: 'amber' },
+            { id: 'falha', name: 'Falha Crítica', category: 'combate', icon: 'fa-face-frown', color: 'zinc' },
+            { id: 'dragao', name: 'Urro de Dragão', category: 'monstros', icon: 'fa-dragon', color: 'red' },
+            { id: 'porta', name: 'Porta Rangendo', category: 'ambientes', icon: 'fa-door-open', color: 'yellow' },
+            { id: 'trovao', name: 'Trovão Impactante', category: 'natureza', icon: 'fa-bolt', color: 'cyan' },
+            { id: 'moedas', name: 'Sacola de Moedas', category: 'taverna', icon: 'fa-coins', color: 'amber' },
+            { id: 'cura', name: 'Feitiço de Cura', category: 'magias', icon: 'fa-sparkles', color: 'emerald' },
+            { id: 'risada', name: 'Risada Maligna', category: 'monstros', icon: 'fa-masks-theater', color: 'purple' },
+            { id: 'flecha', name: 'Disparo de Flecha', category: 'combate', icon: 'fa-location-arrow', color: 'emerald' },
+            { id: 'escudo', name: 'Bloqueio de Escudo', category: 'combate', icon: 'fa-shield', color: 'blue' },
+            { id: 'armadilha', name: 'Armadilha Disparada', category: 'ambientes', icon: 'fa-gear', color: 'amber' },
+            { id: 'alarme', name: 'Buzina de Alarme', category: 'taverna', icon: 'fa-bell', color: 'red' },
+            { id: 'maldicao', name: 'Maldição Negra', category: 'magias', icon: 'fa-skull-crossbones', color: 'purple' },
+            { id: 'grito', name: 'Brado de Bárbaro', category: 'monstros', icon: 'fa-bullhorn', color: 'orange' }
+        ];
+
+        // Músicas Ambientes Padrão (com suporte a YouTube IDs)
+        let ambientData = [
+            { id: 'combate', name: 'Combate Épico', category: 'combate', icon: 'fa-drum', desc: 'Batalha & Tambores', ytId: '3jZ5vnv-LZc' },
+            { id: 'taverna', name: 'Taverna Animada', category: 'taverna', icon: 'fa-beer-mug-empty', desc: 'Risadas & Alaúde', ytId: 'roABNwbjZf4' },
+            { id: 'floresta', name: 'Floresta Mística', category: 'natureza', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
+            { id: 'masmorra', name: 'Masmorra Sombria', category: 'ambientes', icon: 'fa-dungeon', desc: 'Gotas & Eco Misterioso', ytId: 'v8Jt_28E46s' },
+            { id: 'chuva', name: 'Tempestade & Chuva', category: 'natureza', icon: 'fa-cloud-showers-heavy', desc: 'Chuva Forte & Trovões', ytId: 'mPZkdNFkNps' },
+            { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'natureza', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
+        ];
+
+        // Estado do Player & Slots
+        let quickSlots = JSON.parse(localStorage.getItem('st_quick_slots')) || {
+            '1': 'espada',
+            '2': 'fogo',
+            '3': 'critico',
+            '4': 'falha',
+            '5': 'dragao',
+            '6': 'porta',
+            '7': 'trovao',
+            '8': 'moedas',
+            '9': 'cura'
+        };
+
+        let favoriteSounds = JSON.parse(localStorage.getItem('st_favorite_sounds')) || ['critico', 'fogo', 'espada'];
+
+        // WEB AUDIO ENGINE (SFX SYNTHESIZER)
+        let audioCtx = null;
+        let masterGain = null;
+        let masterVolumeValue = 0.8;
+        let isMasterMuted = false;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = masterVolumeValue;
+                masterGain.connect(audioCtx.destination);
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function createNoiseBuffer(duration) {
+            initAudioContext();
+            const bufferSize = audioCtx.sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            return buffer;
+        }
+
+        function playSFX(type) {
+            initAudioContext();
+            const now = audioCtx.currentTime;
+
+            switch(type) {
+                case 'espada': {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    const filter = audioCtx.createBiquadFilter();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(1400, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.15);
+                    filter.type = 'highpass';
+                    filter.frequency.setValueAtTime(1000, now);
+                    gain.gain.setValueAtTime(0.7, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                    break;
+                }
+                case 'fogo': {
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = createNoiseBuffer(0.6);
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(800, now);
+                    filter.frequency.linearRampToValueAtTime(100, now + 0.6);
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.8, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+                    noise.start(now);
+                    break;
+                }
+                case 'critico': {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        const startTime = now + idx * 0.08;
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, startTime);
+                        gain.gain.setValueAtTime(0.6, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.4);
+                    });
+                    break;
+                }
+                case 'falha': {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.5);
+                    gain.gain.setValueAtTime(0.7, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                    break;
+                }
+                case 'dragao': {
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc1.type = 'sawtooth';
+                    osc1.frequency.setValueAtTime(90, now);
+                    osc1.frequency.linearRampToValueAtTime(140, now + 0.3);
+                    osc1.frequency.linearRampToValueAtTime(50, now + 0.8);
+                    osc2.type = 'square';
+                    osc2.frequency.setValueAtTime(95, now);
+                    osc2.frequency.linearRampToValueAtTime(145, now + 0.3);
+                    gain.gain.setValueAtTime(0.7, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(masterGain);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.8);
+                    osc2.stop(now + 0.8);
+                    break;
+                }
+                case 'porta': {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(180, now + 0.2);
+                    osc.frequency.linearRampToValueAtTime(240, now + 0.5);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                    break;
+                }
+                case 'trovao': {
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = createNoiseBuffer(1.2);
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(600, now);
+                    filter.frequency.exponentialRampToValueAtTime(40, now + 1.2);
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.9, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+                    noise.start(now);
+                    break;
+                }
+                case 'moedas': {
+                    [3200, 4100, 4800, 5200].forEach((f, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        const st = now + i * 0.05;
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, st);
+                        gain.gain.setValueAtTime(0.4, st);
+                        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.15);
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(st);
+                        osc.stop(st + 0.15);
+                    });
+                    break;
+                }
+                case 'cura': {
+                    [440, 554.37, 659.25, 880].forEach((f, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        const st = now + i * 0.06;
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, st);
+                        gain.gain.setValueAtTime(0.4, st);
+                        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.6);
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(st);
+                        osc.stop(st + 0.6);
+                    });
+                    break;
+                }
+                default: {
+                    // Fallback tone
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.frequency.setValueAtTime(440, now);
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                }
+            }
+        }
+
+        // RENDERIZAR SLOTS 1-9
+        function renderQuickSlots() {
+            const container = document.getElementById('quick-slots-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 9; i++) {
+                const sfxId = quickSlots[i];
+                const sfx = sfxData.find(s => s.id === sfxId);
+
+                const slot = document.createElement('div');
+                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-3 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[90px]';
+                slot.setAttribute('data-slot', i);
+
+                if (sfx) {
+                    slot.innerHTML = `
+                        <span class="absolute top-1 right-1.5 bg-amber-500 text-black text-[10px] font-mono font-bold px-1.5 py-0.2 rounded">Teclado ${i}</span>
+                        <i class="fa-solid ${sfx.icon} text-amber-500 text-lg mb-1"></i>
+                        <span class="font-bold text-xs text-white leading-tight line-clamp-1">${sfx.name}</span>
+                        <span class="text-[9px] text-zinc-500 uppercase mt-0.5">${sfx.category}</span>
+                    `;
+                } else {
+                    slot.innerHTML = `
+                        <span class="absolute top-1 right-1.5 bg-zinc-800 text-zinc-400 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded">Teclado ${i}</span>
+                        <i class="fa-solid fa-plus text-zinc-600 text-lg mb-1"></i>
+                        <span class="text-xs text-zinc-500">Slot Vazio</span>
+                    `;
+                }
+
+                // Disparar som ao clicar no slot
+                slot.addEventListener('click', () => {
+                    if (sfxId) {
+                        playSFX(sfxId);
+                        slot.classList.add('sfx-active');
+                        setTimeout(() => slot.classList.remove('sfx-active'), 200);
+                    }
+                });
+
+                // HTML5 Drag & Drop
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    slot.classList.add('drop-target-active');
+                });
+
+                slot.addEventListener('dragleave', () => {
+                    slot.classList.remove('drop-target-active');
+                });
+
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drop-target-active');
+                    const droppedSfxId = e.dataTransfer.getData('text/plain');
+                    if (droppedSfxId) {
+                        quickSlots[i] = droppedSfxId;
+                        localStorage.setItem('st_quick_slots', JSON.stringify(quickSlots));
+                        renderQuickSlots();
+                    }
+                });
+
+                container.appendChild(slot);
+            }
+        }
+
+        // RENDERIZAR FAVORITOS
+        function renderFavorites() {
+            const box = document.getElementById('favorites-box');
+            const emptyMsg = document.getElementById('fav-empty-msg');
+            if (!box) return;
+
+            // Limpar botões antigos de favoritos
+            box.querySelectorAll('.fav-item').forEach(el => el.remove());
+
+            if (favoriteSounds.length === 0) {
+                if (emptyMsg) emptyMsg.classList.remove('hidden');
+                return;
+            } else {
+                if (emptyMsg) emptyMsg.classList.add('hidden');
+            }
+
+            favoriteSounds.forEach(id => {
+                const sfx = sfxData.find(s => s.id === id);
+                if (!sfx) return;
+
+                const item = document.createElement('button');
+                item.className = 'fav-item bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/40 rounded-xl px-3 py-2 flex items-center gap-2 transition-all cursor-pointer text-xs font-bold text-amber-300';
+                item.innerHTML = `
+                    <i class="fa-solid ${sfx.icon} text-amber-400"></i>
+                    <span>${sfx.name}</span>
+                    <i class="fa-solid fa-xmark text-zinc-500 hover:text-red-400 ml-1 remove-fav" data-id="${sfx.id}"></i>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('remove-fav')) {
+                        e.stopPropagation();
+                        favoriteSounds = favoriteSounds.filter(favId => favId !== sfx.id);
+                        localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                        renderFavorites();
+                        renderSFXCatalog();
+                    } else {
+                        playSFX(sfx.id);
+                        item.classList.add('sfx-active');
+                        setTimeout(() => item.classList.remove('sfx-active'), 200);
+                    }
+                });
+
+                box.appendChild(item);
+            });
+
+            // Drag & Drop no box de favoritos
+            box.addEventListener('dragover', (e) => e.preventDefault());
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const droppedSfxId = e.dataTransfer.getData('text/plain');
+                if (droppedSfxId && !favoriteSounds.includes(droppedSfxId)) {
+                    favoriteSounds.push(droppedSfxId);
+                    localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                    renderFavorites();
+                    renderSFXCatalog();
+                }
+            });
+        }
+
+        // RENDERIZAR CATÁLOGO DE SFX
+        function renderSFXCatalog() {
+            const grid = document.getElementById('sfx-catalog-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            sfxData.forEach(sfx => {
+                const isFav = favoriteSounds.includes(sfx.id);
+                const card = document.createElement('div');
+                card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-id', sfx.id);
+                card.setAttribute('data-category', sfx.category);
+
+                card.innerHTML = `
+                    <button class="fav-star absolute top-2 right-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer ${isFav ? 'text-amber-400' : ''}" title="Favoritar">
+                        <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
+                    </button>
+                    <div class="w-12 h-12 rounded-full bg-zinc-800 text-amber-500 border border-zinc-700 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid ${sfx.icon}"></i>
+                    </div>
+                    <span class="font-bold text-sm text-white group-hover:text-amber-400 transition-colors">${sfx.name}</span>
+                    <span class="text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.category}</span>
+                `;
+
+                // Tocar SFX ao clicar
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.fav-star')) return;
+                    playSFX(sfx.id);
+                    card.classList.add('sfx-active');
+                    setTimeout(() => card.classList.remove('sfx-active'), 200);
+                });
+
+                // Toggle Estrela Favorito
+                const starBtn = card.querySelector('.fav-star');
+                starBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (favoriteSounds.includes(sfx.id)) {
+                        favoriteSounds = favoriteSounds.filter(id => id !== sfx.id);
+                    } else {
+                        favoriteSounds.push(sfx.id);
+                    }
+                    localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                    renderFavorites();
+                    renderSFXCatalog();
+                });
+
+                // Drag Start
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', sfx.id);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // RENDERIZAR MÚSICAS AMBIENTES
+        function renderAmbients() {
+            const grid = document.getElementById('ambient-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            ambientData.forEach(amb => {
+                const card = document.createElement('div');
+                card.className = 'ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 transition-all hover:border-amber-600/40 relative overflow-hidden';
+                card.setAttribute('data-ambient', amb.id);
+                card.setAttribute('data-category', amb.category);
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-amber-950/60 border border-amber-800/40 flex items-center justify-center text-amber-400 text-lg">
+                                <i class="fa-solid ${amb.icon}"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-base leading-tight">${amb.name}</h3>
+                                <span class="text-xs text-zinc-400 uppercase tracking-wider">${amb.desc || 'Ambiente em Loop'}</span>
+                            </div>
+                        </div>
+                        <div class="equalizer hidden flex items-end gap-1 h-4" id="eq-${amb.id}">
+                            <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                            <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                            <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="ambient-play-btn w-12 h-12 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold flex items-center justify-center text-xl transition-all cursor-pointer shadow-lg shrink-0" title="Tocar / Pausar">
+                            <i class="fa-solid fa-play ml-0.5"></i>
+                        </button>
+                        <div class="flex-grow">
+                            <div class="flex justify-between text-xs text-zinc-400 mb-1 font-semibold">
+                                <span>Volume</span>
+                                <span class="ambient-vol-val">70%</span>
+                            </div>
+                            <input type="range" class="ambient-vol w-full accent-amber-500 cursor-pointer" min="0" max="100" value="70">
+                        </div>
+                    </div>
+                `;
+
+                const playBtn = card.querySelector('.ambient-play-btn');
+                const volSlider = card.querySelector('.ambient-vol');
+                const eq = card.querySelector('.equalizer');
+                const playIcon = playBtn.querySelector('i');
+
+                playBtn.addEventListener('click', () => {
+                    toggleAmbientTrack(amb, playBtn, playIcon, card, eq, volSlider.value);
+                });
+
+                volSlider.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    card.querySelector('.ambient-vol-val').textContent = `${val}%`;
+                    setAmbientVolume(amb.id, val);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // PLAYER DE ÁUDIO DO YOUTUBE & CONTROLES
+        // ==========================================
+
+        let ytPlayer = null;
+        let activeAmbientId = null;
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-audio-player', {
+                height: '0',
+                width: '0',
+                videoId: '3jZ5vnv-LZc', // ID Inicial
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1
+                }
+            });
+        }
+
+        function toggleAmbientTrack(amb, btn, icon, card, eq, vol) {
+            initAudioContext();
+
+            if (activeAmbientId === amb.id) {
+                // Pausar
+                if (ytPlayer && ytPlayer.pauseVideo) {
+                    ytPlayer.pauseVideo();
+                }
+                activeAmbientId = null;
+                icon.className = 'fa-solid fa-play ml-0.5';
+                btn.classList.replace('bg-amber-500', 'bg-amber-600');
+                card.classList.remove('ambient-card-active');
+                if (eq) eq.classList.add('hidden');
+            } else {
+                // Parar anterior se houver
+                document.querySelectorAll('.ambient-card').forEach(c => {
+                    c.classList.remove('ambient-card-active');
+                    const b = c.querySelector('.ambient-play-btn');
+                    if (b) {
+                        b.querySelector('i').className = 'fa-solid fa-play ml-0.5';
+                        b.classList.replace('bg-amber-500', 'bg-amber-600');
+                    }
+                    const e = c.querySelector('.equalizer');
+                    if (e) e.classList.add('hidden');
+                });
+
+                // Carregar novo vídeo do YouTube
+                activeAmbientId = amb.id;
+                icon.className = 'fa-solid fa-pause';
+                btn.classList.replace('bg-amber-600', 'bg-amber-500');
+                card.classList.add('ambient-card-active');
+                if (eq) eq.classList.remove('hidden');
+
+                if (ytPlayer && ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById(amb.ytId || '3jZ5vnv-LZc');
+                    ytPlayer.setVolume(vol * (masterVolumeValue / 1));
+                    ytPlayer.playVideo();
+                }
+            }
+        }
+
+        function setAmbientVolume(ambId, val) {
+            if (activeAmbientId === ambId && ytPlayer && ytPlayer.setVolume) {
+                ytPlayer.setVolume(val * (masterVolumeValue / 1));
+            }
+        }
+
+        // ADICIONAR VÍDEO DO YOUTUBE VIA LINK
+        const addYtBtn = document.getElementById('add-yt-btn');
+        const ytInput = document.getElementById('yt-link-input');
+
+        function extractYtId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        if (addYtBtn && ytInput) {
+            addYtBtn.addEventListener('click', () => {
+                const url = ytInput.value.trim();
+                const ytId = extractYtId(url);
+
+                if (ytId) {
+                    const newAmb = {
+                        id: `custom-${Date.now()}`,
+                        name: 'Trilha Personalizada',
+                        category: 'ambientes',
+                        icon: 'fa-compact-disc',
+                        desc: 'Vídeo do YouTube',
+                        ytId: ytId
+                    };
+                    ambientData.unshift(newAmb);
+                    renderAmbients();
+                    ytInput.value = '';
+                    alert('Música do YouTube adicionada com sucesso!');
+                } else {
+                    alert('Por favor, insira um link válido do YouTube (ex: https://www.youtube.com/watch?v=...)');
+                }
+            });
+        }
+
+        // CONTROLES MASTER & RESET
+        const masterVolInput = document.getElementById('master-volume');
+        const masterVolLabel = document.getElementById('master-vol-label');
+        const masterMuteBtn = document.getElementById('master-mute-btn');
+        const masterMuteIcon = document.getElementById('master-mute-icon');
+        const stopAllBtn = document.getElementById('stop-all-btn');
+        const resetSlotsBtn = document.getElementById('reset-slots-btn');
+
+        if (masterVolInput) {
+            masterVolInput.addEventListener('input', (e) => {
+                const val = e.target.value / 100;
+                masterVolumeValue = val;
+                masterVolLabel.textContent = `${e.target.value}%`;
+                if (masterGain && !isMasterMuted) {
+                    masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
+                }
+                if (activeAmbientId && ytPlayer && ytPlayer.setVolume) {
+                    ytPlayer.setVolume(e.target.value);
+                }
+            });
+        }
+
+        if (masterMuteBtn) {
+            masterMuteBtn.addEventListener('click', () => {
+                initAudioContext();
+                isMasterMuted = !isMasterMuted;
+                if (isMasterMuted) {
+                    masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                    masterMuteIcon.className = 'fa-solid fa-volume-xmark text-red-500';
+                    if (ytPlayer && ytPlayer.mute) ytPlayer.mute();
+                } else {
+                    masterGain.gain.setValueAtTime(masterVolumeValue, audioCtx.currentTime);
+                    masterMuteIcon.className = 'fa-solid fa-volume-high text-amber-500';
+                    if (ytPlayer && ytPlayer.unMute) ytPlayer.unMute();
+                }
+            });
+        }
+
+        if (stopAllBtn) {
+            stopAllBtn.addEventListener('click', () => {
+                if (ytPlayer && ytPlayer.stopVideo) {
+                    ytPlayer.stopVideo();
+                }
+                activeAmbientId = null;
+                document.querySelectorAll('.ambient-card').forEach(card => {
+                    card.classList.remove('ambient-card-active');
+                    const btn = card.querySelector('.ambient-play-btn');
+                    if (btn) {
+                        btn.querySelector('i').className = 'fa-solid fa-play ml-0.5';
+                        btn.classList.replace('bg-amber-500', 'bg-amber-600');
+                    }
+                    const eq = card.querySelector('.equalizer');
+                    if (eq) eq.classList.add('hidden');
+                });
+            });
+        }
+
+        if (resetSlotsBtn) {
+            resetSlotsBtn.addEventListener('click', () => {
+                quickSlots = {
+                    '1': 'espada',
+                    '2': 'fogo',
+                    '3': 'critico',
+                    '4': 'falha',
+                    '5': 'dragao',
+                    '6': 'porta',
+                    '7': 'trovao',
+                    '8': 'moedas',
+                    '9': 'cura'
+                };
+                localStorage.setItem('st_quick_slots', JSON.stringify(quickSlots));
+                renderQuickSlots();
+            });
+        }
+
+        // TECLADO ATALHOS 1 A 9
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+            const key = e.key;
+            if (['1','2','3','4','5','6','7','8','9'].includes(key)) {
+                const sfxId = quickSlots[key];
+                if (sfxId) {
+                    playSFX(sfxId);
+                    const slot = document.querySelector(`.quick-slot[data-slot="${key}"]`);
+                    if (slot) {
+                        slot.classList.add('sfx-active');
+                        setTimeout(() => slot.classList.remove('sfx-active'), 200);
+                    }
+                }
+            }
+        });
+
+        // FILTROS E BUSCA
+        const categoryBtns = document.querySelectorAll('.cat-btn');
+        const searchInput = document.getElementById('search-input');
+        let currentCat = 'all';
+        let currentSearch = '';
+
+        function filterCatalog() {
+            const allItems = document.querySelectorAll('.sfx-card, .ambient-card');
+            allItems.forEach(item => {
+                const cat = item.getAttribute('data-category');
+                const text = item.textContent.toLowerCase();
+                const matchCat = (currentCat === 'all' || cat === currentCat);
+                const matchSearch = (currentSearch === '' || text.includes(currentSearch));
+                if (matchCat && matchSearch) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-amber-600', 'text-black');
+                    b.classList.add('bg-zinc-900', 'text-zinc-300');
+                });
+                btn.classList.add('active', 'bg-amber-600', 'text-black');
+                btn.classList.remove('bg-zinc-900', 'text-zinc-300');
+                currentCat = btn.getAttribute('data-cat');
+                filterCatalog();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value.toLowerCase().trim();
+                filterCatalog();
+            });
+        }
+
+        // INICIALIZAÇÃO DA PÁGINA
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuickSlots();
+            renderFavorites();
+            renderSFXCatalog();
+            renderAmbients();
+        });
+    </script>
+</body>
+</html>
