@@ -2,9 +2,9 @@
 <html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
-    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos, paginação e áudios reais para Mestres de RPG.">
+    <meta name="description" content="Soundboard interativo otimizado para mobile e desktop com Drag & Drop de atalhos (1-9), caixa de favoritos, paginação e áudios reais para Mestres de RPG.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
@@ -20,7 +20,8 @@
         
         body {
             font-family: 'Alsina', sans-serif !important;
-            line-height: 1.8 !important;
+            line-height: 1.6 !important;
+            -webkit-tap-highlight-color: transparent;
         }
         
         h1, h2, h3, .font-title {
@@ -30,7 +31,16 @@
 
         .bg-parchment { background-color: #EBE3CB; }
         .text-parchment-dark { color: #4A4435; }
-        .transition-all { transition: all 0.3s ease; }
+        .transition-all { transition: all 0.25s ease; }
+
+        /* Otimizações Mobile para Barra de Rolagem de Categorias */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
         /* Animação do visualizador de áudio */
         .equalizer-bar {
@@ -48,7 +58,7 @@
         .sfx-active {
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
             border-color: #f59e0b !important;
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
         /* Estilo dos slots e dropzones */
@@ -61,41 +71,42 @@
         /* Glow para os cards de ambiente ativos */
         .ambient-card-active {
             border-color: #f59e0b !important;
-            background: linear-gradient(135deg, rgba(39, 39, 42, 0.9), rgba(217, 119, 6, 0.2)) !important;
+            background: linear-gradient(135deg, rgba(39, 39, 42, 0.95), rgba(217, 119, 6, 0.25)) !important;
             box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
         }
 
-        /* Animação de arrastar */
+        /* Touch Drag & Drop */
         [draggable="true"] {
             cursor: grab;
+            touch-action: manipulation;
         }
         [draggable="true"]:active {
             cursor: grabbing;
-            opacity: 0.6;
+            opacity: 0.7;
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between">
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between overflow-x-hidden">
 
     <!-- Top Banner -->
-    <div class="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
+    <div class="hidden sm:block bg-amber-600 text-black text-xs sm:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
         🎲 Mesa do Mestre: Arraste Efeitos para Atalhos 1 a 9 e Misture Múltiplas Músicas Ambientes
     </div>
 
     <!-- Header Navigation -->
     <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
-        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="container mx-auto px-4 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex justify-between items-center w-full md:w-auto">
                 <a href="/" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
                     Saving Throw
                 </a>
-                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer" aria-label="Abrir Menu">
+                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer p-2" aria-label="Abrir Menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
             
-            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
-                <nav class="flex flex-col md:flex-row items-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
+            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto mt-2 md:mt-0">
+                <nav class="flex flex-col md:flex-row items-center gap-3 sm:gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
                     <a href="oneshots" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">One Shots</a>
                     <a href="miniaturas" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Miniaturas</a>
                     <a href="arsenal" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Arsenal de RPG</a>
@@ -104,7 +115,7 @@
                     <a href="sons" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-amber-600 pb-1 md:border-black w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
                 </nav>
 
-                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
                 </a>
             </div>
@@ -113,26 +124,26 @@
 
     <main class="flex-grow">
         <!-- Hero Section -->
-        <section class="relative w-full py-8 md:py-12 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
+        <section class="relative w-full py-6 sm:py-10 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
             <div class="container mx-auto px-4 max-w-6xl text-center">
-                <span class="inline-flex items-center gap-2 text-amber-500 text-xs font-black tracking-widest uppercase mb-3 px-4 py-1.5 bg-amber-500/10 rounded-full border border-amber-500/30">
+                <span class="inline-flex items-center gap-2 text-amber-500 text-[11px] sm:text-xs font-black tracking-widest uppercase mb-2 px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/30">
                     <i class="fa-solid fa-sliders"></i> Painel Interativo do Mestre
                 </span>
-                <h1 class="text-3xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
+                <h1 class="text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
                     Estúdio Sonoro da Mesa
                 </h1>
-                <p class="text-[#EBE3CB] text-xs md:text-sm max-w-3xl mx-auto mb-6">
-                    Monte sua mesa: Arraste efeitos sonoros para os atalhos <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-xs">1</kbd> a <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-xs">9</kbd> ou para a Box de Favoritos. Misture simultaneamente faixas de áudio e músicas para a sessão.
+                <p class="text-[#EBE3CB] text-xs sm:text-sm max-w-3xl mx-auto mb-5 px-2">
+                    Monte sua mesa: Toque sons com 1 toque no celular ou pelas teclas <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-[10px]">1</kbd> a <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-amber-400 font-mono text-[10px]">9</kbd>. Arraste ou toque para favoritar efeitos!
                 </p>
 
-                <!-- BARRA MASTER DE ÁUDIO & PAINEL DE MÚSICAS TOCANDO -->
-                <div class="bg-zinc-900/90 backdrop-blur-md border border-amber-600/30 rounded-2xl p-4 md:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
+                <!-- BARRA MASTER DE ÁUDIO & PAINEL DE MÚSICAS TOCANDO (OTIMIZADO PARA MOBILE) -->
+                <div class="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-3 text-left">
                     
                     <!-- Linha 1: Volume Master e Botões Principais -->
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 pb-3 border-b border-zinc-800/80">
-                        <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
-                            <div class="flex items-center gap-3">
-                                <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700" title="Silenciar / Ativar Áudio Geral">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                        <div class="flex items-center gap-3 w-full sm:w-auto justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700 shrink-0" title="Silenciar / Ativar Áudio Geral">
                                     <i class="fa-solid fa-volume-high" id="master-mute-icon"></i>
                                 </button>
                                 <div>
@@ -140,15 +151,15 @@
                                     <span class="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
                                 </div>
                             </div>
-                            <input type="range" id="master-volume" min="0" max="100" value="80" class="w-28 md:w-40 accent-amber-500 cursor-pointer">
+                            <input type="range" id="master-volume" min="0" max="100" value="80" class="w-32 sm:w-40 accent-amber-500 cursor-pointer">
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center md:justify-end">
-                            <button id="stop-all-btn" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-xs tracking-wider px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer hover:scale-105">
-                                <i class="fa-solid fa-square"></i> Parar Todos os Sons
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                            <button id="stop-all-btn" class="flex-1 sm:flex-none bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-square text-xs"></i> Parar Todos
                             </button>
-                            <button id="reset-slots-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar Atalhos
+                            <button id="reset-slots-btn" class="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar
                             </button>
                         </div>
                     </div>
@@ -157,15 +168,15 @@
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs uppercase tracking-wider text-amber-400 font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-compact-disc animate-spin text-amber-500" style="animation-duration: 4s;"></i> Músicas Ambientes Ativas no Momento
+                                <i class="fa-solid fa-compact-disc animate-spin text-amber-500" style="animation-duration: 4s;"></i> Ambientes Ativos
                             </span>
                             <span class="text-[11px] text-zinc-400" id="active-tracks-count">0 faixas tocando</span>
                         </div>
 
                         <!-- Container das Faixas Ativas -->
-                        <div id="active-tracks-container" class="min-h-[50px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2.5 flex flex-col gap-2">
+                        <div id="active-tracks-container" class="min-h-[48px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2 flex flex-col gap-2">
                             <div class="text-zinc-500 text-xs italic py-2 text-center" id="no-active-tracks-msg">
-                                Nenhuma música ambiente tocando no momento. Clique em uma faixa abaixo para iniciar a mixagem!
+                                Nenhuma música ambiente tocando. Clique em uma faixa abaixo para iniciar!
                             </div>
                         </div>
                     </div>
@@ -174,123 +185,122 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (SLOTS 1 a 9 VIA DRAG & DROP) -->
-        <section class="py-6 bg-zinc-950 border-b border-zinc-900">
+        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (SLOTS 1 a 9 OTIMIZADOS PARA MOBILE) -->
+        <section class="py-5 sm:py-6 bg-zinc-950 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
-                    <div>
-                        <h2 class="text-xl text-amber-500 font-title uppercase flex items-center gap-2">
-                            <i class="fa-solid fa-keyboard"></i> Barra de Atalhos Rápidos (Teclas 1 a 9)
-                        </h2>
-                        <p class="text-zinc-400 text-xs">Arraste qualquer som do catálogo e solte em uma das caixas para definir o atalho do teclado.</p>
-                    </div>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-1">
+                    <h2 class="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-keyboard"></i> Atalhos Rápidos (Teclas 1 a 9 / Toque)
+                    </h2>
+                    <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho.</p>
                 </div>
 
-                <!-- Grid de Slots 1 a 9 -->
-                <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3" id="quick-slots-container">
+                <!-- Grid de Slots 1 a 9 (3 colunas no Mobile, 9 no Desktop) -->
+                <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3" id="quick-slots-container">
                     <!-- Gerado Dinamicamente via JavaScript -->
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO: BOX DE FAVORITOS DO MESTRE -->
-        <section class="py-6 bg-zinc-900/60 border-b border-zinc-900">
+        <section class="py-5 sm:py-6 bg-zinc-900/60 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-lg text-amber-400 font-title uppercase flex items-center gap-2">
+                <div class="flex items-center justify-between mb-2.5">
+                    <h2 class="text-base sm:text-lg text-amber-400 font-title uppercase flex items-center gap-2">
                         <i class="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Sessão
                     </h2>
-                    <span class="text-xs text-zinc-400">Arraste sons para cá ou clique na estrela ⭐</span>
+                    <span class="text-[11px] text-zinc-400 hidden sm:inline">Arraste sons para cá ou toque na ⭐</span>
                 </div>
 
-                <div id="favorites-box" class="min-h-[80px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-2xl p-3 transition-all flex flex-wrap items-center gap-3">
-                    <div class="text-zinc-500 text-xs italic py-3 text-center w-full" id="fav-empty-msg">
-                        <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Arraste um card ou clique na ⭐ para adicionar!
+                <div id="favorites-box" class="min-h-[70px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-xl p-2.5 transition-all flex flex-wrap items-center gap-2">
+                    <div class="text-zinc-500 text-xs italic py-2 text-center w-full" id="fav-empty-msg">
+                        <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Clique na ⭐ para adicionar!
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- FILTROS E BUSCA -->
-        <section class="py-5 bg-zinc-950 border-b border-zinc-900 sticky top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
-            <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
-                <!-- Categorias -->
-                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-center md:justify-start" id="category-filters">
-                    <button data-cat="all" class="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+        <!-- FILTROS E BUSCA (BARRA SCROLLÁVEL NO MOBILE) -->
+        <section class="py-3.5 sm:py-4 bg-zinc-950 border-b border-zinc-900 sticky top-[60px] sm:top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
+            <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-3">
+                
+                <!-- Categorias Scrolláveis no Celular -->
+                <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1 flex-nowrap" id="category-filters">
+                    <button data-cat="all" class="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         Todos
                     </button>
-                    <button data-cat="combate" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-swords text-amber-500 mr-1"></i> Combate
+                    <button data-cat="combate" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-sword text-amber-500 mr-1"></i> Combate
                     </button>
-                    <button data-cat="magia" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                    <button data-cat="magia" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magia
                     </button>
-                    <button data-cat="ambiente" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                    <button data-cat="ambiente" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambiente
                     </button>
-                    <button data-cat="monstro" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                    <button data-cat="monstro" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         <i class="fa-solid fa-dragon text-red-400 mr-1"></i> Monstro
                     </button>
-                    <button data-cat="taverna" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna & Vozes
+                    <button data-cat="taverna" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna
                     </button>
                 </div>
 
                 <!-- Busca -->
-                <div class="relative w-full md:w-64">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"></i>
-                    <input type="text" id="search-input" placeholder="Buscar efeito..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
+                <div class="relative w-full md:w-64 shrink-0">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                    <input type="text" id="search-input" placeholder="Buscar efeito..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL COM PAGINAÇÃO 3 FILEIRAS / 12 POR PÁGINA) -->
-        <section class="py-10 bg-black border-b border-zinc-900">
+        <section class="py-8 sm:py-10 bg-black border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h2 class="text-2xl text-amber-500 font-title uppercase flex items-center gap-3">
+                        <h2 class="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
                             <i class="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
                         </h2>
-                        <p class="text-zinc-400 text-xs">Clique no efeito para tocar. Arraste qualquer card para a barra de atalhos!</p>
+                        <p class="text-zinc-400 text-xs">Toque para ouvir o efeito. Múltiplos toques simultâneos permitidos!</p>
                     </div>
-                    <span class="text-xs text-zinc-400 font-mono" id="sfx-count-label">40 efeitos encontrados</span>
+                    <span class="text-xs text-zinc-400 font-mono hidden sm:inline" id="sfx-count-label">40 efeitos encontrados</span>
                 </div>
 
-                <!-- Grid Limita 3 Fileiras (12 cards por página) -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 min-h-[360px]" id="sfx-catalog-grid">
+                <!-- Grid Limita 3 Fileiras (12 cards por página - 2 colunas no Mobile = 6 linhas no Mobile) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px]" id="sfx-catalog-grid">
                     <!-- Preenchido via JavaScript -->
                 </div>
 
-                <!-- CONTROLES DE PAGINAÇÃO (3 FILEIRAS MÁXIMO) -->
-                <div class="flex items-center justify-between mt-8 pt-4 border-t border-zinc-900" id="pagination-container">
-                    <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
-                        <i class="fa-solid fa-chevron-left"></i> Anterior
+                <!-- CONTROLES DE PAGINAÇÃO MOBILE FRIENDLY -->
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900" id="pagination-container">
+                    <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> Anterior
                     </button>
 
-                    <div class="flex items-center gap-2" id="page-numbers-container">
+                    <div class="flex items-center gap-1.5" id="page-numbers-container">
                         <!-- Números de página -->
                     </div>
 
-                    <button id="next-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
-                        Próximo <i class="fa-solid fa-chevron-right"></i>
+                    <button id="next-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
+                        Próximo <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO SEPARADA: MÚSICAS & PAISAGENS AMBIENTES -->
-        <section class="py-12 bg-zinc-950">
+        <section class="py-10 sm:py-12 bg-zinc-950">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="mb-8">
-                    <h2 class="text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-3">
+                <div class="mb-6">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
                         <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
                     </h2>
-                    <p class="text-zinc-400 text-sm mt-1">Acionamento simples por botões. Você pode tocar múltiplas faixas ao mesmo tempo (ex: Floresta Mística + Fogueira)!</p>
+                    <p class="text-zinc-400 text-xs sm:text-sm mt-1">Toque para iniciar. Misture várias faixas ao mesmo tempo (ex: Floresta + Fogueira)!</p>
                 </div>
 
-                <!-- Grid de Ambientes em Loop -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ambient-grid">
+                <!-- Grid de Ambientes em Loop (1 coluna no Mobile) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid">
                     <!-- Preenchido Dinamicamente via JS -->
                 </div>
 
@@ -301,13 +311,13 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-parchment text-black py-12 border-t border-black/10 mt-auto">
-        <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+    <footer class="bg-parchment text-black py-8 sm:py-12 border-t border-black/10 mt-auto">
+        <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
-                <a href="/" class="text-2xl font-title tracking-wide font-bold">Saving Throw</a>
-                <p class="text-sm text-zinc-700 mt-1">Boutique Premium de RPG & Acessórios Artesanais para Mestres e Jogadores.</p>
+                <a href="/" class="text-xl sm:text-2xl font-title tracking-wide font-bold">Saving Throw</a>
+                <p class="text-xs sm:text-sm text-zinc-700 mt-1">Boutique Premium de RPG & Acessórios Artesanais para Mestres e Jogadores.</p>
             </div>
-            <div class="flex flex-wrap justify-center items-center gap-6 font-semibold text-xs uppercase tracking-wide">
+            <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-6 font-semibold text-xs uppercase tracking-wide">
                 <a href="oneshots" class="hover:opacity-70">One Shots</a>
                 <a href="miniaturas" class="hover:opacity-70">Miniaturas</a>
                 <a href="arsenal" class="hover:opacity-70">Arsenal</a>
@@ -339,12 +349,12 @@
         }
 
         // ==========================================
-        // BASE DE DADOS DOS EFEITOS SONOROS REALISTAS (ARQUIVOS DA PASTA assets/sounds)
+        // BASE DE DADOS DOS EFEITOS SONOROS REALISTAS (ÍCONES 100% FUNCIONAIS FA6 FREE)
         // ==========================================
 
         const sfxData = [
-            { id: 'amb-combate-gritando-dor', name: 'Homem Gritando Dor', categories: ['ambiente', 'combate'], file: './assets/sounds/Ambiente%20-%20combate%20-%20homem%20gritando%20dor.mp3', icon: 'fa-person-falling-burst' },
-            { id: 'amb-batendo-porta', name: 'Batendo na Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Batendo%20na%20porta.mp3', icon: 'fa-hand-back-fist' },
+            { id: 'amb-combate-gritando-dor', name: 'Homem Gritando Dor', categories: ['ambiente', 'combate'], file: './assets/sounds/Ambiente%20-%20combate%20-%20homem%20gritando%20dor.mp3', icon: 'fa-user-slash' },
+            { id: 'amb-batendo-porta', name: 'Batendo na Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Batendo%20na%20porta.mp3', icon: 'fa-hand-fist' },
             { id: 'amb-fechando-porta', name: 'Fechando Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Fechando%20Porta.mp3', icon: 'fa-door-closed' },
             { id: 'amb-grito-horror', name: 'Grito de Horror', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Grito%20Horror.mp3', icon: 'fa-ghost' },
             { id: 'amb-moedas', name: 'Moedas de Ouro', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20Moedas.mp3', icon: 'fa-coins' },
@@ -354,26 +364,26 @@
             { id: 'amb-combate-grito-monstro', name: 'Grito de Monstro', categories: ['ambiente', 'combate', 'monstro'], file: './assets/sounds/ambiente%20-%20combate%20-%20Grito%20Monstro.mp3', icon: 'fa-dragon' },
             { id: 'amb-combate-homem-morrendo', name: 'Homem Morrendo', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20homem%20morrendo.mp3', icon: 'fa-skull-crossbones' },
             { id: 'amb-combate-homem-sofrendo', name: 'Homem Sofrendo', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20homem%20sofrendo.mp3', icon: 'fa-heart-crack' },
-            { id: 'amb-combate-sacando-espada', name: 'Sacando Espada', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20sacando%20espada.mp3', icon: 'fa-swords' },
-            { id: 'amb-monstro-distancia', name: 'Monstro Grande à Distância', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Monstro%20grande%20a%20distancia.mp3', icon: 'fa-paw' },
-            { id: 'amb-monstro-passos-pesados', name: 'Passos Pesados de Monstro', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Passos%20pesados.mp3', icon: 'fa-shoe-prints' },
-            { id: 'amb-passos', name: 'Passos', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20passos.mp3', icon: 'fa-socks' },
+            { id: 'amb-combate-sacando-espada', name: 'Sacando Espada', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20sacando%20espada.mp3', icon: 'fa-shield-halved' },
+            { id: 'amb-monstro-distancia', name: 'Monstro à Distância', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Monstro%20grande%20a%20distancia.mp3', icon: 'fa-paw' },
+            { id: 'amb-monstro-passos-pesados', name: 'Passos Pesados Monstro', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Passos%20pesados.mp3', icon: 'fa-shoe-prints' },
+            { id: 'amb-passos', name: 'Passos', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20passos.mp3', icon: 'fa-person-walking' },
             { id: 'amb-porta-rangendo', name: 'Porta Rangendo', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20porta%20rangendo.mp3', icon: 'fa-dungeon' },
-            { id: 'amb-risada-homem', name: 'Risada de Homem', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20risada%20homem.mp3', icon: 'fa-face-laugh' },
+            { id: 'amb-risada-homem', name: 'Risada de Homem', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20risada%20homem.mp3', icon: 'fa-face-laugh-beam' },
             { id: 'amb-risada-mulher', name: 'Risada de Mulher', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20risada%20mulher.mp3', icon: 'fa-face-smile-wink' },
-            { id: 'amb-servindo-liquido', name: 'Servindo Líquido / Bebida', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20servindo%20liquido.mp3', icon: 'fa-wine-glass' },
+            { id: 'amb-servindo-liquido', name: 'Servindo Bebida', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20servindo%20liquido.mp3', icon: 'fa-wine-glass' },
             { id: 'combate-impacto-flecha', name: 'Impacto de Flecha', categories: ['combate'], file: './assets/sounds/combate%20-%20Impacto%20Flecha.mp3', icon: 'fa-crosshairs' },
             { id: 'combate-amb-ossos-quebrando', name: 'Ossos Quebrando', categories: ['combate', 'ambiente'], file: './assets/sounds/combate%20-%20ambiente%20-%20Ossos%20quebrando.mp3', icon: 'fa-bone' },
-            { id: 'combate-chute', name: 'Chute', categories: ['combate'], file: './assets/sounds/combate%20-%20chute.mp3', icon: 'fa-child-reaching' },
-            { id: 'combate-corte-lamina', name: 'Corte de Lâmina', categories: ['combate'], file: './assets/sounds/combate%20-%20corte%20de%20lamina.mp3', icon: 'fa-scissors' },
+            { id: 'combate-chute', name: 'Chute', categories: ['combate'], file: './assets/sounds/combate%20-%20chute.mp3', icon: 'fa-hand-fist' },
+            { id: 'combate-corte-lamina', name: 'Corte de Lâmina', categories: ['combate'], file: './assets/sounds/combate%20-%20corte%20de%20lamina.mp3', icon: 'fa-bolt' },
             { id: 'combate-espada-escudo', name: 'Espada no Escudo', categories: ['combate'], file: './assets/sounds/combate%20-%20espada%20no%20escudo.mp3', icon: 'fa-shield' },
             { id: 'combate-espada-metal', name: 'Espada no Metal', categories: ['combate'], file: './assets/sounds/combate%20-%20espada%20no%20metal.mp3', icon: 'fa-shield-halved' },
-            { id: 'combate-espada', name: 'Golpe de Espada', categories: ['combate'], file: './assets/sounds/combate%20-%20espada.mp3', icon: 'fa-hand-back-fist' },
+            { id: 'combate-espada', name: 'Golpe de Espada', categories: ['combate'], file: './assets/sounds/combate%20-%20espada.mp3', icon: 'fa-gavel' },
             { id: 'combate-flecha', name: 'Disparo de Flecha', categories: ['combate'], file: './assets/sounds/combate%20-%20flecha.mp3', icon: 'fa-location-arrow' },
             { id: 'combate-golpe-forte-espada', name: 'Golpe Forte de Espada', categories: ['combate'], file: './assets/sounds/combate%20-%20golpe%20forte%20espada.mp3', icon: 'fa-burst' },
             { id: 'combate-osso-quebrando', name: 'Osso Quebrando', categories: ['combate'], file: './assets/sounds/combate%20-%20osso%20quebrando.mp3', icon: 'fa-skull-crossbones' },
             { id: 'combate-soco', name: 'Soco', categories: ['combate'], file: './assets/sounds/combate%20-%20soco.mp3', icon: 'fa-hand-fist' },
-            { id: 'magia-cura', name: 'Magia de Cura', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Cura.mp3', icon: 'fa-sparkles' },
+            { id: 'magia-cura', name: 'Magia de Cura', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Cura.mp3', icon: 'fa-wand-magic-sparkles' },
             { id: 'magia-relampago', name: 'Magia de Relâmpago', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Relampago.mp3', icon: 'fa-bolt-lightning' },
             { id: 'magia-vento', name: 'Magia de Vento', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Vento.mp3', icon: 'fa-wind' },
             { id: 'magia-fogo', name: 'Magia de Fogo', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20de%20fogo.mp3', icon: 'fa-fire-flame-curved' },
@@ -382,18 +392,18 @@
             { id: 'monstro-marinho-dragao', name: 'Monstro Marinho / Dragão', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Monstro%20Marinho%20,%20Drag%C3%A3o.mp3', icon: 'fa-water' },
             { id: 'monstro-rosnado-2', name: 'Rosnado de Monstro 2', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Rosnado%20Monstro%202.mp3', icon: 'fa-volcano' },
             { id: 'monstro-rosnado-1', name: 'Rosnado de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Rosnado%20Monstro.mp3', icon: 'fa-dragon' },
-            { id: 'monstro-mordida', name: 'Mordida de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20mordida%20monstro.mp3', icon: 'fa-teeth-open' }
+            { id: 'monstro-mordida', name: 'Mordida de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20mordida%20monstro.mp3', icon: 'fa-skull' }
         ];
 
-        // MÚSICAS AMBIENTES PERSONALIZADAS PELO USUÁRIO (LISTA OFICIAL)
+        // MÚSICAS AMBIENTES PERSONALIZADAS PELO USUÁRIO
         const ambientData = [
             { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
             { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
             { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambiente', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
             { id: 'investigacao-suspense', name: 'Investigação Suspense', category: 'ambiente', icon: 'fa-magnifying-glass', desc: 'Investigação & Tensão', ytId: 'l-vpJVMWUvk' },
-            { id: 'combate-1', name: 'Combate 1', category: 'combate', icon: 'fa-swords', desc: 'Batalha Épica 1', ytId: 't3B802PIuB0' },
+            { id: 'combate-1', name: 'Combate 1', category: 'combate', icon: 'fa-shield-halved', desc: 'Batalha Épica 1', ytId: 't3B802PIuB0' },
             { id: 'combate-2', name: 'Combate 2', category: 'combate', icon: 'fa-drum', desc: 'Batalha Épica 2', ytId: 'm-1S1V1PZHA' },
-            { id: 'combate-3', name: 'Combate 3', category: 'combate', icon: 'fa-shield-halved', desc: 'Batalha Épica 3', ytId: 'sd1Otp7s1Fk' },
+            { id: 'combate-3', name: 'Combate 3', category: 'combate', icon: 'fa-crosshairs', desc: 'Batalha Épica 3', ytId: 'sd1Otp7s1Fk' },
             { id: 'combate-4', name: 'Combate 4', category: 'combate', icon: 'fa-bolt', desc: 'Batalha Épica 4', ytId: 'NHuRniA3F6s' },
             { id: 'taverna', name: 'Taverna Animada', category: 'taverna', icon: 'fa-beer-mug-empty', desc: 'Risadas & Alaúde', ytId: 'roABNwbjZf4' },
             { id: 'floresta', name: 'Floresta Mística', category: 'ambiente', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
@@ -443,21 +453,21 @@
                 const sfx = sfxData.find(s => s.id === sfxId);
 
                 const slot = document.createElement('div');
-                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-3 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[85px]';
+                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-2.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[80px] select-none';
                 slot.setAttribute('data-slot', i);
 
                 if (sfx) {
                     slot.innerHTML = `
-                        <span class="absolute top-1 right-1.5 bg-amber-500 text-black text-[10px] font-mono font-bold px-1.5 py-0.2 rounded">Teclado ${i}</span>
-                        <i class="fa-solid ${sfx.icon} text-amber-500 text-lg mb-1"></i>
-                        <span class="font-bold text-xs text-white leading-tight line-clamp-1">${sfx.name}</span>
-                        <span class="text-[9px] text-zinc-500 uppercase mt-0.5">${sfx.categories[0]}</span>
+                        <span class="absolute top-1 right-1 bg-amber-500 text-black text-[9px] font-mono font-bold px-1 rounded">T${i}</span>
+                        <i class="fa-solid ${sfx.icon} text-amber-500 text-base mb-1"></i>
+                        <span class="font-bold text-[11px] text-white leading-tight line-clamp-1">${sfx.name}</span>
+                        <span class="text-[8px] text-zinc-500 uppercase mt-0.5">${sfx.categories[0]}</span>
                     `;
                 } else {
                     slot.innerHTML = `
-                        <span class="absolute top-1 right-1.5 bg-zinc-800 text-zinc-400 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded">Teclado ${i}</span>
-                        <i class="fa-solid fa-plus text-zinc-600 text-lg mb-1"></i>
-                        <span class="text-xs text-zinc-500">Slot Vazio</span>
+                        <span class="absolute top-1 right-1 bg-zinc-800 text-zinc-400 text-[9px] font-mono font-bold px-1 rounded">T${i}</span>
+                        <i class="fa-solid fa-plus text-zinc-600 text-base mb-1"></i>
+                        <span class="text-[11px] text-zinc-500">Vazio</span>
                     `;
                 }
 
@@ -513,7 +523,7 @@
                 if (!sfx) return;
 
                 const item = document.createElement('button');
-                item.className = 'fav-item bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/40 rounded-xl px-3 py-2 flex items-center gap-2 transition-all cursor-pointer text-xs font-bold text-amber-300';
+                item.className = 'fav-item bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/40 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 transition-all cursor-pointer text-xs font-bold text-amber-300';
                 item.innerHTML = `
                     <i class="fa-solid ${sfx.icon} text-amber-400"></i>
                     <span>${sfx.name}</span>
@@ -578,12 +588,12 @@
             const pageItems = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
             if (pageItems.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500 italic text-sm">Nenhum efeito sonoro encontrado nesta categoria.</div>`;
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500 italic text-xs sm:text-sm">Nenhum efeito sonoro encontrado nesta categoria.</div>`;
             } else {
                 pageItems.forEach(sfx => {
                     const isFav = favoriteSounds.includes(sfx.id);
                     const card = document.createElement('div');
-                    card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
+                    card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-3 sm:p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
                     card.setAttribute('draggable', 'true');
                     card.setAttribute('data-id', sfx.id);
 
@@ -591,11 +601,11 @@
                         <button class="fav-star absolute top-2 right-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer ${isFav ? 'text-amber-400' : ''}" title="Favoritar">
                             <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
                         </button>
-                        <div class="w-12 h-12 rounded-full bg-zinc-800 text-amber-500 border border-zinc-700 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 text-amber-500 border border-zinc-700 flex items-center justify-center text-lg sm:text-xl mb-1.5 group-hover:scale-110 transition-transform">
                             <i class="fa-solid ${sfx.icon}"></i>
                         </div>
-                        <span class="font-bold text-sm text-white group-hover:text-amber-400 transition-colors line-clamp-1">${sfx.name}</span>
-                        <span class="text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.categories.join(' • ')}</span>
+                        <span class="font-bold text-xs sm:text-sm text-white group-hover:text-amber-400 transition-colors line-clamp-1">${sfx.name}</span>
+                        <span class="text-[9px] sm:text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.categories.join(' • ')}</span>
                     `;
 
                     card.addEventListener('click', (e) => {
@@ -642,7 +652,7 @@
                 numbersContainer.innerHTML = '';
                 for (let i = 1; i <= totalPages; i++) {
                     const numBtn = document.createElement('button');
-                    numBtn.className = `w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${i === currentPage ? 'bg-amber-600 text-black shadow-md' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'}`;
+                    numBtn.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${i === currentPage ? 'bg-amber-600 text-black shadow-md' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'}`;
                     numBtn.textContent = i;
                     numBtn.addEventListener('click', () => {
                         currentPage = i;
@@ -709,32 +719,31 @@
                 const amb = track.ambObj;
 
                 const bar = document.createElement('div');
-                bar.className = 'active-track-bar bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs';
+                bar.className = 'active-track-bar bg-zinc-900 border border-zinc-800 rounded-lg p-2 flex flex-row items-center justify-between gap-2 text-xs';
                 
                 bar.innerHTML = `
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="flex items-center gap-2.5 min-w-0">
                         <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
                             <i class="fa-solid ${amb.icon}"></i>
                         </div>
-                        <div>
-                            <span class="font-bold text-white block leading-tight">${amb.name}</span>
-                            <span class="text-[10px] text-zinc-400 uppercase">${amb.desc || 'Música Ambiente'}</span>
+                        <div class="min-w-0">
+                            <span class="font-bold text-white block leading-tight truncate">${amb.name}</span>
+                            <span class="text-[9px] text-zinc-400 uppercase hidden sm:block">${amb.desc || 'Música Ambiente'}</span>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-zinc-400 uppercase font-bold">Vol</span>
-                            <input type="range" class="active-track-vol w-24 accent-amber-500 cursor-pointer" min="0" max="100" value="${track.vol}">
-                            <span class="text-[10px] text-amber-400 font-bold w-6 text-right">${track.vol}%</span>
+                    <div class="flex items-center gap-2.5 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <input type="range" class="active-track-vol w-16 sm:w-24 accent-amber-500 cursor-pointer" min="0" max="100" value="${track.vol}">
+                            <span class="text-[10px] text-amber-400 font-bold w-6 text-right hidden sm:inline">${track.vol}%</span>
                         </div>
 
-                        <div class="flex items-center gap-1.5">
-                            <button class="active-track-toggle w-8 h-8 rounded-lg ${track.isPaused ? 'bg-zinc-800 text-zinc-300' : 'bg-amber-600 text-black'} font-bold flex items-center justify-center transition-all cursor-pointer">
-                                <i class="fa-solid ${track.isPaused ? 'fa-play' : 'fa-pause'}"></i>
+                        <div class="flex items-center gap-1">
+                            <button class="active-track-toggle w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${track.isPaused ? 'bg-zinc-800 text-zinc-300' : 'bg-amber-600 text-black'} font-bold flex items-center justify-center transition-all cursor-pointer">
+                                <i class="fa-solid ${track.isPaused ? 'fa-play' : 'fa-pause'} text-xs"></i>
                             </button>
-                            <button class="active-track-stop w-8 h-8 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-800/80 hover:text-white border border-red-800/40 font-bold flex items-center justify-center transition-all cursor-pointer" title="Fechar Faixa">
-                                <i class="fa-solid fa-xmark"></i>
+                            <button class="active-track-stop w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-950/60 text-red-400 hover:bg-red-800/80 hover:text-white border border-red-800/40 font-bold flex items-center justify-center transition-all cursor-pointer" title="Fechar Faixa">
+                                <i class="fa-solid fa-xmark text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -744,7 +753,8 @@
                 volInput.addEventListener('input', (e) => {
                     const val = parseInt(e.target.value);
                     track.vol = val;
-                    bar.querySelector('span.w-6').textContent = `${val}%`;
+                    const valLabel = bar.querySelector('span.w-6');
+                    if (valLabel) valLabel.textContent = `${val}%`;
                     updateTrackVolume(ambId);
 
                     const card = document.querySelector(`.ambient-card[data-ambient="${ambId}"]`);
@@ -781,19 +791,19 @@
                 const volVal = isPlaying ? activeTracks[amb.id].vol : 70;
 
                 const card = document.createElement('div');
-                card.className = `ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 transition-all hover:border-amber-600/40 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
+                card.className = `ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 sm:p-5 transition-all hover:border-amber-600/40 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
                 card.setAttribute('data-ambient', amb.id);
                 card.setAttribute('data-category', amb.category);
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-3.5">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-amber-950/60 border border-amber-800/40 flex items-center justify-center text-amber-400 text-lg">
+                            <div class="w-10 h-10 rounded-lg bg-amber-950/60 border border-amber-800/40 flex items-center justify-center text-amber-400 text-lg shrink-0">
                                 <i class="fa-solid ${amb.icon}"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-white text-base leading-tight">${amb.name}</h3>
-                                <span class="text-xs text-zinc-400 uppercase tracking-wider">${amb.desc || 'Música Ambiente'}</span>
+                                <h3 class="font-bold text-white text-sm sm:text-base leading-tight">${amb.name}</h3>
+                                <span class="text-[11px] text-zinc-400 uppercase tracking-wider">${amb.desc || 'Música Ambiente'}</span>
                             </div>
                         </div>
                         <div class="equalizer ${isPlaying && !isPaused ? '' : 'hidden'} flex items-end gap-1 h-4" id="eq-${amb.id}">
@@ -802,8 +812,8 @@
                             <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <button class="ambient-play-btn w-12 h-12 rounded-xl ${isPlaying && !isPaused ? 'bg-amber-500' : 'bg-amber-600'} hover:bg-amber-500 text-black font-bold flex items-center justify-center text-xl transition-all cursor-pointer shadow-lg shrink-0" title="Tocar / Pausar">
+                    <div class="flex items-center gap-3.5">
+                        <button class="ambient-play-btn w-11 h-11 sm:w-12 sm:h-12 rounded-xl ${isPlaying && !isPaused ? 'bg-amber-500' : 'bg-amber-600'} hover:bg-amber-500 text-black font-bold flex items-center justify-center text-lg sm:text-xl transition-all cursor-pointer shadow-lg shrink-0" title="Tocar / Pausar">
                             <i class="fa-solid ${isPlaying && !isPaused ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
                         </button>
                         <div class="flex-grow">
