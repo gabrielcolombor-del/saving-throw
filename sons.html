@@ -372,7 +372,7 @@
                     <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
-                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-1"></div>
+                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-1 font-semibold"></div>
 
                 <button type="submit" id="auth-submit-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer">
                     Entrar
@@ -486,7 +486,8 @@
         // ==========================================
 
         let currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
-        let tableProfiles = JSON.parse(localStorage.getItem('st_table_profiles')) || [
+        
+        const defaultSingleTable = [
             {
                 id: 'default_mesa',
                 name: 'Mesa 1: Aventura Principal',
@@ -494,7 +495,21 @@
                 quick_slots: {}
             }
         ];
-        let activeProfileId = localStorage.getItem('st_active_profile') || 'default_mesa';
+
+        let tableProfiles = defaultSingleTable;
+        let activeProfileId = 'default_mesa';
+
+        // SE O USUÁRIO ESTIVER LOGADO, RECUPERAR PERFIS SALVOS. CASO CONTRÁRIO, NENHUMA ALTERAÇÃO É PERSISTIDA ENTRE REFRESHES.
+        if (currentUser) {
+            const saved = localStorage.getItem('st_table_profiles');
+            if (saved) {
+                try { tableProfiles = JSON.parse(saved); } catch(e) {}
+            }
+            activeProfileId = localStorage.getItem('st_active_profile') || tableProfiles[0]?.id || 'default_mesa';
+        } else {
+            localStorage.removeItem('st_table_profiles');
+            localStorage.removeItem('st_active_profile');
+        }
 
         function getActiveProfile() {
             let p = tableProfiles.find(item => item.id === activeProfileId);
@@ -512,10 +527,12 @@
             const p = getActiveProfile();
             p.favorites = favoriteSounds;
             p.quick_slots = quickSlots;
-            localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
-            localStorage.setItem('st_active_profile', activeProfileId);
 
+            // SÓ PERSISTE NO LOCALSTORAGE E NO BANCO SE O USUÁRIO ESTIVER AUTENTICADO
             if (currentUser && currentUser.id) {
+                localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+                localStorage.setItem('st_active_profile', activeProfileId);
+
                 fetch('/api/gm-profiles?action=save_profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -555,7 +572,7 @@
                 const p = getActiveProfile();
                 favoriteSounds = p.favorites || [];
                 quickSlots = p.quick_slots || {};
-                localStorage.setItem('st_active_profile', activeProfileId);
+                if (currentUser) localStorage.setItem('st_active_profile', activeProfileId);
 
                 renderQuickSlots();
                 renderFavorites();
@@ -565,6 +582,15 @@
 
         if (addTableBtn) {
             addTableBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    openAuthModal();
+                    if (authErrorMsg) {
+                        authErrorMsg.textContent = '🔑 Faça login ou crie uma conta para criar e salvar perfis de mesas de RPG!';
+                        authErrorMsg.classList.remove('hidden');
+                    }
+                    return;
+                }
+
                 const name = prompt('Digite o nome da nova Mesa de RPG (ex: Mesa 2: A Caverna do Dragão):');
                 if (name && name.trim()) {
                     const newId = `mesa_${Date.now()}`;
@@ -590,6 +616,15 @@
 
         if (renameTableBtn) {
             renameTableBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    openAuthModal();
+                    if (authErrorMsg) {
+                        authErrorMsg.textContent = '🔑 Faça login ou crie uma conta para alterar e salvar perfis de mesas!';
+                        authErrorMsg.classList.remove('hidden');
+                    }
+                    return;
+                }
+
                 const p = getActiveProfile();
                 const newName = prompt('Digite o novo nome para esta Mesa:', p.name);
                 if (newName && newName.trim()) {
@@ -602,6 +637,15 @@
 
         if (deleteTableBtn) {
             deleteTableBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    openAuthModal();
+                    if (authErrorMsg) {
+                        authErrorMsg.textContent = '🔑 Faça login ou crie uma conta para gerenciar perfis de mesas!';
+                        authErrorMsg.classList.remove('hidden');
+                    }
+                    return;
+                }
+
                 if (tableProfiles.length <= 1) {
                     alert('Você deve manter pelo menos uma mesa cadastrada!');
                     return;
@@ -614,13 +658,11 @@
                     favoriteSounds = nextP.favorites || [];
                     quickSlots = nextP.quick_slots || {};
 
-                    if (currentUser && currentUser.id) {
-                        fetch('/api/gm-profiles?action=delete_profile', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId: currentUser.id, profileId: p.id })
-                        }).catch(e => console.log('Delete profile err:', e));
-                    }
+                    fetch('/api/gm-profiles?action=delete_profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: currentUser.id, profileId: p.id })
+                    }).catch(e => console.log('Delete profile err:', e));
 
                     syncActiveProfileChanges();
                     renderTableProfilesUI();
@@ -681,7 +723,26 @@
         function handleLogout() {
             currentUser = null;
             localStorage.removeItem('st_user');
+            localStorage.removeItem('st_table_profiles');
+            localStorage.removeItem('st_active_profile');
+
+            tableProfiles = [
+                {
+                    id: 'default_mesa',
+                    name: 'Mesa 1: Aventura Principal',
+                    favorites: [],
+                    quick_slots: {}
+                }
+            ];
+            activeProfileId = 'default_mesa';
+            favoriteSounds = [];
+            quickSlots = {};
+
             updateAuthUI();
+            renderTableProfilesUI();
+            renderQuickSlots();
+            renderFavorites();
+            renderSFXCatalog();
         }
 
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
