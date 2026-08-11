@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
-    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos e mixer de músicas ambientes simultâneas para Mestres de RPG.">
+    <meta name="description" content="Soundboard interativo com Drag & Drop de atalhos (1-9), caixa de favoritos, paginação e áudios reais para Mestres de RPG.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
@@ -38,7 +38,6 @@
         }
         .equalizer-bar:nth-child(2) { animation-delay: 0.2s; }
         .equalizer-bar:nth-child(3) { animation-delay: 0.4s; }
-        .equalizer-bar:nth-child(4) { animation-delay: 0.1s; }
 
         @keyframes bounce {
             0% { height: 4px; }
@@ -223,45 +222,59 @@
                     <button data-cat="combate" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
                         <i class="fa-solid fa-swords text-amber-500 mr-1"></i> Combate
                     </button>
-                    <button data-cat="magias" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magias
+                    <button data-cat="magia" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magia
                     </button>
-                    <button data-cat="ambientes" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambientes & Suspense
+                    <button data-cat="ambiente" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambiente
                     </button>
-                    <button data-cat="natureza" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-cloud-bolt text-cyan-400 mr-1"></i> Natureza
-                    </button>
-                    <button data-cat="monstros" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-dragon text-red-400 mr-1"></i> Monstros
+                    <button data-cat="monstro" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
+                        <i class="fa-solid fa-dragon text-red-400 mr-1"></i> Monstro
                     </button>
                     <button data-cat="taverna" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer">
-                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna & Cidade
+                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna & Vozes
                     </button>
                 </div>
 
                 <!-- Busca -->
                 <div class="relative w-full md:w-64">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"></i>
-                    <input type="text" id="search-input" placeholder="Buscar efeito ou ambiente..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
+                    <input type="text" id="search-input" placeholder="Buscar efeito..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
                 </div>
             </div>
         </section>
 
-        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL) -->
+        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL COM PAGINAÇÃO 3 FILEIRAS / 12 POR PÁGINA) -->
         <section class="py-10 bg-black border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-2xl text-amber-500 font-title uppercase flex items-center gap-3">
-                            <i class="fa-solid fa-bolt"></i> Efeitos Sonoros Rápidos (SFX)
+                            <i class="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
                         </h2>
-                        <p class="text-zinc-400 text-xs">Clique no botão para tocar o som. Arraste qualquer card para a barra de atalhos acima!</p>
+                        <p class="text-zinc-400 text-xs">Clique no efeito para tocar. Arraste qualquer card para a barra de atalhos!</p>
                     </div>
+                    <span class="text-xs text-zinc-400 font-mono" id="sfx-count-label">40 efeitos encontrados</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4" id="sfx-catalog-grid">
-                    <!-- Cards de SFX com recurso Drag & Drop -->
+                <!-- Grid Limita 3 Fileiras (12 cards por página) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 min-h-[360px]" id="sfx-catalog-grid">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+
+                <!-- CONTROLES DE PAGINAÇÃO (3 FILEIRAS MÁXIMO) -->
+                <div class="flex items-center justify-between mt-8 pt-4 border-t border-zinc-900" id="pagination-container">
+                    <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left"></i> Anterior
+                    </button>
+
+                    <div class="flex items-center gap-2" id="page-numbers-container">
+                        <!-- Números de página -->
+                    </div>
+
+                    <button id="next-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        Próximo <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </section>
@@ -326,255 +339,97 @@
         }
 
         // ==========================================
-        // BASE DE DADOS DOS EFEITOS SONOROS (SFX)
+        // BASE DE DADOS DOS EFEITOS SONOROS REALISTAS (ARQUIVOS DA PASTA assets/sounds)
         // ==========================================
 
         const sfxData = [
-            { id: 'espada', name: 'Golpe de Espada', category: 'combate', icon: 'fa-swords', color: 'red' },
-            { id: 'fogo', name: 'Bola de Fogo', category: 'magias', icon: 'fa-fire-flame-curved', color: 'orange' },
-            { id: 'critico', name: 'Acerto Crítico!', category: 'combate', icon: 'fa-dice-d20', color: 'amber' },
-            { id: 'falha', name: 'Falha Crítica', category: 'combate', icon: 'fa-face-frown', color: 'zinc' },
-            { id: 'dragao', name: 'Urro de Dragão', category: 'monstros', icon: 'fa-dragon', color: 'red' },
-            { id: 'porta', name: 'Porta Rangendo', category: 'ambientes', icon: 'fa-door-open', color: 'yellow' },
-            { id: 'trovao', name: 'Trovão Impactante', category: 'natureza', icon: 'fa-bolt', color: 'cyan' },
-            { id: 'moedas', name: 'Sacola de Moedas', category: 'taverna', icon: 'fa-coins', color: 'amber' },
-            { id: 'cura', name: 'Feitiço de Cura', category: 'magias', icon: 'fa-sparkles', color: 'emerald' },
-            { id: 'risada', name: 'Risada Maligna', category: 'monstros', icon: 'fa-masks-theater', color: 'purple' },
-            { id: 'flecha', name: 'Disparo de Flecha', category: 'combate', icon: 'fa-location-arrow', color: 'emerald' },
-            { id: 'escudo', name: 'Bloqueio de Escudo', category: 'combate', icon: 'fa-shield', color: 'blue' },
-            { id: 'armadilha', name: 'Armadilha Disparada', category: 'ambientes', icon: 'fa-gear', color: 'amber' },
-            { id: 'alarme', name: 'Buzina de Alarme', category: 'taverna', icon: 'fa-bell', color: 'red' },
-            { id: 'maldicao', name: 'Maldição Negra', category: 'magias', icon: 'fa-skull-crossbones', color: 'purple' },
-            { id: 'grito', name: 'Brado de Bárbaro', category: 'monstros', icon: 'fa-bullhorn', color: 'orange' }
+            { id: 'amb-combate-gritando-dor', name: 'Homem Gritando Dor', categories: ['ambiente', 'combate'], file: './assets/sounds/Ambiente%20-%20combate%20-%20homem%20gritando%20dor.mp3', icon: 'fa-person-falling-burst' },
+            { id: 'amb-batendo-porta', name: 'Batendo na Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Batendo%20na%20porta.mp3', icon: 'fa-hand-back-fist' },
+            { id: 'amb-fechando-porta', name: 'Fechando Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Fechando%20Porta.mp3', icon: 'fa-door-closed' },
+            { id: 'amb-grito-horror', name: 'Grito de Horror', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Grito%20Horror.mp3', icon: 'fa-ghost' },
+            { id: 'amb-moedas', name: 'Moedas de Ouro', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20Moedas.mp3', icon: 'fa-coins' },
+            { id: 'amb-risada-maligna', name: 'Risada Maligna', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20Risada%20Maligna.mp3', icon: 'fa-masks-theater' },
+            { id: 'amb-risada-demoniaca', name: 'Risada Demoníaca', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20Risada%20demoniaca.mp3', icon: 'fa-skull' },
+            { id: 'amb-abrindo-porta', name: 'Abrindo Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20abrindo%20porta.mp3', icon: 'fa-door-open' },
+            { id: 'amb-combate-grito-monstro', name: 'Grito de Monstro', categories: ['ambiente', 'combate', 'monstro'], file: './assets/sounds/ambiente%20-%20combate%20-%20Grito%20Monstro.mp3', icon: 'fa-dragon' },
+            { id: 'amb-combate-homem-morrendo', name: 'Homem Morrendo', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20homem%20morrendo.mp3', icon: 'fa-skull-crossbones' },
+            { id: 'amb-combate-homem-sofrendo', name: 'Homem Sofrendo', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20homem%20sofrendo.mp3', icon: 'fa-heart-crack' },
+            { id: 'amb-combate-sacando-espada', name: 'Sacando Espada', categories: ['ambiente', 'combate'], file: './assets/sounds/ambiente%20-%20combate%20-%20sacando%20espada.mp3', icon: 'fa-swords' },
+            { id: 'amb-monstro-distancia', name: 'Monstro Grande à Distância', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Monstro%20grande%20a%20distancia.mp3', icon: 'fa-paw' },
+            { id: 'amb-monstro-passos-pesados', name: 'Passos Pesados de Monstro', categories: ['ambiente', 'monstro'], file: './assets/sounds/ambiente%20-%20monstro%20-%20Passos%20pesados.mp3', icon: 'fa-shoe-prints' },
+            { id: 'amb-passos', name: 'Passos', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20passos.mp3', icon: 'fa-socks' },
+            { id: 'amb-porta-rangendo', name: 'Porta Rangendo', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20porta%20rangendo.mp3', icon: 'fa-dungeon' },
+            { id: 'amb-risada-homem', name: 'Risada de Homem', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20risada%20homem.mp3', icon: 'fa-face-laugh' },
+            { id: 'amb-risada-mulher', name: 'Risada de Mulher', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20risada%20mulher.mp3', icon: 'fa-face-smile-wink' },
+            { id: 'amb-servindo-liquido', name: 'Servindo Líquido / Bebida', categories: ['ambiente', 'taverna'], file: './assets/sounds/ambiente%20-%20servindo%20liquido.mp3', icon: 'fa-wine-glass' },
+            { id: 'combate-impacto-flecha', name: 'Impacto de Flecha', categories: ['combate'], file: './assets/sounds/combate%20-%20Impacto%20Flecha.mp3', icon: 'fa-crosshairs' },
+            { id: 'combate-amb-ossos-quebrando', name: 'Ossos Quebrando', categories: ['combate', 'ambiente'], file: './assets/sounds/combate%20-%20ambiente%20-%20Ossos%20quebrando.mp3', icon: 'fa-bone' },
+            { id: 'combate-chute', name: 'Chute', categories: ['combate'], file: './assets/sounds/combate%20-%20chute.mp3', icon: 'fa-child-reaching' },
+            { id: 'combate-corte-lamina', name: 'Corte de Lâmina', categories: ['combate'], file: './assets/sounds/combate%20-%20corte%20de%20lamina.mp3', icon: 'fa-scissors' },
+            { id: 'combate-espada-escudo', name: 'Espada no Escudo', categories: ['combate'], file: './assets/sounds/combate%20-%20espada%20no%20escudo.mp3', icon: 'fa-shield' },
+            { id: 'combate-espada-metal', name: 'Espada no Metal', categories: ['combate'], file: './assets/sounds/combate%20-%20espada%20no%20metal.mp3', icon: 'fa-shield-halved' },
+            { id: 'combate-espada', name: 'Golpe de Espada', categories: ['combate'], file: './assets/sounds/combate%20-%20espada.mp3', icon: 'fa-hand-back-fist' },
+            { id: 'combate-flecha', name: 'Disparo de Flecha', categories: ['combate'], file: './assets/sounds/combate%20-%20flecha.mp3', icon: 'fa-location-arrow' },
+            { id: 'combate-golpe-forte-espada', name: 'Golpe Forte de Espada', categories: ['combate'], file: './assets/sounds/combate%20-%20golpe%20forte%20espada.mp3', icon: 'fa-burst' },
+            { id: 'combate-osso-quebrando', name: 'Osso Quebrando', categories: ['combate'], file: './assets/sounds/combate%20-%20osso%20quebrando.mp3', icon: 'fa-skull-crossbones' },
+            { id: 'combate-soco', name: 'Soco', categories: ['combate'], file: './assets/sounds/combate%20-%20soco.mp3', icon: 'fa-hand-fist' },
+            { id: 'magia-cura', name: 'Magia de Cura', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Cura.mp3', icon: 'fa-sparkles' },
+            { id: 'magia-relampago', name: 'Magia de Relâmpago', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Relampago.mp3', icon: 'fa-bolt-lightning' },
+            { id: 'magia-vento', name: 'Magia de Vento', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20Vento.mp3', icon: 'fa-wind' },
+            { id: 'magia-fogo', name: 'Magia de Fogo', categories: ['magia'], file: './assets/sounds/magia%20-%20Magia%20de%20fogo.mp3', icon: 'fa-fire-flame-curved' },
+            { id: 'magia-maldicao', name: 'Maldição', categories: ['magia'], file: './assets/sounds/magia%20-%20Maldi%C3%A7%C3%A3o.mp3', icon: 'fa-hat-wizard' },
+            { id: 'magia-fireball', name: 'Bola de Fogo (Fireball)', categories: ['magia'], file: './assets/sounds/magia%20-%20fireball.mp3', icon: 'fa-fire' },
+            { id: 'monstro-marinho-dragao', name: 'Monstro Marinho / Dragão', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Monstro%20Marinho%20,%20Drag%C3%A3o.mp3', icon: 'fa-water' },
+            { id: 'monstro-rosnado-2', name: 'Rosnado de Monstro 2', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Rosnado%20Monstro%202.mp3', icon: 'fa-volcano' },
+            { id: 'monstro-rosnado-1', name: 'Rosnado de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20Rosnado%20Monstro.mp3', icon: 'fa-dragon' },
+            { id: 'monstro-mordida', name: 'Mordida de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20mordida%20monstro.mp3', icon: 'fa-teeth-open' }
         ];
 
         // MÚSICAS AMBIENTES PERSONALIZADAS PELO USUÁRIO (LISTA OFICIAL)
         const ambientData = [
             { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
-            { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambientes', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
-            { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambientes', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
-            { id: 'investigacao-suspense', name: 'Investigação Suspense', category: 'ambientes', icon: 'fa-magnifying-glass', desc: 'Investigação & Tensão', ytId: 'l-vpJVMWUvk' },
+            { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
+            { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambiente', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
+            { id: 'investigacao-suspense', name: 'Investigação Suspense', category: 'ambiente', icon: 'fa-magnifying-glass', desc: 'Investigação & Tensão', ytId: 'l-vpJVMWUvk' },
             { id: 'combate-1', name: 'Combate 1', category: 'combate', icon: 'fa-swords', desc: 'Batalha Épica 1', ytId: 't3B802PIuB0' },
             { id: 'combate-2', name: 'Combate 2', category: 'combate', icon: 'fa-drum', desc: 'Batalha Épica 2', ytId: 'm-1S1V1PZHA' },
             { id: 'combate-3', name: 'Combate 3', category: 'combate', icon: 'fa-shield-halved', desc: 'Batalha Épica 3', ytId: 'sd1Otp7s1Fk' },
             { id: 'combate-4', name: 'Combate 4', category: 'combate', icon: 'fa-bolt', desc: 'Batalha Épica 4', ytId: 'NHuRniA3F6s' },
             { id: 'taverna', name: 'Taverna Animada', category: 'taverna', icon: 'fa-beer-mug-empty', desc: 'Risadas & Alaúde', ytId: 'roABNwbjZf4' },
-            { id: 'floresta', name: 'Floresta Mística', category: 'natureza', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
-            { id: 'chuva', name: 'Tempestade & Chuva', category: 'natureza', icon: 'fa-cloud-showers-heavy', desc: 'Chuva Forte & Trovões', ytId: 'mPZkdNFkNps' },
-            { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'natureza', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
+            { id: 'floresta', name: 'Floresta Mística', category: 'ambiente', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
+            { id: 'chuva', name: 'Tempestade & Chuva', category: 'ambiente', icon: 'fa-cloud-showers-heavy', desc: 'Chuva Forte & Trovões', ytId: 'mPZkdNFkNps' },
+            { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'ambiente', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
         ];
 
-        // Estado do Player & Slots
+        // Estado do Player, Slots e Paginação (12 itens = 3 fileiras por página)
+        const ITEMS_PER_PAGE = 12;
+        let currentPage = 1;
+
         let quickSlots = JSON.parse(localStorage.getItem('st_quick_slots')) || {
-            '1': 'espada',
-            '2': 'fogo',
-            '3': 'critico',
-            '4': 'falha',
-            '5': 'dragao',
-            '6': 'porta',
-            '7': 'trovao',
-            '8': 'moedas',
-            '9': 'cura'
+            '1': 'combate-corte-lamina',
+            '2': 'magia-fireball',
+            '3': 'combate-golpe-forte-espada',
+            '4': 'amb-grito-horror',
+            '5': 'monstro-rosnado-1',
+            '6': 'amb-abrindo-porta',
+            '7': 'magia-relampago',
+            '8': 'amb-moedas',
+            '9': 'magia-cura'
         };
 
-        let favoriteSounds = JSON.parse(localStorage.getItem('st_favorite_sounds')) || ['critico', 'fogo', 'espada'];
+        let favoriteSounds = JSON.parse(localStorage.getItem('st_favorite_sounds')) || ['combate-corte-lamina', 'magia-fireball', 'amb-grito-horror'];
 
-        // WEB AUDIO ENGINE (SFX SYNTHESIZER)
-        let audioCtx = null;
-        let masterGain = null;
+        // CONTROLES DE ÁUDIO REAL (.MP3)
         let masterVolumeValue = 0.8;
         let isMasterMuted = false;
 
-        function initAudioContext() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-                masterGain = audioCtx.createGain();
-                masterGain.gain.value = masterVolumeValue;
-                masterGain.connect(audioCtx.destination);
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
+        function playSFX(sfxId) {
+            const sfx = sfxData.find(s => s.id === sfxId);
+            if (!sfx) return;
 
-        function createNoiseBuffer(duration) {
-            initAudioContext();
-            const bufferSize = audioCtx.sampleRate * duration;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-            return buffer;
-        }
-
-        function playSFX(type) {
-            initAudioContext();
-            const now = audioCtx.currentTime;
-
-            switch(type) {
-                case 'espada': {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    const filter = audioCtx.createBiquadFilter();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(1400, now);
-                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.15);
-                    filter.type = 'highpass';
-                    filter.frequency.setValueAtTime(1000, now);
-                    gain.gain.setValueAtTime(0.7, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
-                    osc.start(now);
-                    osc.stop(now + 0.2);
-                    break;
-                }
-                case 'fogo': {
-                    const noise = audioCtx.createBufferSource();
-                    noise.buffer = createNoiseBuffer(0.6);
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(800, now);
-                    filter.frequency.linearRampToValueAtTime(100, now + 0.6);
-                    const gain = audioCtx.createGain();
-                    gain.gain.setValueAtTime(0.8, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-                    noise.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
-                    noise.start(now);
-                    break;
-                }
-                case 'critico': {
-                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        const startTime = now + idx * 0.08;
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, startTime);
-                        gain.gain.setValueAtTime(0.6, startTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(startTime);
-                        osc.stop(startTime + 0.4);
-                    });
-                    break;
-                }
-                case 'falha': {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.5);
-                    gain.gain.setValueAtTime(0.7, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                    osc.connect(gain);
-                    gain.connect(masterGain);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
-                    break;
-                }
-                case 'dragao': {
-                    const osc1 = audioCtx.createOscillator();
-                    const osc2 = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc1.type = 'sawtooth';
-                    osc1.frequency.setValueAtTime(90, now);
-                    osc1.frequency.linearRampToValueAtTime(140, now + 0.3);
-                    osc1.frequency.linearRampToValueAtTime(50, now + 0.8);
-                    osc2.type = 'square';
-                    osc2.frequency.setValueAtTime(95, now);
-                    osc2.frequency.linearRampToValueAtTime(145, now + 0.3);
-                    gain.gain.setValueAtTime(0.7, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
-                    osc1.connect(gain);
-                    osc2.connect(gain);
-                    gain.connect(masterGain);
-                    osc1.start(now);
-                    osc2.start(now);
-                    osc1.stop(now + 0.8);
-                    osc2.stop(now + 0.8);
-                    break;
-                }
-                case 'porta': {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(220, now);
-                    osc.frequency.linearRampToValueAtTime(180, now + 0.2);
-                    osc.frequency.linearRampToValueAtTime(240, now + 0.5);
-                    gain.gain.setValueAtTime(0.4, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                    osc.connect(gain);
-                    gain.connect(masterGain);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
-                    break;
-                }
-                case 'trovao': {
-                    const noise = audioCtx.createBufferSource();
-                    noise.buffer = createNoiseBuffer(1.2);
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(600, now);
-                    filter.frequency.exponentialRampToValueAtTime(40, now + 1.2);
-                    const gain = audioCtx.createGain();
-                    gain.gain.setValueAtTime(0.9, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-                    noise.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
-                    noise.start(now);
-                    break;
-                }
-                case 'moedas': {
-                    [3200, 4100, 4800, 5200].forEach((f, i) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        const st = now + i * 0.05;
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(f, st);
-                        gain.gain.setValueAtTime(0.4, st);
-                        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.15);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(st);
-                        osc.stop(st + 0.15);
-                    });
-                    break;
-                }
-                case 'cura': {
-                    [440, 554.37, 659.25, 880].forEach((f, i) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        const st = now + i * 0.06;
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(f, st);
-                        gain.gain.setValueAtTime(0.4, st);
-                        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.6);
-                        osc.connect(gain);
-                        gain.connect(masterGain);
-                        osc.start(st);
-                        osc.stop(st + 0.6);
-                    });
-                    break;
-                }
-                default: {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.frequency.setValueAtTime(440, now);
-                    gain.gain.setValueAtTime(0.5, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                    osc.connect(gain);
-                    gain.connect(masterGain);
-                    osc.start(now);
-                    osc.stop(now + 0.2);
-                }
-            }
+            const audio = new Audio(sfx.file);
+            audio.volume = isMasterMuted ? 0 : masterVolumeValue;
+            audio.play().catch(err => console.log('Autoplay audio err:', err));
         }
 
         // RENDERIZAR SLOTS 1-9
@@ -596,7 +451,7 @@
                         <span class="absolute top-1 right-1.5 bg-amber-500 text-black text-[10px] font-mono font-bold px-1.5 py-0.2 rounded">Teclado ${i}</span>
                         <i class="fa-solid ${sfx.icon} text-amber-500 text-lg mb-1"></i>
                         <span class="font-bold text-xs text-white leading-tight line-clamp-1">${sfx.name}</span>
-                        <span class="text-[9px] text-zinc-500 uppercase mt-0.5">${sfx.category}</span>
+                        <span class="text-[9px] text-zinc-500 uppercase mt-0.5">${sfx.categories[0]}</span>
                     `;
                 } else {
                     slot.innerHTML = `
@@ -695,56 +550,128 @@
             });
         }
 
-        // RENDERIZAR CATÁLOGO DE SFX
+        // RENDERIZAR CATÁLOGO DE SFX COM PAGINAÇÃO (MÁXIMO 3 FILEIRAS / 12 CARDS POR PÁGINA)
+        let currentCat = 'all';
+        let currentSearch = '';
+
+        function getFilteredSFX() {
+            return sfxData.filter(sfx => {
+                const matchCat = (currentCat === 'all' || sfx.categories.includes(currentCat));
+                const matchSearch = (currentSearch === '' || sfx.name.toLowerCase().includes(currentSearch));
+                return matchCat && matchSearch;
+            });
+        }
+
         function renderSFXCatalog() {
             const grid = document.getElementById('sfx-catalog-grid');
+            const countLabel = document.getElementById('sfx-count-label');
             if (!grid) return;
             grid.innerHTML = '';
 
-            sfxData.forEach(sfx => {
-                const isFav = favoriteSounds.includes(sfx.id);
-                const card = document.createElement('div');
-                card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
-                card.setAttribute('draggable', 'true');
-                card.setAttribute('data-id', sfx.id);
-                card.setAttribute('data-category', sfx.category);
+            const filtered = getFilteredSFX();
+            const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+            if (currentPage > totalPages) currentPage = totalPages;
 
-                card.innerHTML = `
-                    <button class="fav-star absolute top-2 right-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer ${isFav ? 'text-amber-400' : ''}" title="Favoritar">
-                        <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
-                    </button>
-                    <div class="w-12 h-12 rounded-full bg-zinc-800 text-amber-500 border border-zinc-700 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid ${sfx.icon}"></i>
-                    </div>
-                    <span class="font-bold text-sm text-white group-hover:text-amber-400 transition-colors">${sfx.name}</span>
-                    <span class="text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.category}</span>
-                `;
+            if (countLabel) countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'efeito encontrado' : 'efeitos encontrados'}`;
 
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.fav-star')) return;
-                    playSFX(sfx.id);
-                    card.classList.add('sfx-active');
-                    setTimeout(() => card.classList.remove('sfx-active'), 200);
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+            if (pageItems.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500 italic text-sm">Nenhum efeito sonoro encontrado nesta categoria.</div>`;
+            } else {
+                pageItems.forEach(sfx => {
+                    const isFav = favoriteSounds.includes(sfx.id);
+                    const card = document.createElement('div');
+                    card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
+                    card.setAttribute('draggable', 'true');
+                    card.setAttribute('data-id', sfx.id);
+
+                    card.innerHTML = `
+                        <button class="fav-star absolute top-2 right-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer ${isFav ? 'text-amber-400' : ''}" title="Favoritar">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
+                        </button>
+                        <div class="w-12 h-12 rounded-full bg-zinc-800 text-amber-500 border border-zinc-700 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid ${sfx.icon}"></i>
+                        </div>
+                        <span class="font-bold text-sm text-white group-hover:text-amber-400 transition-colors line-clamp-1">${sfx.name}</span>
+                        <span class="text-[10px] text-zinc-400 uppercase mt-0.5">${sfx.categories.join(' • ')}</span>
+                    `;
+
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.fav-star')) return;
+                        playSFX(sfx.id);
+                        card.classList.add('sfx-active');
+                        setTimeout(() => card.classList.remove('sfx-active'), 200);
+                    });
+
+                    const starBtn = card.querySelector('.fav-star');
+                    starBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (favoriteSounds.includes(sfx.id)) {
+                            favoriteSounds = favoriteSounds.filter(id => id !== sfx.id);
+                        } else {
+                            favoriteSounds.push(sfx.id);
+                        }
+                        localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
+                        renderFavorites();
+                        renderSFXCatalog();
+                    });
+
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', sfx.id);
+                    });
+
+                    grid.appendChild(card);
                 });
+            }
 
-                const starBtn = card.querySelector('.fav-star');
-                starBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (favoriteSounds.includes(sfx.id)) {
-                        favoriteSounds = favoriteSounds.filter(id => id !== sfx.id);
-                    } else {
-                        favoriteSounds.push(sfx.id);
-                    }
-                    localStorage.setItem('st_favorite_sounds', JSON.stringify(favoriteSounds));
-                    renderFavorites();
+            renderPagination(totalPages);
+        }
+
+        // CONTROLES DE PAGINAÇÃO
+        function renderPagination(totalPages) {
+            const prevBtn = document.getElementById('prev-page-btn');
+            const nextBtn = document.getElementById('next-page-btn');
+            const numbersContainer = document.getElementById('page-numbers-container');
+
+            if (prevBtn) prevBtn.disabled = (currentPage === 1);
+            if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
+
+            if (numbersContainer) {
+                numbersContainer.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const numBtn = document.createElement('button');
+                    numBtn.className = `w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${i === currentPage ? 'bg-amber-600 text-black shadow-md' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'}`;
+                    numBtn.textContent = i;
+                    numBtn.addEventListener('click', () => {
+                        currentPage = i;
+                        renderSFXCatalog();
+                        document.getElementById('sfx-catalog-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+                    numbersContainer.appendChild(numBtn);
+                }
+            }
+        }
+
+        const prevPageBtn = document.getElementById('prev-page-btn');
+        const nextPageBtn = document.getElementById('next-page-btn');
+        if (prevPageBtn) {
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
                     renderSFXCatalog();
-                });
-
-                card.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', sfx.id);
-                });
-
-                grid.appendChild(card);
+                }
+            });
+        }
+        if (nextPageBtn) {
+            nextPageBtn.addEventListener('click', () => {
+                const filtered = getFilteredSFX();
+                const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderSFXCatalog();
+                }
             });
         }
 
@@ -752,14 +679,13 @@
         // MOTOR MULTICANAL DE MÚSICAS AMBIENTES (SIMULTÂNEAS)
         // ==========================================
 
-        const activeTracks = {}; // Guarda { ambId: { player, vol, isPaused, ambObj } }
+        const activeTracks = {};
         let isYTApiReady = false;
 
         function onYouTubeIframeAPIReady() {
             isYTApiReady = true;
         }
 
-        // RENDERIZAR PAINEL DE FAIXAS ATIVAS NO CABEÇALHO MASTER
         function renderActiveTracksHeaderPanel() {
             const container = document.getElementById('active-tracks-container');
             const noMsg = document.getElementById('no-active-tracks-msg');
@@ -814,7 +740,6 @@
                     </div>
                 `;
 
-                // Volume slider na barra master
                 const volInput = bar.querySelector('.active-track-vol');
                 volInput.addEventListener('input', (e) => {
                     const val = parseInt(e.target.value);
@@ -822,7 +747,6 @@
                     bar.querySelector('span.w-6').textContent = `${val}%`;
                     updateTrackVolume(ambId);
 
-                    // Sincronizar slider no card do catálogo
                     const card = document.querySelector(`.ambient-card[data-ambient="${ambId}"]`);
                     if (card) {
                         const cardSlider = card.querySelector('.ambient-vol');
@@ -832,13 +756,11 @@
                     }
                 });
 
-                // Toggle Play/Pause na barra master
                 const toggleBtn = bar.querySelector('.active-track-toggle');
                 toggleBtn.addEventListener('click', () => {
                     togglePlayPauseTrack(ambId);
                 });
 
-                // Fechar/Parar faixa na barra master
                 const stopBtn = bar.querySelector('.active-track-stop');
                 stopBtn.addEventListener('click', () => {
                     stopAmbientTrack(ambId);
@@ -848,7 +770,6 @@
             });
         }
 
-        // RENDERIZAR GRID DE CARDS AMBIENTES NO CORPO DA PÁGINA
         function renderAmbients() {
             const grid = document.getElementById('ambient-grid');
             if (!grid) return;
@@ -920,9 +841,7 @@
             });
         }
 
-        // CONTROLE INDIVIDUAL DE CADA FAIXA MULTICANAL
         function startAmbientTrack(amb, initialVol) {
-            initAudioContext();
             const playersDiv = document.getElementById('youtube-players-container');
             const playerId = `yt-player-${amb.id}`;
 
@@ -1012,19 +931,14 @@
                 const val = e.target.value / 100;
                 masterVolumeValue = val;
                 masterVolLabel.textContent = `${e.target.value}%`;
-                if (masterGain && !isMasterMuted) {
-                    masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
-                }
                 Object.keys(activeTracks).forEach(ambId => updateTrackVolume(ambId));
             });
         }
 
         if (masterMuteBtn) {
             masterMuteBtn.addEventListener('click', () => {
-                initAudioContext();
                 isMasterMuted = !isMasterMuted;
                 if (isMasterMuted) {
-                    masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
                     masterMuteIcon.className = 'fa-solid fa-volume-xmark text-red-500';
                     Object.keys(activeTracks).forEach(ambId => {
                         if (activeTracks[ambId].player && activeTracks[ambId].player.mute) {
@@ -1032,7 +946,6 @@
                         }
                     });
                 } else {
-                    masterGain.gain.setValueAtTime(masterVolumeValue, audioCtx.currentTime);
                     masterMuteIcon.className = 'fa-solid fa-volume-high text-amber-500';
                     Object.keys(activeTracks).forEach(ambId => {
                         if (activeTracks[ambId].player && activeTracks[ambId].player.unMute) {
@@ -1055,15 +968,15 @@
         if (resetSlotsBtn) {
             resetSlotsBtn.addEventListener('click', () => {
                 quickSlots = {
-                    '1': 'espada',
-                    '2': 'fogo',
-                    '3': 'critico',
-                    '4': 'falha',
-                    '5': 'dragao',
-                    '6': 'porta',
-                    '7': 'trovao',
-                    '8': 'moedas',
-                    '9': 'cura'
+                    '1': 'combate-corte-lamina',
+                    '2': 'magia-fireball',
+                    '3': 'combate-golpe-forte-espada',
+                    '4': 'amb-grito-horror',
+                    '5': 'monstro-rosnado-1',
+                    '6': 'amb-abrindo-porta',
+                    '7': 'magia-relampago',
+                    '8': 'amb-moedas',
+                    '9': 'magia-cura'
                 };
                 localStorage.setItem('st_quick_slots', JSON.stringify(quickSlots));
                 renderQuickSlots();
@@ -1090,23 +1003,6 @@
         // FILTROS E BUSCA
         const categoryBtns = document.querySelectorAll('.cat-btn');
         const searchInput = document.getElementById('search-input');
-        let currentCat = 'all';
-        let currentSearch = '';
-
-        function filterCatalog() {
-            const allItems = document.querySelectorAll('.sfx-card, .ambient-card');
-            allItems.forEach(item => {
-                const cat = item.getAttribute('data-category');
-                const text = item.textContent.toLowerCase();
-                const matchCat = (currentCat === 'all' || cat === currentCat);
-                const matchSearch = (currentSearch === '' || text.includes(currentSearch));
-                if (matchCat && matchSearch) {
-                    item.classList.remove('hidden');
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-        }
 
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1117,14 +1013,16 @@
                 btn.classList.add('active', 'bg-amber-600', 'text-black');
                 btn.classList.remove('bg-zinc-900', 'text-zinc-300');
                 currentCat = btn.getAttribute('data-cat');
-                filterCatalog();
+                currentPage = 1;
+                renderSFXCatalog();
             });
         });
 
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 currentSearch = e.target.value.toLowerCase().trim();
-                filterCatalog();
+                currentPage = 1;
+                renderSFXCatalog();
             });
         }
 
