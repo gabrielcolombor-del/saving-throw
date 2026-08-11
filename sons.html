@@ -301,11 +301,13 @@
         <!-- SEÇÃO SEPARADA: MÚSICAS & PAISAGENS AMBIENTES -->
         <section class="py-10 sm:py-12 bg-zinc-950">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="mb-6">
-                    <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
-                    </h2>
-                    <p class="text-zinc-400 text-xs sm:text-sm mt-1">Toque para iniciar. Misture várias faixas ao mesmo tempo!</p>
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
+                        </h2>
+                        <p class="text-zinc-400 text-xs sm:text-sm mt-1">Clique na ⭐ para favoritar a faixa e fixá-la no topo da mesa!</p>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid"></div>
@@ -492,6 +494,7 @@
                 id: 'default_mesa',
                 name: 'Mesa 1: Aventura Principal',
                 favorites: [],
+                favoriteAmbients: [],
                 quick_slots: {}
             }
         ];
@@ -499,7 +502,6 @@
         let tableProfiles = defaultSingleTable;
         let activeProfileId = 'default_mesa';
 
-        // SE O USUÁRIO ESTIVER LOGADO, RECUPERAR PERFIS SALVOS. CASO CONTRÁRIO, NENHUMA ALTERAÇÃO É PERSISTIDA ENTRE REFRESHES.
         if (currentUser) {
             const saved = localStorage.getItem('st_table_profiles');
             if (saved) {
@@ -517,18 +519,20 @@
                 p = tableProfiles[0];
                 activeProfileId = p.id;
             }
-            return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], quick_slots: {} };
+            return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], favoriteAmbients: [], quick_slots: {} };
         }
 
         let favoriteSounds = getActiveProfile().favorites || [];
+        let favoriteAmbients = getActiveProfile().favoriteAmbients || getActiveProfile().favorite_ambients || [];
         let quickSlots = getActiveProfile().quick_slots || {};
 
         function syncActiveProfileChanges() {
             const p = getActiveProfile();
             p.favorites = favoriteSounds;
+            p.favoriteAmbients = favoriteAmbients;
+            p.favorite_ambients = favoriteAmbients;
             p.quick_slots = quickSlots;
 
-            // SÓ PERSISTE NO LOCALSTORAGE E NO BANCO SE O USUÁRIO ESTIVER AUTENTICADO
             if (currentUser && currentUser.id) {
                 localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
                 localStorage.setItem('st_active_profile', activeProfileId);
@@ -541,6 +545,7 @@
                         profileId: p.id,
                         name: p.name,
                         favorites: p.favorites,
+                        favoriteAmbients: p.favoriteAmbients,
                         quickSlots: p.quick_slots
                     })
                 }).catch(e => console.log('Sync server err:', e));
@@ -571,12 +576,14 @@
                 activeProfileId = e.target.value;
                 const p = getActiveProfile();
                 favoriteSounds = p.favorites || [];
+                favoriteAmbients = p.favoriteAmbients || p.favorite_ambients || [];
                 quickSlots = p.quick_slots || {};
                 if (currentUser) localStorage.setItem('st_active_profile', activeProfileId);
 
                 renderQuickSlots();
                 renderFavorites();
                 renderSFXCatalog();
+                renderAmbients();
             });
         }
 
@@ -598,11 +605,13 @@
                         id: newId,
                         name: name.trim(),
                         favorites: [],
+                        favoriteAmbients: [],
                         quick_slots: {}
                     };
                     tableProfiles.push(newProfile);
                     activeProfileId = newId;
                     favoriteSounds = newProfile.favorites;
+                    favoriteAmbients = newProfile.favoriteAmbients;
                     quickSlots = newProfile.quick_slots;
 
                     syncActiveProfileChanges();
@@ -610,6 +619,7 @@
                     renderQuickSlots();
                     renderFavorites();
                     renderSFXCatalog();
+                    renderAmbients();
                 }
             });
         }
@@ -656,6 +666,7 @@
                     activeProfileId = tableProfiles[0].id;
                     const nextP = getActiveProfile();
                     favoriteSounds = nextP.favorites || [];
+                    favoriteAmbients = nextP.favoriteAmbients || nextP.favorite_ambients || [];
                     quickSlots = nextP.quick_slots || {};
 
                     fetch('/api/gm-profiles?action=delete_profile', {
@@ -669,6 +680,7 @@
                     renderQuickSlots();
                     renderFavorites();
                     renderSFXCatalog();
+                    renderAmbients();
                 }
             });
         }
@@ -731,11 +743,13 @@
                     id: 'default_mesa',
                     name: 'Mesa 1: Aventura Principal',
                     favorites: [],
+                    favoriteAmbients: [],
                     quick_slots: {}
                 }
             ];
             activeProfileId = 'default_mesa';
             favoriteSounds = [];
+            favoriteAmbients = [];
             quickSlots = {};
 
             updateAuthUI();
@@ -743,6 +757,7 @@
             renderQuickSlots();
             renderFavorites();
             renderSFXCatalog();
+            renderAmbients();
         }
 
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
@@ -806,6 +821,7 @@
                         tableProfiles = data.profiles;
                         activeProfileId = tableProfiles[0].id;
                         favoriteSounds = tableProfiles[0].favorites || [];
+                        favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
                         quickSlots = tableProfiles[0].quick_slots || {};
                         localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
                         localStorage.setItem('st_active_profile', activeProfileId);
@@ -816,6 +832,7 @@
                     renderQuickSlots();
                     renderFavorites();
                     renderSFXCatalog();
+                    renderAmbients();
                     closeAuthModal();
                 } catch (err) {
                     if (authErrorMsg) {
@@ -854,6 +871,7 @@
                     tableProfiles = data.profiles;
                     activeProfileId = tableProfiles[0].id;
                     favoriteSounds = tableProfiles[0].favorites || [];
+                    favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
                     quickSlots = tableProfiles[0].quick_slots || {};
                     localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
                     localStorage.setItem('st_active_profile', activeProfileId);
@@ -864,6 +882,7 @@
                 renderQuickSlots();
                 renderFavorites();
                 renderSFXCatalog();
+                renderAmbients();
                 closeAuthModal();
             } catch (err) {
                 console.error('Google login error:', err);
@@ -1255,24 +1274,41 @@
             if (!grid) return;
             grid.innerHTML = '';
 
-            ambientData.forEach(amb => {
+            // ORDENAR PARA QUE AS MÚSICAS AMBIENTES FAVORITADAS FIQUEM NO TOPO DO GRID
+            const sortedData = [...ambientData].sort((a, b) => {
+                const aFav = favoriteAmbients.includes(a.id);
+                const bFav = favoriteAmbients.includes(b.id);
+                if (aFav && !bFav) return -1;
+                if (!aFav && bFav) return 1;
+                return 0;
+            });
+
+            sortedData.forEach(amb => {
                 const isPlaying = !!activeTracks[amb.id];
                 const isPaused = isPlaying && activeTracks[amb.id].isPaused;
                 const volVal = isPlaying ? activeTracks[amb.id].vol : 70;
+                const isFavAmbient = favoriteAmbients.includes(amb.id);
 
                 const card = document.createElement('div');
-                card.className = `ambient-card bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 sm:p-5 transition-all hover:border-amber-600/40 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
+                card.className = `ambient-card bg-zinc-900/60 border ${isFavAmbient ? 'border-amber-500/70 bg-amber-950/20 shadow-lg' : 'border-zinc-800'} rounded-xl p-4 sm:p-5 transition-all hover:border-amber-600/60 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
                 card.setAttribute('data-ambient', amb.id);
                 card.setAttribute('data-category', amb.category);
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-3.5">
+                    <button class="fav-ambient-star absolute top-3 right-3 text-zinc-600 hover:text-amber-400 p-1 text-sm cursor-pointer ${isFavAmbient ? 'text-amber-400' : ''}" title="${isFavAmbient ? 'Desfavoritar' : 'Favoritar (Fixar no topo)'}">
+                        <i class="fa-${isFavAmbient ? 'solid' : 'regular'} fa-star"></i>
+                    </button>
+
+                    <div class="flex items-center justify-between mb-3.5 pr-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-amber-950/60 border border-amber-800/40 flex items-center justify-center text-amber-400 text-lg shrink-0">
                                 <i class="fa-solid ${amb.icon}"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-white text-sm sm:text-base leading-tight">${amb.name}</h3>
+                                <h3 class="font-bold text-white text-sm sm:text-base leading-tight flex items-center gap-1.5">
+                                    ${amb.name}
+                                    ${isFavAmbient ? '<span class="bg-amber-500/20 text-amber-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-500/40 uppercase">Favorito</span>' : ''}
+                                </h3>
                                 <span class="text-[11px] text-zinc-400 uppercase tracking-wider">${amb.desc || 'Música Ambiente'}</span>
                             </div>
                         </div>
@@ -1295,6 +1331,27 @@
                         </div>
                     </div>
                 `;
+
+                const starBtn = card.querySelector('.fav-ambient-star');
+                starBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!currentUser) {
+                        openAuthModal();
+                        if (authErrorMsg) {
+                            authErrorMsg.textContent = '🔑 Faça login ou crie uma conta para favoritar músicas ambientes e fixá-las no topo!';
+                            authErrorMsg.classList.remove('hidden');
+                        }
+                        return;
+                    }
+
+                    if (favoriteAmbients.includes(amb.id)) {
+                        favoriteAmbients = favoriteAmbients.filter(id => id !== amb.id);
+                    } else {
+                        favoriteAmbients.push(amb.id);
+                    }
+                    syncActiveProfileChanges();
+                    renderAmbients();
+                });
 
                 const playBtn = card.querySelector('.ambient-play-btn');
                 const volSlider = card.querySelector('.ambient-vol');
