@@ -20,7 +20,6 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password + 'saving_throw_salt').digest('hex');
 }
 
-// Inicializar tabelas se não existirem
 async function ensureTablesExist() {
   if (!pool) return;
   try {
@@ -71,23 +70,20 @@ module.exports = async (req, res) => {
       const userId = googleId || `google_${email}`;
 
       if (pool) {
-        // Upsert Usuário
         await pool.query(`
           INSERT INTO users (id, email, name, avatar_url)
           VALUES ($1, $2, $3, $4)
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, avatar_url = EXCLUDED.avatar_url
         `, [userId, email, name || 'Mestre de RPG', avatarUrl || '']);
 
-        // Verificar se usuário tem perfis
         let { rows: profiles } = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
 
-        // Se não tiver nenhum perfil, criar o primeiro perfil padrão
         if (profiles.length === 0) {
           const defaultProfileId = `mesa_${Date.now()}`;
           await pool.query(`
             INSERT INTO gm_table_profiles (id, user_id, name, favorites, quick_slots)
             VALUES ($1, $2, $3, $4, $5)
-          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify(['combate-corte-lamina', 'magia-fireball']), JSON.stringify({'1': 'combate-corte-lamina'})]);
+          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify({})]);
 
           const resP = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
           profiles = resP.rows;
@@ -147,7 +143,7 @@ module.exports = async (req, res) => {
           await pool.query(`
             INSERT INTO gm_table_profiles (id, user_id, name, favorites, quick_slots)
             VALUES ($1, $2, $3, $4, $5)
-          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify(['combate-corte-lamina', 'magia-fireball']), JSON.stringify({'1': 'combate-corte-lamina'})]);
+          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify({})]);
 
           const { rows: profiles } = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
 
@@ -198,7 +194,6 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Retorno para ambiente sem PostgreSQL (Modo local de desenvolvimento)
     return res.status(200).json({
       success: true,
       message: 'PostgreSQL offline. Funcionando via LocalStorage.'

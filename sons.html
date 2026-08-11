@@ -490,8 +490,8 @@
             {
                 id: 'default_mesa',
                 name: 'Mesa 1: Aventura Principal',
-                favorites: ['combate-corte-lamina', 'magia-fireball', 'amb-grito-horror'],
-                quick_slots: { '1': 'combate-corte-lamina', '2': 'magia-fireball', '3': 'combate-golpe-forte-espada' }
+                favorites: [],
+                quick_slots: {}
             }
         ];
         let activeProfileId = localStorage.getItem('st_active_profile') || 'default_mesa';
@@ -571,8 +571,8 @@
                     const newProfile = {
                         id: newId,
                         name: name.trim(),
-                        favorites: ['combate-corte-lamina', 'magia-cura'],
-                        quick_slots: { '1': 'combate-corte-lamina', '2': 'magia-cura' }
+                        favorites: [],
+                        quick_slots: {}
                     };
                     tableProfiles.push(newProfile);
                     activeProfileId = newId;
@@ -854,13 +854,16 @@
                 const sfx = sfxData.find(s => s.id === sfxId);
 
                 const slot = document.createElement('div');
-                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-2.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[80px] select-none';
+                slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-2.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[80px] select-none group';
                 slot.setAttribute('data-slot', i);
 
                 if (sfx) {
                     slot.innerHTML = `
+                        <button class="clear-single-slot absolute top-1 left-1 text-zinc-500 hover:text-red-400 p-1 text-[10px] cursor-pointer" title="Remover atalho">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                         <span class="absolute top-1 right-1.5 bg-amber-500 text-black text-[9px] font-mono font-bold px-1 rounded">T${i}</span>
-                        <i class="fa-solid ${sfx.icon} text-amber-500 text-base mb-1"></i>
+                        <i class="fa-solid ${sfx.icon} text-amber-500 text-base mb-1 group-hover:scale-110 transition-transform"></i>
                         <span class="font-bold text-[11px] text-white leading-tight line-clamp-1">${sfx.name}</span>
                         <span class="text-[8px] text-zinc-500 uppercase mt-0.5">${sfx.categories[0]}</span>
                     `;
@@ -872,8 +875,13 @@
                     `;
                 }
 
-                slot.addEventListener('click', () => {
-                    if (sfxId) {
+                slot.addEventListener('click', (e) => {
+                    if (e.target.closest('.clear-single-slot')) {
+                        e.stopPropagation();
+                        delete quickSlots[i];
+                        syncActiveProfileChanges();
+                        renderQuickSlots();
+                    } else if (sfxId) {
                         playSFX(sfxId);
                         slot.classList.add('sfx-active');
                         setTimeout(() => slot.classList.remove('sfx-active'), 200);
@@ -1369,7 +1377,6 @@
             });
         }
 
-        // BOTÃO PAUSAR TODOS (PAUSA E RETOMA TODAS AS FAIXAS ATIVAS SEM REMOVÊ-LAS)
         if (pauseAllBtn) {
             pauseAllBtn.addEventListener('click', () => {
                 const keys = Object.keys(activeTracks);
@@ -1393,7 +1400,6 @@
             });
         }
 
-        // BOTÃO RESETAR (LIMPA E FECHA TODAS AS MÚSICAS AMBIENTES ATIVAS)
         if (resetAmbientsBtn) {
             resetAmbientsBtn.addEventListener('click', () => {
                 Object.keys(activeTracks).forEach(ambId => {
@@ -1402,7 +1408,6 @@
             });
         }
 
-        // BOTÃO LIMPAR ATALHOS (LIMPA OS ATALHOS 1 A 9 DA MESA ATIVA EM UM CLIQUE)
         if (clearSlotsBtn) {
             clearSlotsBtn.addEventListener('click', () => {
                 if (confirm('Deseja realmente apagar todos os atalhos rápidos do teclado (1 a 9) desta mesa?')) {
