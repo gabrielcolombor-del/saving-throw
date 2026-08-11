@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
-    <meta name="description" content="Soundboard interativo com login Google/E-mail, perfis de mesas de RPG personalizáveis, atalhos e áudios reais para Mestres.">
+    <meta name="description" content="Soundboard interativo otimizado para mobile e desktop com caixa de favoritos em cards, atalhos de teclado e mixer de áudio para RPG.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
@@ -100,7 +100,6 @@
                     <a href="sons" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-amber-600 pb-1 md:border-black w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
                 </nav>
 
-                <!-- Botão de Conta / Usuário Logado -->
                 <div id="user-header-area" class="w-full md:w-auto flex items-center justify-center">
                     <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-user-gear text-sm"></i> Minha Conta
@@ -171,10 +170,10 @@
                         </div>
 
                         <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
-                            <button id="stop-all-btn" class="flex-1 sm:flex-none bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-square text-xs"></i> Parar Todos
+                            <button id="pause-all-btn" class="flex-1 sm:flex-none bg-amber-900/40 hover:bg-amber-800/60 text-amber-300 border border-amber-700/50 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-pause text-xs"></i> Pausar Todos
                             </button>
-                            <button id="reset-slots-btn" class="hidden sm:flex flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all items-center justify-center gap-1.5 cursor-pointer">
+                            <button id="reset-ambients-btn" class="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Limpar todas as músicas ambientes ativas">
                                 <i class="fa-solid fa-rotate-left text-amber-500"></i> Resetar
                             </button>
                         </div>
@@ -203,11 +202,16 @@
         <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (OCULTA NO MOBILE / VISÍVEL APENAS DESKTOP) -->
         <section class="hidden sm:block py-5 sm:py-6 bg-zinc-950 border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-1">
-                    <h2 class="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-keyboard"></i> Atalhos Rápidos no Teclado (Teclas 1 a 9)
-                    </h2>
-                    <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado da mesa ativa.</p>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                    <div>
+                        <h2 class="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-keyboard"></i> Atalhos Rápidos no Teclado (Teclas 1 a 9)
+                        </h2>
+                        <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado da mesa ativa.</p>
+                    </div>
+                    <button id="clear-slots-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shrink-0">
+                        <i class="fa-solid fa-trash-can text-xs"></i> Limpar Atalhos
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3" id="quick-slots-container">
@@ -265,7 +269,7 @@
             </div>
         </section>
 
-        <!-- SEÇÃO DE EFEITOS SONOROS (CATÁLOGO DISPARÁVEL COM PAGINAÇÃO MÁXIMO 3 FILEIRAS) -->
+        <!-- SEÇÃO DE EFEITOS SONOROS -->
         <section class="py-8 sm:py-10 bg-black border-b border-zinc-900">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex items-center justify-between mb-5">
@@ -278,9 +282,7 @@
                     <span class="text-xs text-zinc-400 font-mono hidden sm:inline" id="sfx-count-label">40 efeitos encontrados</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px]" id="sfx-catalog-grid">
-                    <!-- Preenchido via JavaScript -->
-                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px]" id="sfx-catalog-grid"></div>
 
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900" id="pagination-container">
                     <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
@@ -325,7 +327,6 @@
                 <p class="text-xs text-zinc-400 mt-1">Faça login para salvar seus atalhos e criar perfis para suas mesas.</p>
             </div>
 
-            <!-- Abas Login / Cadastro -->
             <div class="flex border-b border-zinc-800 mb-5">
                 <button id="tab-login" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer">
                     Entrar
@@ -335,7 +336,6 @@
                 </button>
             </div>
 
-            <!-- Google Sign-In Container -->
             <div class="mb-5 flex flex-col items-center justify-center">
                 <div id="g_id_onload"
                      data-client_id="845239103984-fakegoogleclientid.apps.googleusercontent.com"
@@ -356,7 +356,6 @@
                 <div class="flex-grow border-t border-zinc-800"></div>
             </div>
 
-            <!-- Formulário E-mail / Senha -->
             <form id="auth-form" class="space-y-3">
                 <div id="name-field-group" class="hidden">
                     <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Seu Nome / Apelido de Mestre</label>
@@ -516,7 +515,6 @@
             localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
             localStorage.setItem('st_active_profile', activeProfileId);
 
-            // Tentar salvar no servidor se o usuário estiver logado
             if (currentUser && currentUser.id) {
                 fetch('/api/gm-profiles?action=save_profile', {
                     method: 'POST',
@@ -546,7 +544,6 @@
             });
         }
 
-        // Eventos do Gerenciador de Mesas
         const profileSelect = document.getElementById('table-profile-select');
         const addTableBtn = document.getElementById('add-table-btn');
         const renameTableBtn = document.getElementById('rename-table-btn');
@@ -690,7 +687,6 @@
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
         if (closeAuthModalBtn) closeAuthModalBtn.addEventListener('click', closeAuthModal);
 
-        // Abas do Modal de Auth
         let authMode = 'login';
         const tabLogin = document.getElementById('tab-login');
         const tabRegister = document.getElementById('tab-register');
@@ -714,7 +710,6 @@
             });
         }
 
-        // Formulário de E-mail/Senha
         const authForm = document.getElementById('auth-form');
         const authErrorMsg = document.getElementById('auth-error-msg');
 
@@ -774,11 +769,9 @@
             });
         }
 
-        // Google Sign-In Callback
         window.handleGoogleLoginResponse = async function(response) {
             try {
                 const token = response.credential;
-                // decodificar JWT simples
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 
                 const resp = await fetch('/api/gm-profiles?action=google_login', {
@@ -1336,13 +1329,14 @@
             }
         }
 
-        // CONTROLES MASTER & RESET
+        // CONTROLES MASTER, PAUSAR TODOS E RESETAR AMBIENTES
         const masterVolInput = document.getElementById('master-volume');
         const masterVolLabel = document.getElementById('master-vol-label');
         const masterMuteBtn = document.getElementById('master-mute-btn');
         const masterMuteIcon = document.getElementById('master-mute-icon');
-        const stopAllBtn = document.getElementById('stop-all-btn');
-        const resetSlotsBtn = document.getElementById('reset-slots-btn');
+        const pauseAllBtn = document.getElementById('pause-all-btn');
+        const resetAmbientsBtn = document.getElementById('reset-ambients-btn');
+        const clearSlotsBtn = document.getElementById('clear-slots-btn');
 
         if (masterVolInput) {
             masterVolInput.addEventListener('input', (e) => {
@@ -1375,29 +1369,47 @@
             });
         }
 
-        if (stopAllBtn) {
-            stopAllBtn.addEventListener('click', () => {
+        // BOTÃO PAUSAR TODOS (PAUSA E RETOMA TODAS AS FAIXAS ATIVAS SEM REMOVÊ-LAS)
+        if (pauseAllBtn) {
+            pauseAllBtn.addEventListener('click', () => {
+                const keys = Object.keys(activeTracks);
+                if (keys.length === 0) return;
+
+                const allPaused = keys.every(k => activeTracks[k].isPaused);
+
+                keys.forEach(ambId => {
+                    const track = activeTracks[ambId];
+                    if (allPaused) {
+                        track.isPaused = false;
+                        if (track.player && track.player.playVideo) track.player.playVideo();
+                    } else {
+                        track.isPaused = true;
+                        if (track.player && track.player.pauseVideo) track.player.pauseVideo();
+                    }
+                });
+
+                renderAmbients();
+                renderActiveTracksHeaderPanel();
+            });
+        }
+
+        // BOTÃO RESETAR (LIMPA E FECHA TODAS AS MÚSICAS AMBIENTES ATIVAS)
+        if (resetAmbientsBtn) {
+            resetAmbientsBtn.addEventListener('click', () => {
                 Object.keys(activeTracks).forEach(ambId => {
                     stopAmbientTrack(ambId);
                 });
             });
         }
 
-        if (resetSlotsBtn) {
-            resetSlotsBtn.addEventListener('click', () => {
-                quickSlots = {
-                    '1': 'combate-corte-lamina',
-                    '2': 'magia-fireball',
-                    '3': 'combate-golpe-forte-espada',
-                    '4': 'amb-grito-horror',
-                    '5': 'monstro-rosnado-1',
-                    '6': 'amb-abrindo-porta',
-                    '7': 'magia-relampago',
-                    '8': 'amb-moedas',
-                    '9': 'magia-cura'
-                };
-                syncActiveProfileChanges();
-                renderQuickSlots();
+        // BOTÃO LIMPAR ATALHOS (LIMPA OS ATALHOS 1 A 9 DA MESA ATIVA EM UM CLIQUE)
+        if (clearSlotsBtn) {
+            clearSlotsBtn.addEventListener('click', () => {
+                if (confirm('Deseja realmente apagar todos os atalhos rápidos do teclado (1 a 9) desta mesa?')) {
+                    quickSlots = {};
+                    syncActiveProfileChanges();
+                    renderQuickSlots();
+                }
             });
         }
 
