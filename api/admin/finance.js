@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
     try {
         if (req.method === 'GET') {
-            const { type, filter } = req.query;
+            const { type } = req.query;
 
             let querySql = 'SELECT * FROM st_finance';
             let params = [];
@@ -142,6 +142,42 @@ export default async function handler(req, res) {
 
                 return res.status(201).json(rows[0]);
             }
+        }
+
+        if (req.method === 'PUT') {
+            const { id, data, tipo, descricao, valor, categoria, cliente, produto } = req.body || {};
+            if (!id) return res.status(400).json({ error: 'ID é obrigatório para atualização' });
+
+            const val = parseFloat(valor) || 0;
+
+            const { rows } = await pool.query(`
+                UPDATE st_finance
+                SET data = COALESCE($1, data),
+                    tipo = COALESCE($2, tipo),
+                    descricao = COALESCE($3, descricao),
+                    valor = $4,
+                    categoria = COALESCE($5, categoria),
+                    cliente = $6,
+                    produto = $7
+                WHERE id = $8
+                RETURNING *
+            `, [data, tipo, descricao, val, categoria, cliente || null, produto || null, id]);
+
+            if (tipo === 'Venda') {
+                await pool.query(`
+                    INSERT INTO st_sales (id, data, cliente, produto, valor_final)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (id) DO UPDATE SET
+                        data = EXCLUDED.data,
+                        cliente = EXCLUDED.cliente,
+                        produto = EXCLUDED.produto,
+                        valor_final = EXCLUDED.valor_final
+                `, [id, data || formatNow(), cliente || 'Cliente', produto || 'Produto', val]);
+            } else {
+                await pool.query('DELETE FROM st_sales WHERE id = $1', [id]);
+            }
+
+            return res.status(200).json({ success: true, updated: rows[0] });
         }
 
         if (req.method === 'DELETE') {
