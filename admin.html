@@ -3,40 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <meta name="samsung-dark-mode" content="false">
+    <meta name="theme-color" content="#EBE3CB">
     <title>Painel ERP & Gestão | Saving Throw</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
     <style>
-        @font-face { font-family: 'Alsina'; src: url('./assets/Alsina.TTF') format('truetype'); }
-        @font-face { font-family: 'Shindler'; src: url('./assets/ShindlerFont.ttf') format('truetype'); }
-        body { font-family: 'Alsina', sans-serif !important; }
-        h1, h2, h3, .font-title { font-family: 'Shindler', serif !important; font-weight: normal; }
+        :root, html, body, header, main, footer, section, div, article, nav, aside {
+            color-scheme: light !important;
+            supported-color-schemes: light !important;
+            forced-color-adjust: none !important;
+            -webkit-forced-color-adjust: none !important;
+        }
+
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        
+        h1, h2, h3, h4, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        .text-parchment-dark { color: #4A4435 !important; }
         .hidden { display: none !important; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #EBE3CB; }
+        ::-webkit-scrollbar-thumb { background: #4A4435; rounded: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #000000; }
     </style>
 </head>
-<body class="bg-zinc-100 text-black min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-600 selection:text-white">
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="flex-1 flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full border border-zinc-200">
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-title">Saving Throw</h1>
-                <p class="text-sm text-zinc-500 uppercase tracking-widest mt-1">Gestão RPG & ERP Admin</p>
+        <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-md w-full border border-black/10 text-center">
+            <div class="flex justify-center mb-4">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-20 w-auto opacity-95">
             </div>
-            <form id="login-form" class="space-y-4">
+            <h1 class="text-3xl font-title text-parchment-dark mb-1">Guilda de Gestão</h1>
+            <p class="text-xs uppercase font-bold tracking-widest text-zinc-500 mb-6">Acesso Restrito ao Painel ERP</p>
+            
+            <form id="login-form" class="space-y-4 text-left">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Usuário</label>
-                    <input type="text" id="username" class="w-full p-3 border border-zinc-300 rounded focus:border-black focus:outline-none" required>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Mestre / Usuário</label>
+                    <div class="relative">
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors" placeholder="Digite seu usuário..." required>
+                        <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-zinc-400"></i>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Senha</label>
-                    <input type="password" id="password" class="w-full p-3 border border-zinc-300 rounded focus:border-black focus:outline-none" required>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Chave / Senha</label>
+                    <div class="relative">
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors" placeholder="••••••••" required>
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-zinc-400"></i>
+                    </div>
                 </div>
-                <div id="login-error" class="text-red-500 text-sm hidden font-semibold">Credenciais inválidas.</div>
-                <button type="submit" class="w-full bg-black text-white font-bold uppercase py-3 rounded hover:bg-zinc-800 transition-colors">
-                    Entrar na Guilda
+                <div id="login-error" class="text-red-600 text-xs hidden font-bold bg-red-50 p-2.5 rounded-lg border border-red-200 text-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Credenciais inválidas. Verifique usuário e senha.
+                </div>
+                <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-3.5 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm tracking-wider cursor-pointer">
+                    <i class="fa-solid fa-dungeon text-amber-500"></i> Entrar no ERP
                 </button>
             </form>
         </div>
@@ -44,68 +90,106 @@
 
     <!-- DASHBOARD SCREEN -->
     <div id="dashboard-screen" class="hidden flex-1 flex flex-col">
-        <header class="bg-black text-white p-4 shadow-md flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-title">Sistema ST - Gestão ERP</h1>
-                <span class="bg-amber-600 text-black text-[10px] font-black uppercase px-2 py-0.5 rounded">Supabase Conectado</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <span class="text-sm">Admin</span>
-                <button onclick="logout()" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-xs font-bold uppercase">Sair</button>
+        <!-- HEADER -->
+        <header class="bg-[#EBE3CB] text-black border-b border-black/10 shadow-md sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="/" title="Voltar ao Site">
+                        <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity">
+                    </a>
+                    <div class="h-6 w-px bg-black/20 hidden md:block"></div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-title text-parchment-dark">Painel ERP & Gestão</h1>
+                        <span class="bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Supabase Ativo
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-black/5 px-3 py-1.5 rounded-lg border border-black/10">
+                        <div class="w-6 h-6 rounded-full bg-black text-[#EBE3CB] flex items-center justify-center text-xs">🧙‍♂️</div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-parchment-dark">Mestre Admin</span>
+                    </div>
+                    <button onclick="logout()" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket text-amber-500"></i> Sair
+                    </button>
+                </div>
             </div>
         </header>
 
         <div class="flex-1 container mx-auto px-4 py-6 max-w-6xl">
-            <!-- Navigation Tabs -->
-            <div class="flex flex-wrap gap-2 mb-6 border-b border-zinc-300 pb-2">
-                <button onclick="switchMainTab('dash')" id="mtab-dash" class="px-5 py-2.5 text-xs font-bold uppercase border-b-2 border-black text-black flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line"></i> Painel Geral
+            <!-- MAIN NAVIGATION TABS -->
+            <div class="flex flex-wrap gap-2 mb-6 bg-white/40 p-1.5 rounded-xl border border-black/10 shadow-xs">
+                <button onclick="switchMainTab('dash')" id="mtab-dash" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-400"></i></div>
+                    Painel Geral
                 </button>
-                <button onclick="switchMainTab('prods')" id="mtab-prods" class="px-5 py-2.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black flex items-center gap-2">
-                    <i class="fa-solid fa-box"></i> Produtos do Site
+                <button onclick="switchMainTab('prods')" id="mtab-prods" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-zinc-600"></i></div>
+                    Produtos do Site
                 </button>
-                <button onclick="switchMainTab('fin')" id="mtab-fin" class="px-5 py-2.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black flex items-center gap-2">
-                    <i class="fa-solid fa-coins"></i> Livro de Contabilidade
+                <button onclick="switchMainTab('fin')" id="mtab-fin" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-book text-zinc-600"></i></div>
+                    Livro de Contabilidade
                 </button>
-                <button onclick="switchMainTab('cli')" id="mtab-cli" class="px-5 py-2.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black flex items-center gap-2">
-                    <i class="fa-solid fa-users"></i> Clientes (CRM)
+                <button onclick="switchMainTab('cli')" id="mtab-cli" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-users text-zinc-600"></i></div>
+                    Clientes (CRM)
                 </button>
             </div>
 
             <!-- TAB 1: PAINEL GERAL / DASHBOARD -->
             <div id="sec-dash" class="space-y-6">
-                <!-- KPIs -->
+                <!-- KPIs CARDS -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white border border-zinc-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">🪙</div>
+                    <!-- Receita -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
                         <div>
-                            <span class="text-xs uppercase font-bold text-zinc-400 block">Receita Total</span>
-                            <span id="kpi-revenue" class="text-2xl font-black text-emerald-600">R$ 0,00</span>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Receita Total</span>
+                            <span id="kpi-revenue" class="text-2xl font-black text-emerald-700">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="bg-white border border-zinc-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl font-bold">💸</div>
+                    <!-- Despesas -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
                         <div>
-                            <span class="text-xs uppercase font-bold text-zinc-400 block">Despesas Totais</span>
-                            <span id="kpi-expenses" class="text-2xl font-black text-red-600">R$ 0,00</span>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Despesas Totais</span>
+                            <span id="kpi-expenses" class="text-2xl font-black text-red-700">R$ 0,00</span>
                         </div>
                     </div>
-                    <div class="bg-white border border-zinc-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">⚖️</div>
+                    <!-- Lucro -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
                         <div>
-                            <span class="text-xs uppercase font-bold text-zinc-400 block">Lucro Líquido</span>
-                            <span id="kpi-profit" class="text-2xl font-black text-amber-600">R$ 0,00</span>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Lucro Líquido</span>
+                            <span id="kpi-profit" class="text-2xl font-black text-amber-700">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Fast Forms & Charts -->
+                <!-- FAST FORMS & CHARTS -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Charts Col -->
+                    <!-- Chart Col -->
                     <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                            <h3 class="font-bold text-sm uppercase mb-4 text-zinc-700">Despesas por Categoria</h3>
-                            <div class="h-64 relative">
+                        <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-chart-donut"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-title text-xl text-parchment-dark">Despesas por Categoria</h3>
+                                    <p class="text-xs text-zinc-500">Distribuição dos seus custos operacionais</p>
+                                </div>
+                            </div>
+                            <div class="h-64 relative flex items-center justify-center">
                                 <canvas id="chart-costs"></canvas>
                             </div>
                         </div>
@@ -114,47 +198,59 @@
                     <!-- Fast Forms Col -->
                     <div class="space-y-6">
                         <!-- Registrar Venda -->
-                        <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                            <h3 class="font-bold text-sm uppercase mb-3 text-emerald-700 flex items-center gap-2">
-                                <i class="fa-solid fa-cart-shopping"></i> Registrar Venda (CRM)
-                            </h3>
+                        <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl border border-black/10 shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-title text-lg text-emerald-800">Registrar Venda</h3>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Entrada Financeira</p>
+                                </div>
+                            </div>
                             <form id="form-venda" class="space-y-3">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-zinc-500">Nome do Cliente</label>
-                                    <input type="text" id="venda-cliente" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Nome do Cliente</label>
+                                    <input type="text" id="venda-cliente" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: João Pedro" required>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-zinc-500">Produto Vendido</label>
-                                    <input type="text" id="venda-produto" class="w-full p-2 border border-zinc-300 rounded text-xs" placeholder="Ex: Miniatura Dragão / Escudo" required>
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Produto Vendido</label>
+                                    <input type="text" id="venda-produto" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: Miniatura Dragão / Escudo" required>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-zinc-500">Valor Pago (R$)</label>
-                                    <input type="number" step="0.01" id="venda-valor" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor Pago (R$)</label>
+                                    <input type="number" step="0.01" id="venda-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
                                 </div>
-                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase py-2 rounded text-xs transition-colors">
-                                    Confirmar Venda
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-plus"></i> Confirmar Venda
                                 </button>
                             </form>
                         </div>
 
-                        <!-- Registrar Custo -->
-                        <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                            <h3 class="font-bold text-sm uppercase mb-3 text-red-700 flex items-center gap-2">
-                                <i class="fa-solid fa-arrow-down-long"></i> Registrar Gasto (Custo)
-                            </h3>
+                        <!-- Registrar Gasto -->
+                        <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl border border-black/10 shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-red-600 text-white flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-arrow-down-long"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-title text-lg text-red-800">Registrar Custo</h3>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Saída Financeira</p>
+                                </div>
+                            </div>
                             <form id="form-gasto" class="space-y-3">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-zinc-500">Descrição do Gasto</label>
-                                    <input type="text" id="gasto-desc" class="w-full p-2 border border-zinc-300 rounded text-xs" placeholder="Ex: Garrafa de Resina" required>
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Descrição do Gasto</label>
+                                    <input type="text" id="gasto-desc" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none" placeholder="Ex: Garrafa de Resina" required>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label class="block text-[10px] font-bold uppercase text-zinc-500">Valor (R$)</label>
-                                        <input type="number" step="0.01" id="gasto-valor" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                                        <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor (R$)</label>
+                                        <input type="number" step="0.01" id="gasto-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-bold uppercase text-zinc-500">Categoria</label>
-                                        <select id="gasto-cat" class="w-full p-2 border border-zinc-300 rounded text-xs">
+                                        <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Categoria</label>
+                                        <select id="gasto-cat" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none">
                                             <option value="Insumo">Insumo</option>
                                             <option value="Equipamento">Equipamento</option>
                                             <option value="Fixo">Fixo</option>
@@ -163,8 +259,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase py-2 rounded text-xs transition-colors">
-                                    Salvar Gasto
+                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-minus"></i> Salvar Gasto
                                 </button>
                             </form>
                         </div>
@@ -174,61 +270,86 @@
 
             <!-- TAB 2: PRODUTOS DO SITE -->
             <div id="sec-prods" class="hidden flex flex-col lg:flex-row gap-8">
-                <!-- Subtabs Miniatura / Arsenal -->
                 <div class="w-full">
-                    <div class="flex gap-4 mb-6 border-b border-zinc-200 pb-2">
-                        <button onclick="switchTab('miniaturas')" id="tab-miniaturas" class="px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-black text-black">Miniaturas</button>
-                        <button onclick="switchTab('arsenal')" id="tab-arsenal" class="px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black">Arsenal</button>
+                    <!-- SUBTABS -->
+                    <div class="flex gap-2 mb-6 border-b border-black/10 pb-2">
+                        <button onclick="switchTab('miniaturas')" id="tab-miniaturas" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all bg-black text-[#EBE3CB] shadow-sm flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-dragon text-amber-500"></i> Miniaturas
+                        </button>
+                        <button onclick="switchTab('arsenal')" id="tab-arsenal" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-chess-knight text-zinc-500"></i> Arsenal
+                        </button>
                     </div>
 
-                    <div class="flex flex-col lg:flex-row gap-8">
-                        <div class="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-sm border border-zinc-200 self-start">
-                            <h2 class="text-xl font-bold mb-4" id="form-title">Adicionar Miniatura</h2>
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- FORM -->
+                        <div class="w-full lg:w-1/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-black/10 self-start">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-plus-circle text-amber-500"></i>
+                                </div>
+                                <div>
+                                    <h2 class="font-title text-xl text-parchment-dark" id="form-title">Adicionar Miniatura</h2>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Exibido no Catálogo do Site</p>
+                                </div>
+                            </div>
+
                             <form id="product-form" class="space-y-4">
                                 <input type="hidden" id="prod-type" value="miniatura">
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça</label>
-                                    <input type="text" id="prod-name" class="w-full p-2 border border-zinc-300 rounded text-sm" required>
+                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro">
                                 </div>
                                 <div id="field-category">
-                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
-                                    <select id="prod-category" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria</label>
+                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none">
                                         <option value="npcs">NPCs</option>
                                         <option value="monstros">Monstros</option>
                                         <option value="cenario">Cenário</option>
                                     </select>
                                 </div>
-                                <div id="fields-prices-mini">
-                                    <div class="mb-4">
+                                <div id="fields-prices-mini" class="space-y-3">
+                                    <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R$)</label>
-                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="89.90">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R$)</label>
-                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="139.90">
                                     </div>
                                 </div>
                                 <div id="field-price-arsenal" class="hidden">
-                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor (R$)</label>
-                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R$)</label>
+                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="299.90">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição</label>
-                                    <textarea id="prod-desc" rows="3" class="w-full p-2 border border-zinc-300 rounded text-sm" required></textarea>
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto</label>
+                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Imagem do Produto</label>
-                                    <input type="file" id="prod-image" accept="image/*" class="w-full p-2 border border-zinc-300 rounded text-sm bg-zinc-50" required>
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Foto do Seu Computador</label>
+                                    <input type="file" id="prod-image" accept="image/*" class="w-full p-2 bg-zinc-50 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
                                 </div>
-                                <button type="submit" id="btn-submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase py-3 rounded text-sm transition-colors flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-plus"></i> Cadastrar no Site
+                                <button type="submit" id="btn-submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase py-3 rounded-lg text-xs transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Publicar no Site
                                 </button>
                             </form>
                         </div>
-                        <div class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-zinc-200">
-                            <h2 class="text-xl font-bold mb-4" id="list-title">Miniaturas Cadastradas</h2>
-                            <div id="loading-products" class="text-center py-8 text-zinc-500">
-                                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Carregando...
+
+                        <!-- LIST -->
+                        <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-black/10">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-list-check"></i>
+                                </div>
+                                <div>
+                                    <h2 class="font-title text-xl text-parchment-dark" id="list-title">Miniaturas Cadastradas</h2>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Gerenciamento do Catálogo Ativo</p>
+                                </div>
+                            </div>
+                            <div id="loading-products" class="text-center py-12 text-zinc-500">
+                                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-amber-600"></i>
+                                <p class="text-xs font-bold uppercase tracking-wider">Buscando itens no Supabase...</p>
                             </div>
                             <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
                         </div>
@@ -237,74 +358,101 @@
             </div>
 
             <!-- TAB 3: LIVRO DE CONTABILIDADE -->
-            <div id="sec-fin" class="hidden bg-white p-6 rounded-xl border border-zinc-200 shadow-sm space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Livro de Contabilidade (Entradas & Saídas)</h2>
-                    <select id="fin-filter-type" onchange="loadFinance()" class="p-2 border border-zinc-300 rounded text-xs">
-                        <option value="all">Ver Tudo</option>
+            <div id="sec-fin" class="hidden bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-book-bookmark text-amber-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-2xl text-parchment-dark">Livro de Contabilidade</h2>
+                            <p class="text-xs text-zinc-500">Histórico de entradas (vendas) e saídas (custos)</p>
+                        </div>
+                    </div>
+                    <select id="fin-filter-type" onchange="loadFinance()" class="p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-bold focus:outline-none focus:border-black cursor-pointer">
+                        <option value="all">Ver Todos os Lançamentos</option>
                         <option value="Venda">Apenas Entradas (Vendas)</option>
                         <option value="Custo">Apenas Saídas (Custos)</option>
                     </select>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto rounded-xl border border-black/10">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-zinc-100 uppercase text-zinc-600">
+                        <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
                             <tr>
-                                <th class="p-3">Data/Hora</th>
-                                <th class="p-3">Tipo</th>
-                                <th class="p-3">Descrição</th>
-                                <th class="p-3">Categoria</th>
-                                <th class="p-3">Valor</th>
-                                <th class="p-3">Ações</th>
+                                <th class="p-3.5">Data / Hora</th>
+                                <th class="p-3.5">Tipo</th>
+                                <th class="p-3.5">Descrição</th>
+                                <th class="p-3.5">Categoria</th>
+                                <th class="p-3.5">Valor Total</th>
+                                <th class="p-3.5 text-center">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-finance" class="divide-y divide-zinc-200">
-                            <tr><td colspan="6" class="p-4 text-center text-zinc-400">Carregando lançamentos...</td></tr>
+                        <tbody id="tbody-finance" class="divide-y divide-zinc-200 bg-white">
+                            <tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- TAB 4: CLIENTES (CRM) -->
-            <div id="sec-cli" class="hidden flex flex-col lg:flex-row gap-8">
-                <div class="w-full lg:w-1/3 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm self-start">
-                    <h2 class="text-xl font-bold mb-4">Cadastrar Cliente</h2>
+            <div id="sec-cli" class="hidden flex flex-col lg:flex-row gap-6">
+                <!-- FORM CLIENTE -->
+                <div class="w-full lg:w-1/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm self-start">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-user-plus text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Novo Cliente</h2>
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Cadastro da Guilda</p>
+                        </div>
+                    </div>
                     <form id="form-cliente" class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome Completo *</label>
-                            <input type="text" id="cli-nome" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                            <input type="text" id="cli-nome" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Ex: Carlos Silva">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Telefone / WhatsApp *</label>
-                            <input type="text" id="cli-tel" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                            <input type="text" id="cli-tel" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="(27) 99999-9999">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Endereço Completo *</label>
-                            <input type="text" id="cli-end" class="w-full p-2 border border-zinc-300 rounded text-xs" required>
+                            <input type="text" id="cli-end" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Rua, número, bairro">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">E-mail</label>
-                            <input type="email" id="cli-email" class="w-full p-2 border border-zinc-300 rounded text-xs">
+                            <input type="email" id="cli-email" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="cliente@email.com">
                         </div>
-                        <button type="submit" class="w-full bg-black text-white font-bold uppercase py-2.5 rounded text-xs hover:bg-zinc-800">
-                            Registrar Cliente
+                        <button type="submit" class="w-full bg-black text-[#EBE3CB] font-bold uppercase py-3 rounded-lg text-xs hover:bg-zinc-800 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-address-book"></i> Cadastrar Cliente
                         </button>
                     </form>
                 </div>
-                <div class="w-full lg:w-2/3 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
-                    <h2 class="text-xl font-bold mb-4">Clientes Cadastrados</h2>
-                    <div class="overflow-x-auto">
+
+                <!-- LISTA CLIENTES -->
+                <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Clientes Registrados</h2>
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Base de Dados de Membros</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-black/10">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-zinc-100 uppercase text-zinc-600">
+                            <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
                                 <tr>
-                                    <th class="p-3">Nome</th>
-                                    <th class="p-3">Telefone</th>
-                                    <th class="p-3">Endereço</th>
-                                    <th class="p-3">Ações</th>
+                                    <th class="p-3.5">Nome</th>
+                                    <th class="p-3.5">Telefone</th>
+                                    <th class="p-3.5">Endereço</th>
+                                    <th class="p-3.5 text-center">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-customers" class="divide-y divide-zinc-200">
-                                <tr><td colspan="4" class="p-4 text-center text-zinc-400">Carregando clientes...</td></tr>
+                            <tbody id="tbody-customers" class="divide-y divide-zinc-200 bg-white">
+                                <tr><td colspan="4" class="p-8 text-center text-zinc-400">Carregando clientes...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -367,13 +515,16 @@
             ['dash', 'prods', 'fin', 'cli'].forEach(t => {
                 document.getElementById(`sec-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`mtab-${t}`);
-                btn.classList.replace('border-black', 'border-transparent');
-                btn.classList.replace('text-black', 'text-zinc-500');
+                btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
+                const iconBox = btn.querySelector('div');
+                if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
             });
+
             document.getElementById(`sec-${tab}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`mtab-${tab}`);
-            activeBtn.classList.replace('border-transparent', 'border-black');
-            activeBtn.classList.replace('text-zinc-500', 'text-black');
+            activeBtn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer";
+            const activeIconBox = activeBtn.querySelector('div');
+            if (activeIconBox) activeIconBox.className = "w-6 h-6 rounded-md bg-white/10 flex items-center justify-center";
 
             if (tab === 'dash') loadDashboardData();
             if (tab === 'prods') loadProducts();
@@ -416,7 +567,7 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6']
+                        backgroundColor: ['#dc2626', '#d97706', '#2563eb', '#059669', '#7c3aed']
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
@@ -479,8 +630,8 @@
             const typeInput = document.getElementById('prod-type');
             
             if (tab === 'miniaturas') {
-                tabMin.className = 'px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-black text-black';
-                tabArs.className = 'px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black';
+                tabMin.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all bg-black text-[#EBE3CB] shadow-sm flex items-center gap-2 cursor-pointer';
+                tabArs.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer';
                 document.getElementById('form-title').innerText = 'Adicionar Miniatura';
                 document.getElementById('list-title').innerText = 'Miniaturas Cadastradas';
                 typeInput.value = 'miniatura';
@@ -488,8 +639,8 @@
                 document.getElementById('fields-prices-mini').classList.remove('hidden');
                 document.getElementById('field-price-arsenal').classList.add('hidden');
             } else {
-                tabArs.className = 'px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-black text-black';
-                tabMin.className = 'px-4 py-1.5 text-xs font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black';
+                tabArs.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all bg-black text-[#EBE3CB] shadow-sm flex items-center gap-2 cursor-pointer';
+                tabMin.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer';
                 document.getElementById('form-title').innerText = 'Adicionar ao Arsenal';
                 document.getElementById('list-title').innerText = 'Itens de Arsenal Cadastrados';
                 typeInput.value = 'arsenal';
@@ -512,21 +663,21 @@
                 if(data.products && data.products.length > 0) {
                     data.products.forEach(p => {
                         grid.innerHTML += `
-                            <div class="border border-zinc-200 rounded-lg p-3 flex gap-3 relative bg-white shadow-xs">
-                                <img src="${p.image_url}" class="w-16 h-16 object-cover rounded bg-zinc-100">
+                            <div class="border border-black/10 rounded-xl p-3 flex gap-3 relative bg-white shadow-xs hover:shadow-md transition-shadow">
+                                <img src="${p.image_url}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200">
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-xs line-clamp-1">${p.name}</h4>
-                                    ${p.type === 'miniatura' ? `<span class="text-[9px] uppercase font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">${p.category}</span>` : ''}
+                                    <h4 class="font-bold text-xs line-clamp-1 text-zinc-900">${p.name}</h4>
+                                    ${p.type === 'miniatura' ? `<span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category}</span>` : ''}
                                     <div class="mt-1 text-[11px] text-zinc-500 line-clamp-1">${p.description}</div>
                                 </div>
-                                <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700 text-xs p-1 cursor-pointer">
+                                <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700 text-xs p-1 cursor-pointer" title="Excluir produto">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
                         `;
                     });
                 } else {
-                    grid.innerHTML = '<div class="col-span-full text-center text-xs text-zinc-400 py-4">Nenhum produto cadastrado nesta categoria.</div>';
+                    grid.innerHTML = '<div class="col-span-full text-center text-xs text-zinc-400 py-8">Nenhum produto cadastrado nesta categoria.</div>';
                 }
                 loader.classList.add('hidden'); grid.classList.remove('hidden');
             } catch(e) { console.error(e); }
@@ -558,7 +709,7 @@
                     body: formData
                 });
                 if (res.ok) {
-                    alert('Produto adicionado ao site!');
+                    alert('Produto publicado no site com sucesso!');
                     document.getElementById('product-form').reset();
                     loadProducts();
                 }
@@ -579,7 +730,7 @@
         async function loadFinance() {
             const tbody = document.getElementById('tbody-finance');
             const type = document.getElementById('fin-filter-type').value;
-            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-400">Carregando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>';
             try {
                 const res = await fetch(`/api/admin/finance?type=${type}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -587,19 +738,23 @@
                 const data = await res.json();
                 if (data.financeiro && data.financeiro.length > 0) {
                     tbody.innerHTML = data.financeiro.map(r => `
-                        <tr>
-                            <td class="p-3 text-zinc-500 font-mono text-[10px]">${r.data}</td>
-                            <td class="p-3 font-bold ${r.tipo === 'Venda' ? 'text-emerald-600' : 'text-red-500'}">${r.tipo}</td>
-                            <td class="p-3 font-medium">${r.descricao}</td>
-                            <td class="p-3"><span class="bg-zinc-100 px-2 py-0.5 rounded text-[10px] uppercase font-bold">${r.categoria}</span></td>
-                            <td class="p-3 font-bold ${r.tipo === 'Venda' ? 'text-emerald-600' : 'text-red-500'}">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
-                            <td class="p-3">
-                                <button onclick="deleteFinance('${r.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        <tr class="hover:bg-amber-50/40 transition-colors">
+                            <td class="p-3.5 text-zinc-500 font-mono text-[11px]">${r.data}</td>
+                            <td class="p-3.5 font-bold ${r.tipo === 'Venda' ? 'text-emerald-700' : 'text-red-600'}">
+                                <span class="inline-flex items-center gap-1 ${r.tipo === 'Venda' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'} px-2 py-0.5 rounded text-[10px] uppercase font-bold">
+                                    <i class="fa-solid ${r.tipo === 'Venda' ? 'fa-arrow-up' : 'fa-arrow-down'} text-[9px]"></i> ${r.tipo}
+                                </span>
+                            </td>
+                            <td class="p-3.5 font-medium text-zinc-900">${r.descricao}</td>
+                            <td class="p-3.5"><span class="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold text-zinc-600">${r.categoria}</span></td>
+                            <td class="p-3.5 font-bold ${r.tipo === 'Venda' ? 'text-emerald-700' : 'text-red-600'}">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="deleteFinance('${r.id}')" class="text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Excluir lançamento"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-400">Nenhum lançamento no livro.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Nenhum lançamento no livro.</td></tr>';
                 }
             } catch(e) { console.error(e); }
         }
@@ -616,7 +771,7 @@
         // CLIENTES
         async function loadCustomers() {
             const tbody = document.getElementById('tbody-customers');
-            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-zinc-400">Carregando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-zinc-400">Carregando clientes...</td></tr>';
             try {
                 const res = await fetch('/api/admin/customers', {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -624,17 +779,17 @@
                 const data = await res.json();
                 if (data.clientes && data.clientes.length > 0) {
                     tbody.innerHTML = data.clientes.map(c => `
-                        <tr>
-                            <td class="p-3 font-bold">${c.nome}</td>
-                            <td class="p-3">${c.telefone}</td>
-                            <td class="p-3 text-zinc-500">${c.endereco}</td>
-                            <td class="p-3">
-                                <button onclick="deleteCustomer('${c.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        <tr class="hover:bg-amber-50/40 transition-colors">
+                            <td class="p-3.5 font-bold text-zinc-900">${c.nome}</td>
+                            <td class="p-3.5 text-zinc-700 font-semibold">${c.telefone}</td>
+                            <td class="p-3.5 text-zinc-500">${c.endereco}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="deleteCustomer('${c.id}')" class="text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Excluir cliente"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-zinc-400">Nenhum cliente cadastrado.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-zinc-400">Nenhum cliente cadastrado.</td></tr>';
                 }
             } catch(e) { console.error(e); }
         }
