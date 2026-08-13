@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="only light">
     <meta name="supported-color-schemes" content="light">
+    <meta name="theme-color" content="#EBE3CB">
     <title>Arsenal de RPG | Saving Throw</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
     <style>
-        :root, html, body {
-            color-scheme: light !important;
+        :root, html, body, * {
+            color-scheme: only light !important;
+            forced-color-adjust: none !important;
+            -webkit-forced-color-adjust: none !important;
         }
 
         @font-face {
