@@ -28,8 +28,14 @@ export default async function handler(req, res) {
         let params = [];
 
         if (type) {
-            params.push(type);
-            whereClauses.push(`type = $${params.length}`);
+            if (type === 'arsenal') {
+                whereClauses.push(`(type = 'arsenal' OR type = 'escudo' OR category ILIKE '%escudo%' OR category ILIKE '%arsenal%')`);
+            } else if (type === 'miniatura') {
+                whereClauses.push(`(type = 'miniatura' OR type = 'mini')`);
+            } else {
+                params.push(type);
+                whereClauses.push(`type = $${params.length}`);
+            }
         }
 
         if (category) {
@@ -39,7 +45,7 @@ export default async function handler(req, res) {
 
         if (search) {
             params.push(`%${search}%`);
-            whereClauses.push(`name ILIKE $${params.length}`);
+            whereClauses.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length})`);
         }
 
         const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
