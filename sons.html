@@ -43,11 +43,35 @@
             font-weight: normal;
         }
 
-        .bg-parchment { background-color: #EBE3CB !important; }
+        /* Desativa forçamento de Dark Mode no Samsung Internet, Chrome Mobile e MIUI usando gradiente sólido (bypass de filtro Chromium) */
+        .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
         .text-parchment-dark { color: #4A4435 !important; }
         .transition-all { transition: all 0.25s ease; }
 
-        /* Impede o Dark Mode forçado em navegadores mobile (Samsung Internet, Chrome Android, Xiaomi MIUI) */
+        .bg-\[\#EBE3CB\] {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .text-\[\#EBE3CB\] {
+            color: #EBE3CB !important;
+        }
+        .bg-white {
+            background-color: #ffffff !important;
+            background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
+            color: #000000 !important;
+        }
+        .bg-zinc-50 {
+            background-color: #f4f4f5 !important;
+            background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
+            color: #000000 !important;
+        }
+
+        /* Garantia extra sob prefers-color-scheme: dark */
         @media (prefers-color-scheme: dark) {
             :root, html, body {
                 color-scheme: only light !important;
@@ -59,8 +83,9 @@
                 filter: none !important;
                 -webkit-filter: none !important;
             }
-            .bg-parchment {
+            .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
                 background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
                 color: #000000 !important;
             }
             .bg-parchment a:not(.bg-black), .bg-parchment button, .bg-parchment i {
@@ -71,6 +96,7 @@
             }
             .bg-\[\#EBE3CB\] {
                 background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
                 color: #000000 !important;
             }
             .text-\[\#EBE3CB\] {
@@ -78,10 +104,12 @@
             }
             .bg-white {
                 background-color: #ffffff !important;
+                background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
                 color: #000000 !important;
             }
             .bg-zinc-50 {
                 background-color: #f4f4f5 !important;
+                background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
                 color: #000000 !important;
             }
         }
