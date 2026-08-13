@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saving Throw - Gestão RPG</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <img src="logo_quadrada.png" alt="Logo" class="logo-img-large">
+            
+            <nav class="nav-menu">
+                <button class="nav-btn active" id="btn-dashboard">
+                    <span class="nav-icon">📊</span> Painel de Controle
+                </button>
+                <button class="nav-btn" id="btn-products">
+                    <span class="nav-icon">🛡️</span> Inventário de Produtos
+                </button>
+                <button class="nav-btn" id="btn-finance">
+                    <span class="nav-icon">🪙</span> Registro Financeiro
+                </button>
+                <button class="nav-btn" id="btn-customers">
+                    <span class="nav-icon">👥</span> Clientes da Guilda
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>Status da Guilda: <span>Ativo</span> 🟢</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h2 id="page-title">Painel Geral</h2>
+                    <p class="current-date" id="current-date">Carregando data...</p>
+                </div>
+                <div class="profile-info">
+                    <span class="rank-badge">Saving Throw</span>
+                    <div class="avatar">🧙‍♂️</div>
+                </div>
+            </header>
+
+            <!-- Notification Toast -->
+            <div id="toast-container" class="toast-container"></div>
+
+            <!-- Tab: Dashboard -->
+            <section id="sec-dashboard" class="tab-content active">
+                <!-- Overview Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card card-revenue">
+                        <div class="kpi-icon">🪙</div>
+                        <div class="kpi-info">
+                            <h3>Receita Total</h3>
+                            <p class="kpi-value" id="revenue-total">R$ 0,00</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card card-expenses">
+                        <div class="kpi-icon">💸</div>
+                        <div class="kpi-info">
+                            <h3>Despesas Totais</h3>
+                            <p class="kpi-value" id="expenses-total">R$ 0,00</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card card-profit">
+                        <div class="kpi-icon" id="profit-icon">⚖️</div>
+                        <div class="kpi-info">
+                            <h3>Lucro Líquido</h3>
+                            <p class="kpi-value" id="net-profit">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forms Grid -->
+                <div class="dashboard-grid">
+                    <div class="grid-col flex-col">
+                        <!-- Chart section -->
+                        <div class="glass-card chart-card">
+                            <h3>Balanço por Categoria de Custo</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="costChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card">
+                            <h3>Receita por Produto</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-col">
+                        <!-- Quick Forms -->
+                        <div class="glass-card form-card">
+                            <h3><span class="icon">🛒</span> Registrar Venda (CRM)</h3>
+                            <form id="form-venda">
+                                <div class="form-group">
+                                    <label for="venda-cliente">Nome do Cliente</label>
+                                    <input type="text" id="venda-cliente" placeholder="Ex: João Pedro" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="venda-produto">Produto Vendido</label>
+                                    <select id="venda-produto" required>
+                                        <option value="">Selecione um produto...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="venda-valor">Valor Pago (R$)</label>
+                                    <input type="number" id="venda-valor" step="0.01" placeholder="Ex: 150.00" required>
+                                </div>
+                                <button type="submit" class="btn-primary">Registrar Venda</button>
+                            </form>
+                        </div>
+
+                        <div class="glass-card form-card">
+                            <h3><span class="icon">🔨</span> Forjar Novo Produto</h3>
+                            <form id="form-produto">
+                                <div class="form-group">
+                                    <label for="prod-nome">Nome do Produto</label>
+                                    <input type="text" id="prod-nome" placeholder="Ex: Miniatura Dragão Vermelho" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-6">
+                                        <label for="prod-categoria">Categoria</label>
+                                        <select id="prod-categoria" required>
+                                            <option value="Miniatura">Miniatura</option>
+                                            <option value="Escudo">Escudo</option>
+                                            <option value="One-Shot">One-Shot</option>
+                                            <option value="Dados">Dados</option>
+                                            <option value="Acessórios">Acessórios</option>
+                                            <option value="Outros">Outros</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="prod-tipo">Tipo/Estado</label>
+                                        <select id="prod-tipo" required>
+                                            <option value="Cru">Cru</option>
+                                            <option value="Pintado">Pintado</option>
+                                            <option value="Digital">Digital</option>
+                                            <option value="Impressão 3D">Impressão 3D</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prod-preco">Preço Base (R$)</label>
+                                    <input type="number" id="prod-preco" step="0.01" placeholder="Ex: 85.00" required>
+                                </div>
+                                <button type="submit" class="btn-secondary">Registrar Produto</button>
+                            </form>
+                        </div>
+
+                        <div class="glass-card form-card">
+                            <h3><span class="icon">📉</span> Registrar Gasto (Custo)</h3>
+                            <form id="form-gasto">
+                                <div class="form-group">
+                                    <label for="gasto-descricao">Descrição da Despesa</label>
+                                    <input type="text" id="gasto-descricao" placeholder="Ex: Resina para Impressora" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-6">
+                                        <label for="gasto-valor">Valor (R$)</label>
+                                        <input type="number" id="gasto-valor" step="0.01" placeholder="Ex: 200.00" required>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="gasto-categoria">Categoria</label>
+                                        <select id="gasto-categoria" required>
+                                            <option value="Equipamento">Equipamento</option>
+                                            <option value="Insumo">Insumo</option>
+                                            <option value="Fixo">Fixo</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Outros">Outros</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-danger">Registrar Custo</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Products -->
+            <section id="sec-products" class="tab-content">
+                <div class="tab-grid">
+                    <div class="glass-card table-col">
+                        <div class="card-header-flex">
+                            <h3>Itens no Inventário</h3>
+                            <div class="search-box">
+                                <input type="text" id="search-products" placeholder="Buscar produto por nome ou tipo...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="rpg-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Categoria</th>
+                                        <th>Tipo</th>
+                                        <th>Preço Base</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-products">
+                                    <tr>
+                                        <td colspan="6" class="empty-state">Carregando itens...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card form-col">
+                        <h3 id="form-prod-tab-title"><span class="icon">🔨</span> Adicionar Produto</h3>
+                        <form id="form-tab-produto">
+                            <input type="hidden" id="tab-prod-id">
+                            <div class="form-group">
+                                <label for="tab-prod-nome">Nome do Produto</label>
+                                <input type="text" id="tab-prod-nome" placeholder="Ex: Escudo de Madeira Escura" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-prod-categoria">Categoria</label>
+                                <select id="tab-prod-categoria" required>
+                                    <option value="Miniatura">Miniatura</option>
+                                    <option value="Escudo do Mestre">Escudo do Mestre</option>
+                                    <option value="Dados & Acessórios">Dados & Acessórios</option>
+                                    <option value="One-Shot & Campanhas">One-Shot & Campanhas</option>
+                                    <option value="Terreno & Cenário">Terreno & Cenário</option>
+                                    <option value="Livros & Manuais">Livros & Manuais</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-prod-tipo">Tipo / Estado</label>
+                                <select id="tab-prod-tipo" required>
+                                    <option value="Cru">Cru</option>
+                                    <option value="Pintado">Pintado</option>
+                                    <option value="Digital">Digital</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Físico">Físico</option>
+                                    <option value="Sob Encomenda">Sob Encomenda</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-prod-preco">Preço Base (R$)</label>
+                                <input type="number" id="tab-prod-preco" step="0.01" placeholder="Ex: 85.00" required>
+                            </div>
+                            <button type="submit" id="btn-submit-tab-prod" class="btn-secondary">Registrar Produto</button>
+                            <button type="button" id="btn-cancel-tab-prod" class="btn-danger" style="display:none; margin-top: 0.8rem;">Cancelar Edição</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Finance -->
+            <section id="sec-finance" class="tab-content">
+                <div class="tab-grid">
+                    <div class="glass-card table-col">
+                        <div class="card-header-flex">
+                            <h3>Livro de Contabilidade (Entradas & Saídas)</h3>
+                            <div class="filter-box">
+                                <select id="filter-finance-type">
+                                    <option value="all">Ver Tudo</option>
+                                    <option value="Venda">Apenas Entradas (Vendas)</option>
+                                    <option value="Custo">Apenas Saídas (Custos)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="rpg-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data / Hora</th>
+                                        <th>Tipo</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-finance">
+                                    <tr>
+                                        <td colspan="6" class="empty-state">Carregando livro...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card form-col">
+                        <h3 id="form-finance-tab-title"><span class="icon">🪙</span> Registrar Transação</h3>
+                        <form id="form-tab-finance">
+                            <input type="hidden" id="tab-fin-id">
+                            <div class="form-group">
+                                <label for="tab-fin-tipo">Tipo de Lançamento</label>
+                                <select id="tab-fin-tipo" required>
+                                    <option value="Custo">Saída (Gasto / Custo)</option>
+                                    <option value="Venda">Entrada (Venda / CRM)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tab-fin-descricao">Descrição / Detalhe</label>
+                                <input type="text" id="tab-fin-descricao" placeholder="Ex: Garrafa de Resina 1L" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tab-fin-valor">Valor Total (R$)</label>
+                                <input type="number" id="tab-fin-valor" step="0.01" placeholder="Ex: 200.00" required>
+                            </div>
+                            
+                            <!-- Specific field for Costs -->
+                            <div class="form-group" id="group-tab-fin-cat-custo">
+                                <label for="tab-fin-categoria-custo">Categoria de Custo</label>
+                                <select id="tab-fin-categoria-custo">
+                                    <option value="Insumo">Insumo</option>
+                                    <option value="Equipamento">Equipamento</option>
+                                    <option value="Fixo">Fixo</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Embalagem & Frete">Embalagem & Frete</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Specific fields for Sales (Venda) -->
+                            <div id="fields-tab-fin-venda" style="display:none;">
+                                <div class="form-group">
+                                    <label for="tab-fin-cliente">Cliente</label>
+                                    <input type="text" id="tab-fin-cliente" placeholder="Ex: Carlos Santos">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tab-fin-produto">Produto Vendido</label>
+                                    <select id="tab-fin-produto">
+                                        <option value="">Selecione um produto...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" id="btn-submit-tab-fin" class="btn-danger">Registrar Custo</button>
+                            <button type="button" id="btn-cancel-tab-fin" class="btn-secondary" style="display:none; margin-top: 0.8rem;">Cancelar Edição</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            <!-- Tab: Clientes -->
+            <section id="sec-customers" class="tab-content">
+                <div class="tab-grid">
+                    <div class="glass-card table-col">
+                        <div class="card-header-flex">
+                            <h3>Membros Registrados da Guilda (Clientes)</h3>
+                            <div class="search-box">
+                                <input type="text" id="search-customers" placeholder="Buscar cliente por nome ou telefone...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="rpg-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Telefone</th>
+                                        <th>Endereço</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-customers">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">Carregando clientes...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card form-col">
+                        <h3 id="form-cust-tab-title"><span class="icon">👥</span> Registrar Cliente</h3>
+                        <form id="form-tab-cliente">
+                            <input type="hidden" id="tab-cli-id">
+                            <div class="form-group">
+                                <label for="tab-cli-nome">Nome Completo *</label>
+                                <input type="text" id="tab-cli-nome" placeholder="Ex: João Silva" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <label for="tab-cli-telefone">Telefone *</label>
+                                    <input type="text" id="tab-cli-telefone" placeholder="Ex: (11) 99999-9999" required>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="tab-cli-email">E-mail</label>
+                                    <input type="email" id="tab-cli-email" placeholder="Ex: joao@guilda.com">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-cli-endereco">Endereço Completo *</label>
+                                <input type="text" id="tab-cli-endereco" placeholder="Ex: Rua das Miniaturas, 123" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-cli-cpf">CPF / Identificação</label>
+                                <input type="text" id="tab-cli-cpf" placeholder="Ex: 123.456.789-00">
+                            </div>
+                            <div class="form-group">
+                                <label for="tab-cli-observacoes">Observações / Preferências</label>
+                                <input type="text" id="tab-cli-observacoes" placeholder="Ex: Prefere miniaturas cruas para pintar">
+                            </div>
+                            <button type="submit" id="btn-submit-tab-cli" class="btn-primary">Registrar Cliente</button>
+                            <button type="button" id="btn-cancel-tab-cli" class="btn-danger" style="display:none; margin-top: 0.8rem;">Cancelar Edição</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal: Histórico de Compras do Cliente -->
+    <div id="modal-purchases" class="modal-overlay" style="display: none;">
+        <div class="glass-card modal-content">
+            <div class="modal-header">
+                <h3 id="modal-client-name">Compras de [Nome]</h3>
+                <button class="btn-close-modal" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="client-purchase-summary" class="kpi-grid" style="grid-template-columns: 1fr; margin-bottom: 1.5rem;">
+                    <div class="kpi-card card-revenue" style="padding: 1rem;">
+                        <div class="kpi-icon">🪙</div>
+                        <div class="kpi-info">
+                            <h3 style="font-size: 0.75rem; border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Total Investido</h3>
+                            <p class="kpi-value" id="client-total-spent" style="font-size: 1.3rem;">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="rpg-table">
+                        <thead>
+                            <tr>
+                                <th>Data / Hora</th>
+                                <th>Produto</th>
+                                <th>Valor Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-client-purchases">
+                            <tr>
+                                <td colspan="3" class="empty-state">Nenhuma compra registrada nos pergaminhos.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

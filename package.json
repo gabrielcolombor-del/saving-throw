@@ -8,7 +8,11 @@
     "parse-pdf": "node scripts/parse-phb.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "cookie": "^1.1.1",
     "dotenv": "^16.4.5",
+    "formidable": "^3.5.4",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.11.5"
   },
   "devDependencies": {

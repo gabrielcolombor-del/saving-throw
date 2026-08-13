@@ -1,0 +1,207 @@
+{
+    "produtos": [
+        {
+            "id": "001",
+            "nome": "Miniatura Dragão Vermelho",
+            "categoria": "Miniatura",
+            "tipo": "Pintado",
+            "preco_base": 150
+        }
+    ],
+    "financeiro": [
+        {
+            "id": "gasto_eb76daf7",
+            "data": "2026-06-07 14:28:20",
+            "tipo": "Custo",
+            "descricao": "Resina Uvtek Tough (Informado por você)",
+            "valor": 150,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_738a4a13",
+            "data": "2026-06-07 14:28:30",
+            "tipo": "Custo",
+            "descricao": "Resina Uvtek Power (Informado por você)",
+            "valor": 130,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_f0c2993d",
+            "data": "2026-06-07 14:28:40",
+            "tipo": "Custo",
+            "descricao": "Álcool Isopropílico 99.8% (Informado por você)",
+            "valor": 76,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_e78ca838",
+            "data": "2026-06-07 14:28:50",
+            "tipo": "Custo",
+            "descricao": "Máscara Facial com Respirador (Informado por você)",
+            "valor": 38,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_3880defb",
+            "data": "2026-06-07 14:29:00",
+            "tipo": "Custo",
+            "descricao": "Gastos com Papelaria (Informado por você)",
+            "valor": 220,
+            "categoria": "Outros"
+        },
+        {
+            "id": "gasto_53bb9f00",
+            "data": "2026-06-07 14:29:10",
+            "tipo": "Custo",
+            "descricao": "Luva Nitrílica Preta Descartável (Cx 100) (Shopee)",
+            "valor": 29.99,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_10e8faa7",
+            "data": "2026-06-07 14:29:20",
+            "tipo": "Custo",
+            "descricao": "Seringa Descartável 60 mL Descarpack (Shopee)",
+            "valor": 15.5,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_e7f44cea",
+            "data": "2026-06-07 14:29:30",
+            "tipo": "Custo",
+            "descricao": "Tapete de Corte A3 45x30cm (Shopee)",
+            "valor": 38.9,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_462811bf",
+            "data": "2026-06-07 14:29:40",
+            "tipo": "Custo",
+            "descricao": "Conjunto Kit Aerógrafo Recarregável (Shopee)",
+            "valor": 88.03,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_451ea674",
+            "data": "2026-06-07 14:29:50",
+            "tipo": "Custo",
+            "descricao": "Frasco Plástico (25 Unidades) (Shopee)",
+            "valor": 28.9,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_b4009ad7",
+            "data": "2026-06-07 14:30:00",
+            "tipo": "Custo",
+            "descricao": "Paletas Molhadas Portáteis (Shopee)",
+            "valor": 74.63,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_98ce2855",
+            "data": "2026-06-07 14:30:10",
+            "tipo": "Custo",
+            "descricao": "Conjunto De Pincéis De Estêncil (6 Peças) (Shopee)",
+            "valor": 36.87,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_8e346953",
+            "data": "2026-06-07 14:30:20",
+            "tipo": "Custo",
+            "descricao": "Kit de Estiletes de Precisão (13 Peças) (Shopee)",
+            "valor": 19.03,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_032b8989",
+            "data": "2026-06-07 14:30:30",
+            "tipo": "Custo",
+            "descricao": "Jogo de Limas Agulha 15cm (6 Peças) (Shopee)",
+            "valor": 17.97,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_b47c9c9d",
+            "data": "2026-06-07 14:30:40",
+            "tipo": "Custo",
+            "descricao": "Lanterna Led Uv Luz Negra Potente (Mercado Livre)",
+            "valor": 21.15,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_03bda6f9",
+            "data": "2026-06-07 14:30:50",
+            "tipo": "Custo",
+            "descricao": "Kit 6 Pincéis Traços Finos (Mercado Livre)",
+            "valor": 29.9,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_bbf95fa2",
+            "data": "2026-06-07 14:31:00",
+            "tipo": "Custo",
+            "descricao": "Kit 24 Tinta Acrílica Fosca Acrilex (Mercado Livre)",
+            "valor": 223.15,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_17bab406",
+            "data": "2026-06-07 14:31:10",
+            "tipo": "Custo",
+            "descricao": "Driver Motor De Passo Tmc2209 V3 (Mercado Livre)",
+            "valor": 154.82,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_f681504a",
+            "data": "2026-06-07 14:31:20",
+            "tipo": "Custo",
+            "descricao": "Placa-mãe De Gravador A Laser Mks (Mercado Livre)",
+            "valor": 134.06,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_357f311a",
+            "data": "2026-06-07 14:31:30",
+            "tipo": "Custo",
+            "descricao": "Sculpfun S9 90w Máquina Laser CNC (Mercado Livre)",
+            "valor": 1319,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_f52f4847",
+            "data": "2026-06-07 14:31:40",
+            "tipo": "Custo",
+            "descricao": "Protetor De Tela Lcd Para Anycubic (Mercado Livre)",
+            "valor": 139.15,
+            "categoria": "Insumo"
+        },
+        {
+            "id": "gasto_f9cbd323",
+            "data": "2026-06-07 14:31:50",
+            "tipo": "Custo",
+            "descricao": "Impressora 3d De Resina Anycubic Photon (Mercado Livre)",
+            "valor": 1637,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_9f40f6ce",
+            "data": "2026-06-07 14:32:00",
+            "tipo": "Custo",
+            "descricao": "Filtro Resina Uv + Funil Silicone (Mercado Livre)",
+            "valor": 28.4,
+            "categoria": "Equipamento"
+        },
+        {
+            "id": "gasto_e8d0df3a",
+            "data": "2026-06-07 14:32:10",
+            "tipo": "Custo",
+            "descricao": "Lubrificante Bike Algoo Lube Óleo Cera (Mercado Livre)",
+            "valor": 29.04,
+            "categoria": "Insumo"
+        }
+    ],
+    "vendas": [],
+    "clientes": []
+}

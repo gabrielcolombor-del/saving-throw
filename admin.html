@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin | Saving Throw</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        @font-face { font-family: 'Alsina'; src: url('./assets/Alsina.TTF') format('truetype'); }
+        @font-face { font-family: 'Shindler'; src: url('./assets/ShindlerFont.ttf') format('truetype'); }
+        body { font-family: 'Alsina', sans-serif !important; }
+        h1, h2, h3, .font-title { font-family: 'Shindler', serif !important; font-weight: normal; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-zinc-100 text-black min-h-screen flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full border border-zinc-200">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-title">Saving Throw</h1>
+                <p class="text-sm text-zinc-500 uppercase tracking-widest mt-1">Acesso Restrito</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Usuário</label>
+                    <input type="text" id="username" class="w-full p-3 border border-zinc-300 rounded focus:border-black focus:outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Senha</label>
+                    <input type="password" id="password" class="w-full p-3 border border-zinc-300 rounded focus:border-black focus:outline-none" required>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm hidden font-semibold">Credenciais inválidas.</div>
+                <button type="submit" class="w-full bg-black text-white font-bold uppercase py-3 rounded hover:bg-zinc-800 transition-colors">
+                    Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="hidden flex-1 flex flex-col">
+        <header class="bg-black text-white p-4 shadow-md flex justify-between items-center">
+            <h1 class="text-2xl font-title">Painel ERP</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-sm">Admin</span>
+                <button onclick="logout()" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-xs font-bold uppercase">Sair</button>
+            </div>
+        </header>
+
+        <div class="flex-1 container mx-auto px-4 py-8 max-w-6xl">
+            <!-- Tabs -->
+            <div class="flex gap-4 mb-8 border-b border-zinc-300 pb-2">
+                <button onclick="switchTab('miniaturas')" id="tab-miniaturas" class="px-6 py-2 text-sm font-bold uppercase border-b-2 border-black text-black">Miniaturas</button>
+                <button onclick="switchTab('arsenal')" id="tab-arsenal" class="px-6 py-2 text-sm font-bold uppercase border-b-2 border-transparent text-zinc-500 hover:text-black transition-colors">Arsenal</button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- FORM -->
+                <div class="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-sm border border-zinc-200 self-start">
+                    <h2 class="text-xl font-bold mb-4" id="form-title">Adicionar Miniatura</h2>
+                    <form id="product-form" class="space-y-4">
+                        <input type="hidden" id="prod-type" value="miniatura">
+                        
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça</label>
+                            <input type="text" id="prod-name" class="w-full p-2 border border-zinc-300 rounded text-sm" required>
+                        </div>
+                        
+                        <div id="field-category">
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
+                            <select id="prod-category" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                                <option value="npcs">NPCs</option>
+                                <option value="monstros">Monstros</option>
+                                <option value="cenario">Cenário</option>
+                            </select>
+                        </div>
+
+                        <!-- Preços Miniatura -->
+                        <div id="fields-prices-mini">
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R$)</label>
+                                <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R$)</label>
+                                <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Preço Arsenal -->
+                        <div id="field-price-arsenal" class="hidden">
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor (R$)</label>
+                            <input type="number" step="0.01" id="prod-price" class="w-full p-2 border border-zinc-300 rounded text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição</label>
+                            <textarea id="prod-desc" rows="3" class="w-full p-2 border border-zinc-300 rounded text-sm" required></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Imagem</label>
+                            <input type="file" id="prod-image" accept="image/*" class="w-full p-2 border border-zinc-300 rounded text-sm bg-zinc-50" required>
+                        </div>
+
+                        <button type="submit" id="btn-submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase py-3 rounded text-sm transition-colors flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Cadastrar Produto
+                        </button>
+                    </form>
+                </div>
+
+                <!-- LIST -->
+                <div class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-zinc-200">
+                    <h2 class="text-xl font-bold mb-4" id="list-title">Miniaturas Cadastradas</h2>
+                    
+                    <div id="loading-products" class="text-center py-8 text-zinc-500">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Carregando...
+                    </div>
+                    
+                    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                        <!-- Product Cards injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('adminToken');
+        let currentTab = 'miniatura';
+
+        // Inicialização
+        if (token) {
+            showDashboard();
+            loadProducts();
+        }
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    token = data.token;
+                    localStorage.setItem('adminToken', token);
+                    document.getElementById('login-error').classList.add('hidden');
+                    showDashboard();
+                    loadProducts();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        function logout() {
+            token = null;
+            localStorage.removeItem('adminToken');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-screen').classList.add('flex');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('flex');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            const tabMin = document.getElementById('tab-miniaturas');
+            const tabArs = document.getElementById('tab-arsenal');
+            const typeInput = document.getElementById('prod-type');
+            
+            const fieldCat = document.getElementById('field-category');
+            const fieldsMin = document.getElementById('fields-prices-mini');
+            const fieldArs = document.getElementById('field-price-arsenal');
+            
+            if (tab === 'miniaturas') {
+                tabMin.classList.replace('border-transparent', 'border-black');
+                tabMin.classList.replace('text-zinc-500', 'text-black');
+                tabArs.classList.replace('border-black', 'border-transparent');
+                tabArs.classList.replace('text-black', 'text-zinc-500');
+                
+                document.getElementById('form-title').innerText = 'Adicionar Miniatura';
+                document.getElementById('list-title').innerText = 'Miniaturas Cadastradas';
+                typeInput.value = 'miniatura';
+                
+                fieldCat.classList.remove('hidden');
+                fieldsMin.classList.remove('hidden');
+                fieldArs.classList.add('hidden');
+                
+                document.getElementById('prod-price-unpainted').required = true;
+                document.getElementById('prod-price-painted').required = true;
+                document.getElementById('prod-price').required = false;
+            } else {
+                tabArs.classList.replace('border-transparent', 'border-black');
+                tabArs.classList.replace('text-zinc-500', 'text-black');
+                tabMin.classList.replace('border-black', 'border-transparent');
+                tabMin.classList.replace('text-black', 'text-zinc-500');
+                
+                document.getElementById('form-title').innerText = 'Adicionar ao Arsenal';
+                document.getElementById('list-title').innerText = 'Itens de Arsenal Cadastrados';
+                typeInput.value = 'arsenal';
+                
+                fieldCat.classList.add('hidden');
+                fieldsMin.classList.add('hidden');
+                fieldArs.classList.remove('hidden');
+                
+                document.getElementById('prod-price-unpainted').required = false;
+                document.getElementById('prod-price-painted').required = false;
+                document.getElementById('prod-price').required = true;
+            }
+            
+            loadProducts();
+        }
+
+        async function loadProducts() {
+            const grid = document.getElementById('products-grid');
+            const loader = document.getElementById('loading-products');
+            grid.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            try {
+                const res = await fetch(`/api/products?type=${currentTab}&limit=50`); // Para o admin carrega os ultimos 50
+                const data = await res.json();
+                
+                grid.innerHTML = '';
+                if(data.products && data.products.length > 0) {
+                    data.products.forEach(p => {
+                        grid.innerHTML += `
+                            <div class="border border-zinc-200 rounded-lg p-3 flex gap-3 relative">
+                                <img src="${p.image_url}" class="w-20 h-20 object-cover rounded bg-zinc-100">
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-sm line-clamp-1">${p.name}</h4>
+                                    ${p.type === 'miniatura' ? `<span class="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">${p.category}</span>` : ''}
+                                    <div class="mt-1 text-xs text-zinc-600 line-clamp-2">${p.description}</div>
+                                </div>
+                                <button onclick="deleteProduct('${p.id}')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 p-1 cursor-pointer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = '<div class="col-span-full text-center text-sm text-zinc-500 py-4">Nenhum produto cadastrado.</div>';
+                }
+                
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        // Criar
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('type', document.getElementById('prod-type').value);
+            formData.append('name', document.getElementById('prod-name').value);
+            formData.append('description', document.getElementById('prod-desc').value);
+            formData.append('image', document.getElementById('prod-image').files[0]);
+
+            if (currentTab === 'miniatura') {
+                formData.append('category', document.getElementById('prod-category').value);
+                formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
+                formData.append('price_painted', document.getElementById('prod-price-painted').value);
+            } else {
+                formData.append('price', document.getElementById('prod-price').value);
+            }
+
+            try {
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    alert('Produto adicionado com sucesso!');
+                    document.getElementById('product-form').reset();
+                    loadProducts();
+                } else {
+                    alert('Erro ao salvar produto. Verifique sua conexão.');
+                }
+            } catch(err) {
+                alert('Erro fatal ao conectar.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Deletar
+        async function deleteProduct(id) {
+            if(!confirm('Tem certeza que deseja excluir este produto?')) return;
+            
+            try {
+                const res = await fetch(`/api/admin/products?id=${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if(res.ok) {
+                    loadProducts();
+                } else {
+                    alert('Erro ao excluir');
+                }
+            } catch(e) {
+                alert('Erro fatal ao excluir.');
+            }
+        }
+    </script>
+</body>
+</html>
