@@ -57,29 +57,26 @@
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="flex-1 flex items-center justify-center p-4">
         <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-md w-full border border-black/10 text-center">
-            <div class="flex justify-center mb-4">
-                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-20 w-auto opacity-95">
-            </div>
-            <h1 class="text-3xl font-title text-parchment-dark mb-1">Guilda de Gestão</h1>
+            <h1 class="text-4xl font-title text-black tracking-wide mb-1">Saving Throw</h1>
             <p class="text-xs uppercase font-bold tracking-widest text-zinc-500 mb-6">Acesso Restrito ao Painel ERP</p>
             
             <form id="login-form" class="space-y-4 text-left">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Mestre / Usuário</label>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Usuário</label>
                     <div class="relative">
-                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors" placeholder="Digite seu usuário..." required>
-                        <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-zinc-400"></i>
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="Digite seu usuário..." required>
+                        <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-amber-500"></i>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Chave / Senha</label>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Senha</label>
                     <div class="relative">
-                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors" placeholder="••••••••" required>
-                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-zinc-400"></i>
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="••••••••" required>
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-amber-500"></i>
                     </div>
                 </div>
-                <div id="login-error" class="text-red-600 text-xs hidden font-bold bg-red-50 p-2.5 rounded-lg border border-red-200 text-center">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Credenciais inválidas. Verifique usuário e senha.
+                <div id="login-error" class="text-amber-700 text-xs hidden font-bold bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-500"></i> Credenciais inválidas. Verifique usuário e senha.
                 </div>
                 <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-3.5 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm tracking-wider cursor-pointer">
                     <i class="fa-solid fa-dungeon text-amber-500"></i> Entrar no ERP
@@ -94,22 +91,24 @@
         <header class="bg-[#EBE3CB] text-black border-b border-black/10 shadow-md sticky top-0 z-50">
             <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-4">
-                    <a href="/" title="Voltar ao Site">
-                        <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity">
+                    <a href="/" class="text-3xl font-title text-black tracking-wide drop-shadow-sm hover:opacity-80 transition-opacity">
+                        Saving Throw
                     </a>
                     <div class="h-6 w-px bg-black/20 hidden md:block"></div>
                     <div class="flex items-center gap-2">
                         <h1 class="text-xl font-title text-parchment-dark">Painel ERP & Gestão</h1>
                         <span class="bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Supabase Ativo
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Supabase Ativo
                         </span>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-2 bg-black/5 px-3 py-1.5 rounded-lg border border-black/10">
-                        <div class="w-6 h-6 rounded-full bg-black text-[#EBE3CB] flex items-center justify-center text-xs">🧙‍♂️</div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-parchment-dark">Mestre Admin</span>
+                        <div class="w-6 h-6 rounded-full bg-black text-amber-500 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-user text-amber-500"></i>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-parchment-dark">Admin</span>
                     </div>
                     <button onclick="logout()" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm">
                         <i class="fa-solid fa-right-from-bracket text-amber-500"></i> Sair
@@ -122,7 +121,7 @@
             <!-- MAIN NAVIGATION TABS -->
             <div class="flex flex-wrap gap-2 mb-6 bg-white/40 p-1.5 rounded-xl border border-black/10 shadow-xs">
                 <button onclick="switchMainTab('dash')" id="mtab-dash" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-400"></i></div>
+                    <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-500"></i></div>
                     Painel Geral
                 </button>
                 <button onclick="switchMainTab('prods')" id="mtab-prods" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
@@ -145,28 +144,28 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Receita -->
                     <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
-                            <i class="fa-solid fa-coins"></i>
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-coins text-amber-500"></i>
                         </div>
                         <div>
                             <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Receita Total</span>
-                            <span id="kpi-revenue" class="text-2xl font-black text-emerald-700">R$ 0,00</span>
+                            <span id="kpi-revenue" class="text-2xl font-black text-black">R$ 0,00</span>
                         </div>
                     </div>
                     <!-- Despesas -->
                     <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
-                            <i class="fa-solid fa-receipt"></i>
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-receipt text-amber-500"></i>
                         </div>
                         <div>
                             <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Despesas Totais</span>
-                            <span id="kpi-expenses" class="text-2xl font-black text-red-700">R$ 0,00</span>
+                            <span id="kpi-expenses" class="text-2xl font-black text-black">R$ 0,00</span>
                         </div>
                     </div>
                     <!-- Lucro -->
                     <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
-                            <i class="fa-solid fa-scale-balanced"></i>
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-scale-balanced text-amber-500"></i>
                         </div>
                         <div>
                             <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Lucro Líquido</span>
@@ -181,8 +180,8 @@
                     <div class="lg:col-span-2 space-y-6">
                         <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
-                                    <i class="fa-solid fa-chart-donut"></i>
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-chart-pie text-amber-500"></i>
                                 </div>
                                 <div>
                                     <h3 class="font-title text-xl text-parchment-dark">Despesas por Categoria</h3>
@@ -200,29 +199,29 @@
                         <!-- Registrar Venda -->
                         <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl border border-black/10 shadow-sm">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs">
-                                    <i class="fa-solid fa-cart-shopping"></i>
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-cart-shopping text-amber-500"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-title text-lg text-emerald-800">Registrar Venda</h3>
+                                    <h3 class="font-title text-lg text-parchment-dark">Registrar Venda</h3>
                                     <p class="text-[10px] uppercase font-bold text-zinc-400">Entrada Financeira</p>
                                 </div>
                             </div>
                             <form id="form-venda" class="space-y-3">
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Nome do Cliente</label>
-                                    <input type="text" id="venda-cliente" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: João Pedro" required>
+                                    <input type="text" id="venda-cliente" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Ex: João Pedro" required>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Produto Vendido</label>
-                                    <input type="text" id="venda-produto" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: Miniatura Dragão / Escudo" required>
+                                    <input type="text" id="venda-produto" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Ex: Miniatura Dragão / Escudo" required>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor Pago (R$)</label>
-                                    <input type="number" step="0.01" id="venda-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-emerald-600 focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
+                                    <input type="number" step="0.01" id="venda-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
                                 </div>
-                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
-                                    <i class="fa-solid fa-plus"></i> Confirmar Venda
+                                <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-plus text-amber-500"></i> Confirmar Venda
                                 </button>
                             </form>
                         </div>
@@ -230,27 +229,27 @@
                         <!-- Registrar Gasto -->
                         <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl border border-black/10 shadow-sm">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-9 h-9 rounded-lg bg-red-600 text-white flex items-center justify-center text-sm shadow-xs">
-                                    <i class="fa-solid fa-arrow-down-long"></i>
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-arrow-down-long text-amber-500"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-title text-lg text-red-800">Registrar Custo</h3>
+                                    <h3 class="font-title text-lg text-parchment-dark">Registrar Custo</h3>
                                     <p class="text-[10px] uppercase font-bold text-zinc-400">Saída Financeira</p>
                                 </div>
                             </div>
                             <form id="form-gasto" class="space-y-3">
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Descrição do Gasto</label>
-                                    <input type="text" id="gasto-desc" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none" placeholder="Ex: Garrafa de Resina" required>
+                                    <input type="text" id="gasto-desc" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Ex: Garrafa de Resina" required>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
                                         <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor (R$)</label>
-                                        <input type="number" step="0.01" id="gasto-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
+                                        <input type="number" step="0.01" id="gasto-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Ex: 150.00" required>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Categoria</label>
-                                        <select id="gasto-cat" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-red-600 focus:bg-white focus:outline-none">
+                                        <select id="gasto-cat" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
                                             <option value="Insumo">Insumo</option>
                                             <option value="Equipamento">Equipamento</option>
                                             <option value="Fixo">Fixo</option>
@@ -259,8 +258,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
-                                    <i class="fa-solid fa-minus"></i> Salvar Gasto
+                                <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-minus text-amber-500"></i> Salvar Gasto
                                 </button>
                             </form>
                         </div>
@@ -285,7 +284,7 @@
                         <!-- FORM -->
                         <div class="w-full lg:w-1/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-black/10 self-start">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
                                     <i class="fa-solid fa-plus-circle text-amber-500"></i>
                                 </div>
                                 <div>
@@ -298,11 +297,11 @@
                                 <input type="hidden" id="prod-type" value="miniatura">
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça</label>
-                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro">
+                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro">
                                 </div>
                                 <div id="field-category">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria</label>
-                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none">
+                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
                                         <option value="npcs">NPCs</option>
                                         <option value="monstros">Monstros</option>
                                         <option value="cenario">Cenário</option>
@@ -311,27 +310,27 @@
                                 <div id="fields-prices-mini" class="space-y-3">
                                     <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R$)</label>
-                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="89.90">
+                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="89.90">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R$)</label>
-                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="139.90">
+                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="139.90">
                                     </div>
                                 </div>
                                 <div id="field-price-arsenal" class="hidden">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R$)</label>
-                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="299.90">
+                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="299.90">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto</label>
-                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
+                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Foto do Seu Computador</label>
                                     <input type="file" id="prod-image" accept="image/*" class="w-full p-2 bg-zinc-50 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
                                 </div>
-                                <button type="submit" id="btn-submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase py-3 rounded-lg text-xs transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Publicar no Site
+                                <button type="submit" id="btn-submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-3 rounded-lg text-xs transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-cloud-arrow-up text-amber-500"></i> Publicar no Site
                                 </button>
                             </form>
                         </div>
@@ -339,8 +338,8 @@
                         <!-- LIST -->
                         <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-black/10">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
-                                    <i class="fa-solid fa-list-check"></i>
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-list-check text-amber-500"></i>
                                 </div>
                                 <div>
                                     <h2 class="font-title text-xl text-parchment-dark" id="list-title">Miniaturas Cadastradas</h2>
@@ -348,7 +347,7 @@
                                 </div>
                             </div>
                             <div id="loading-products" class="text-center py-12 text-zinc-500">
-                                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-amber-600"></i>
+                                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-amber-500"></i>
                                 <p class="text-xs font-bold uppercase tracking-wider">Buscando itens no Supabase...</p>
                             </div>
                             <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
@@ -361,8 +360,8 @@
             <div id="sec-fin" class="hidden bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm space-y-4">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
-                            <i class="fa-solid fa-book-bookmark text-amber-400"></i>
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-book-bookmark text-amber-500"></i>
                         </div>
                         <div>
                             <h2 class="font-title text-2xl text-parchment-dark">Livro de Contabilidade</h2>
@@ -399,7 +398,7 @@
                 <!-- FORM CLIENTE -->
                 <div class="w-full lg:w-1/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm self-start">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
                             <i class="fa-solid fa-user-plus text-amber-500"></i>
                         </div>
                         <div>
@@ -425,7 +424,7 @@
                             <input type="email" id="cli-email" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="cliente@email.com">
                         </div>
                         <button type="submit" class="w-full bg-black text-[#EBE3CB] font-bold uppercase py-3 rounded-lg text-xs hover:bg-zinc-800 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-address-book"></i> Cadastrar Cliente
+                            <i class="fa-solid fa-address-book text-amber-500"></i> Cadastrar Cliente
                         </button>
                     </form>
                 </div>
@@ -433,8 +432,8 @@
                 <!-- LISTA CLIENTES -->
                 <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-9 h-9 rounded-lg bg-black text-[#EBE3CB] flex items-center justify-center text-sm shadow-xs">
-                            <i class="fa-solid fa-users"></i>
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-users text-amber-500"></i>
                         </div>
                         <div>
                             <h2 class="font-title text-xl text-parchment-dark">Clientes Registrados</h2>
@@ -567,7 +566,7 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: ['#dc2626', '#d97706', '#2563eb', '#059669', '#7c3aed']
+                        backgroundColor: ['#000000', '#d97706', '#71717a', '#b45309', '#4a4435']
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
@@ -670,7 +669,7 @@
                                     ${p.type === 'miniatura' ? `<span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category}</span>` : ''}
                                     <div class="mt-1 text-[11px] text-zinc-500 line-clamp-1">${p.description}</div>
                                 </div>
-                                <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700 text-xs p-1 cursor-pointer" title="Excluir produto">
+                                <button onclick="deleteProduct('${p.id}')" class="text-zinc-500 hover:text-black text-xs p-1 cursor-pointer" title="Excluir produto">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -740,16 +739,16 @@
                     tbody.innerHTML = data.financeiro.map(r => `
                         <tr class="hover:bg-amber-50/40 transition-colors">
                             <td class="p-3.5 text-zinc-500 font-mono text-[11px]">${r.data}</td>
-                            <td class="p-3.5 font-bold ${r.tipo === 'Venda' ? 'text-emerald-700' : 'text-red-600'}">
-                                <span class="inline-flex items-center gap-1 ${r.tipo === 'Venda' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'} px-2 py-0.5 rounded text-[10px] uppercase font-bold">
-                                    <i class="fa-solid ${r.tipo === 'Venda' ? 'fa-arrow-up' : 'fa-arrow-down'} text-[9px]"></i> ${r.tipo}
+                            <td class="p-3.5 font-bold text-black">
+                                <span class="inline-flex items-center gap-1 bg-black text-[#EBE3CB] px-2 py-0.5 rounded text-[10px] uppercase font-bold">
+                                    <i class="fa-solid ${r.tipo === 'Venda' ? 'fa-arrow-up' : 'fa-arrow-down'} text-amber-500 text-[9px]"></i> ${r.tipo}
                                 </span>
                             </td>
                             <td class="p-3.5 font-medium text-zinc-900">${r.descricao}</td>
                             <td class="p-3.5"><span class="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold text-zinc-600">${r.categoria}</span></td>
-                            <td class="p-3.5 font-bold ${r.tipo === 'Venda' ? 'text-emerald-700' : 'text-red-600'}">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3.5 font-bold text-black">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
                             <td class="p-3.5 text-center">
-                                <button onclick="deleteFinance('${r.id}')" class="text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Excluir lançamento"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="deleteFinance('${r.id}')" class="text-zinc-500 hover:text-black p-1 cursor-pointer" title="Excluir lançamento"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `).join('');
@@ -784,7 +783,7 @@
                             <td class="p-3.5 text-zinc-700 font-semibold">${c.telefone}</td>
                             <td class="p-3.5 text-zinc-500">${c.endereco}</td>
                             <td class="p-3.5 text-center">
-                                <button onclick="deleteCustomer('${c.id}')" class="text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Excluir cliente"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="deleteCustomer('${c.id}')" class="text-zinc-500 hover:text-black p-1 cursor-pointer" title="Excluir cliente"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `).join('');
