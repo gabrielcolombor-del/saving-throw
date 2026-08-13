@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="color-scheme" content="only light">
+    <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
+    <meta name="samsung-dark-mode" content="false">
     <meta name="theme-color" content="#EBE3CB">
     <title>Estúdio de Efeitos Sonoros & Músicas | Saving Throw RPG</title>
     <meta name="description" content="Soundboard interativo otimizado para mobile e desktop com caixa de favoritos em cards, atalhos de teclado e mixer de áudio para RPG.">
@@ -16,8 +17,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        :root, html, body {
-            color-scheme: only light !important;
+        :root, html, body, header, main, footer, section, div, article, nav, aside {
+            color-scheme: light !important;
             supported-color-schemes: light !important;
             forced-color-adjust: none !important;
             -webkit-forced-color-adjust: none !important;
@@ -43,10 +44,13 @@
             font-weight: normal;
         }
 
-        /* Desativa forçamento de Dark Mode no Samsung Internet, Chrome Mobile e MIUI usando gradiente sólido (bypass de filtro Chromium) */
+        /* Desativa forçamento de Dark Mode no Samsung Internet, Chrome Mobile e MIUI usando gradiente sólido */
         .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
             background-color: #EBE3CB !important;
             background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .bg-parchment a:not(.bg-black), .bg-parchment button, .bg-parchment i {
             color: #000000 !important;
         }
         .text-parchment-dark { color: #4A4435 !important; }
@@ -73,9 +77,11 @@
 
         /* Garantia extra sob prefers-color-scheme: dark */
         @media (prefers-color-scheme: dark) {
-            :root, html, body {
-                color-scheme: only light !important;
+            :root, html, body, header, main, footer, section, div, article, nav, aside {
+                color-scheme: light !important;
                 supported-color-schemes: light !important;
+                forced-color-adjust: none !important;
+                -webkit-forced-color-adjust: none !important;
             }
             *, ::before, ::after {
                 forced-color-adjust: none !important;
