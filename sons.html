@@ -563,6 +563,7 @@
             { id: 'taverna', name: 'Taverna Animada', category: 'taverna', icon: 'fa-beer-mug-empty', desc: 'Risadas & Alaúde', ytId: 'roABNwbjZf4' },
             { id: 'floresta', name: 'Floresta Mística', category: 'ambiente', icon: 'fa-tree', desc: 'Vento & Pássaros', ytId: 'xNN7iTA57jM' },
             { id: 'chuva', name: 'Tempestade & Chuva', category: 'ambiente', icon: 'fa-cloud-showers-heavy', desc: 'Chuva Forte & Trovões', ytId: 'mPZkdNFkNps' },
+            { id: 'tempestade-areia', name: 'Tempestade de Areia', category: 'ambiente', icon: 'fa-wind', desc: 'Deserto & Ventania', ytId: 'NEOvz3k9DuQ', start: 10 },
             { id: 'fogueira', name: 'Fogueira de Acampamento', category: 'ambiente', icon: 'fa-fire', desc: 'Estalos de Madeira', ytId: 'L_LUpnjgPso' }
         ];
 
@@ -1472,16 +1473,35 @@
                 playersDiv.appendChild(playerElem);
             }
 
+            const playerVars = {
+                'autoplay': 1,
+                'controls': 0,
+                'loop': 1,
+                'playlist': amb.ytId
+            };
+            if (amb.start) {
+                playerVars.start = amb.start;
+            }
+
             const newPlayer = new YT.Player(playerId, {
                 height: '0',
                 width: '0',
                 videoId: amb.ytId,
-                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': amb.ytId },
+                playerVars: playerVars,
                 events: {
                     'onReady': (event) => {
                         const calcVol = Math.round(initialVol * (masterVolumeValue / 1));
                         event.target.setVolume(isMasterMuted ? 0 : calcVol);
+                        if (amb.start) {
+                            event.target.seekTo(amb.start, true);
+                        }
                         event.target.playVideo();
+                    },
+                    'onStateChange': (event) => {
+                        if (event.data === YT.PlayerState.ENDED && amb.start) {
+                            event.target.seekTo(amb.start, true);
+                            event.target.playVideo();
+                        }
                     }
                 }
             });
