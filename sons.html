@@ -147,8 +147,43 @@
             box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
         }
 
+        .central-scene-dropzone {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .central-scene-dropzone.drag-over {
+            border-color: #f59e0b !important;
+            background: radial-gradient(circle at center, rgba(245, 158, 11, 0.35) 0%, rgba(24, 24, 27, 0.95) 75%) !important;
+            box-shadow: 0 0 45px rgba(245, 158, 11, 0.6) !important;
+            transform: scale(1.02);
+        }
+
+        .scene-card {
+            transition: all 0.25s ease;
+        }
+
+        .scene-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .scene-card.is-active-scene {
+            border-color: #f59e0b !important;
+            background: linear-gradient(135deg, rgba(39, 39, 42, 0.95), rgba(217, 119, 6, 0.28)) !important;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+        }
+
+        .crossfade-pulsing {
+            animation: auraPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes auraPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.85); }
+        }
+
         [draggable="true"] { cursor: grab; touch-action: manipulation; }
-        [draggable="true"]:active { cursor: grabbing; opacity: 0.7; }
+        [draggable="true"]:active { cursor: grabbing; opacity: 0.75; }
     </style>
 </head>
 <body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between overflow-x-hidden">
@@ -279,6 +314,76 @@
                     </div>
 
                 </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: PALCO DE CENAS & PRESETS DE ÁUDIO DA AVENTURA -->
+        <section class="py-6 sm:py-8 bg-zinc-950/95 border-b border-zinc-800 relative overflow-hidden" id="scenes-deck-section">
+            <div class="container mx-auto px-4 max-w-6xl">
+                
+                <!-- Cabeçalho da Seção de Cenas -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/30">Presets da Aventura</span>
+                            <h2 class="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-masks-theater text-amber-400"></i> Cenas Sonoras da Mesa
+                            </h2>
+                        </div>
+                        <p class="text-zinc-400 text-xs mt-1">
+                            Monte suas cenas e transicione entre momentos da narrativa. Arraste qualquer card para o palco central para fazer um crossfade suave de 4 segundos.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="save-scene-btn" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold text-xs uppercase px-4 py-2.5 rounded-xl transition-all shadow-lg flex items-center gap-2 cursor-pointer shrink-0 group">
+                            <i class="fa-solid fa-bookmark group-hover:scale-110 transition-transform"></i>
+                            <span>Salvar Cena Atual</span>
+                            <span id="save-scene-badge" class="bg-black/30 text-black px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold">0 sons</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PALCO PRINCIPAL DE CENAS: CARD CENTRALIZADO ATIVO + CARROSSEL DE PRESETS -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                    
+                    <!-- CARD CENTRALIZADO ATIVO (STAGE / DROP TARGET COM CROSSFADE 4s) -->
+                    <div class="lg:col-span-5 flex flex-col">
+                        <div class="text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-2 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-play text-amber-500 animate-pulse"></i> Cena Ativa (Tocando Agora)
+                            </span>
+                            <span class="text-[10px] text-zinc-400 font-mono" id="active-scene-status-tag">Pronto</span>
+                        </div>
+
+                        <div id="central-active-scene-card" class="central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_30px_rgba(245,158,11,0.15)] min-h-[220px]">
+                            <!-- Preenchido dinamicamente via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- CARROSSEL / FILEIRA DE CARDS DE CENAS DA AVENTURA -->
+                    <div class="lg:col-span-7 flex flex-col min-w-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] uppercase tracking-wider text-zinc-400 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-layer-group text-zinc-400"></i> Cenas Salvas na Aventura (<span id="scenes-count-label">0</span>)
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <button id="scenes-scroll-left" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para esquerda">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button id="scenes-scroll-right" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para direita">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="scenes-carousel-track" class="scenes-track flex items-stretch gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar flex-grow select-none">
+                            <!-- Cards de cenas gerados via JavaScript -->
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
         </section>
 
@@ -466,6 +571,65 @@
         </div>
     </div>
 
+    <!-- MODAL DE CRIAR / SALVAR NOVA CENA -->
+    <div id="save-scene-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-amber-600/40 rounded-2xl p-5 sm:p-6 max-w-md w-full relative shadow-2xl">
+            <button id="close-scene-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 mx-auto flex items-center justify-center text-xl mb-2">
+                    <i class="fa-solid fa-masks-theater"></i>
+                </div>
+                <h3 class="text-2xl font-title text-amber-400 uppercase">Salvar Cena Sonora</h3>
+                <p class="text-xs text-zinc-400 mt-1">Crie um preset com os sons e volumes atualmente ativos nesta aventura.</p>
+            </div>
+
+            <form id="save-scene-form" class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome da Cena</label>
+                    <input type="text" id="scene-name-input" required placeholder="Ex: Taverna Festiva, Combate na Chuva..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Sugestões Rápidas</label>
+                    <div class="flex flex-wrap gap-1.5" id="scene-name-suggestions">
+                        <button type="button" class="scene-tag-btn text-[10px] bg-zinc-800 hover:bg-amber-600 hover:text-black text-zinc-300 px-2 py-1 rounded-md transition-all cursor-pointer">🍻 Taverna Animada</button>
+                        <button type="button" class="scene-tag-btn text-[10px] bg-zinc-800 hover:bg-amber-600 hover:text-black text-zinc-300 px-2 py-1 rounded-md transition-all cursor-pointer">⚔️ Batalha Épica</button>
+                        <button type="button" class="scene-tag-btn text-[10px] bg-zinc-800 hover:bg-amber-600 hover:text-black text-zinc-300 px-2 py-1 rounded-md transition-all cursor-pointer">⛈️ Noite de Tempestade</button>
+                        <button type="button" class="scene-tag-btn text-[10px] bg-zinc-800 hover:bg-amber-600 hover:text-black text-zinc-300 px-2 py-1 rounded-md transition-all cursor-pointer">🕯️ Masmorra Sombria</button>
+                        <button type="button" class="scene-tag-btn text-[10px] bg-zinc-800 hover:bg-amber-600 hover:text-black text-zinc-300 px-2 py-1 rounded-md transition-all cursor-pointer">🏕️ Acampamento na Floresta</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Ícone da Cena</label>
+                    <div class="grid grid-cols-6 gap-2" id="scene-icon-selector">
+                        <button type="button" data-icon="fa-masks-theater" class="scene-icon-opt active p-2 rounded-lg bg-amber-600 text-black flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-masks-theater"></i></button>
+                        <button type="button" data-icon="fa-beer-mug-empty" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-beer-mug-empty"></i></button>
+                        <button type="button" data-icon="fa-shield-halved" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-shield-halved"></i></button>
+                        <button type="button" data-icon="fa-cloud-showers-heavy" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-cloud-showers-heavy"></i></button>
+                        <button type="button" data-icon="fa-skull" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-skull"></i></button>
+                        <button type="button" data-icon="fa-fire" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-fire"></i></button>
+                    </div>
+                </div>
+
+                <!-- Resumo dos sons que serão salvos -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Sons Ativos Incluídos no Preset</label>
+                    <div id="modal-sounds-preview" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 max-h-28 overflow-y-auto no-scrollbar space-y-1.5 text-xs">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer shadow-lg">
+                    Salvar Cena na Aventura
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-parchment text-black py-8 sm:py-12 border-t border-black/10 mt-auto">
         <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
@@ -568,8 +732,38 @@
         ];
 
         // ==========================================
-        // SISTEMA DE USUÁRIO E GERENCIADOR DE MESAS (PROFILES)
+        // SISTEMA DE USUÁRIO E GERENCIADOR DE MESAS (PROFILES) & CENAS
         // ==========================================
+
+        const defaultPresetScenes = [
+            {
+                id: 'scene_taverna_fogueira',
+                name: 'Taverna Aconchegante',
+                icon: 'fa-beer-mug-empty',
+                tracks: [
+                    { id: 'taverna', vol: 80 },
+                    { id: 'fogueira', vol: 30 }
+                ]
+            },
+            {
+                id: 'scene_combate_tempestade',
+                name: 'Batalha na Tempestade',
+                icon: 'fa-shield-halved',
+                tracks: [
+                    { id: 'combate-1', vol: 75 },
+                    { id: 'chuva', vol: 45 }
+                ]
+            },
+            {
+                id: 'scene_exploracao_sombria',
+                name: 'Exploração Misteriosa',
+                icon: 'fa-compass',
+                tracks: [
+                    { id: 'exploracao-suspense', vol: 70 },
+                    { id: 'fogueira', vol: 15 }
+                ]
+            }
+        ];
 
         let currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
         
@@ -579,7 +773,8 @@
                 name: 'Mesa 1: Aventura Principal',
                 favorites: [],
                 favoriteAmbients: [],
-                quick_slots: {}
+                quick_slots: {},
+                scenes: JSON.parse(JSON.stringify(defaultPresetScenes))
             }
         ];
 
@@ -593,8 +788,11 @@
             }
             activeProfileId = localStorage.getItem('st_active_profile') || tableProfiles[0]?.id || 'default_mesa';
         } else {
-            localStorage.removeItem('st_table_profiles');
-            localStorage.removeItem('st_active_profile');
+            const saved = localStorage.getItem('st_table_profiles');
+            if (saved) {
+                try { tableProfiles = JSON.parse(saved); } catch(e) {}
+            }
+            activeProfileId = localStorage.getItem('st_active_profile') || tableProfiles[0]?.id || 'default_mesa';
         }
 
         function getActiveProfile() {
@@ -603,12 +801,21 @@
                 p = tableProfiles[0];
                 activeProfileId = p.id;
             }
-            return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], favoriteAmbients: [], quick_slots: {} };
+            if (p && (!p.scenes || p.scenes.length === 0)) {
+                p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
+            }
+            return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], favoriteAmbients: [], quick_slots: {}, scenes: JSON.parse(JSON.stringify(defaultPresetScenes)) };
         }
 
         let favoriteSounds = getActiveProfile().favorites || [];
         let favoriteAmbients = getActiveProfile().favoriteAmbients || getActiveProfile().favorite_ambients || [];
         let quickSlots = getActiveProfile().quick_slots || {};
+        let tableScenes = getActiveProfile().scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+        let activeSceneId = null;
+        let crossfadeIntervalId = null;
+        let isCrossfading = false;
+        let crossfadeTargetScene = null;
+        let selectedModalIcon = 'fa-masks-theater';
 
         function syncActiveProfileChanges() {
             const p = getActiveProfile();
@@ -616,11 +823,12 @@
             p.favoriteAmbients = favoriteAmbients;
             p.favorite_ambients = favoriteAmbients;
             p.quick_slots = quickSlots;
+            p.scenes = tableScenes;
+
+            localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+            localStorage.setItem('st_active_profile', activeProfileId);
 
             if (currentUser && currentUser.id) {
-                localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
-                localStorage.setItem('st_active_profile', activeProfileId);
-
                 fetch('/api/gm-profiles?action=save_profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -630,7 +838,8 @@
                         name: p.name,
                         favorites: p.favorites,
                         favoriteAmbients: p.favoriteAmbients,
-                        quickSlots: p.quick_slots
+                        quickSlots: p.quick_slots,
+                        scenes: p.scenes
                     })
                 }).catch(e => console.log('Sync server err:', e));
             }
@@ -662,12 +871,15 @@
                 favoriteSounds = p.favorites || [];
                 favoriteAmbients = p.favoriteAmbients || p.favorite_ambients || [];
                 quickSlots = p.quick_slots || {};
+                tableScenes = p.scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+                activeSceneId = null;
                 if (currentUser) localStorage.setItem('st_active_profile', activeProfileId);
 
                 renderQuickSlots();
                 renderFavorites();
                 renderSFXCatalog();
                 renderAmbients();
+                renderScenesUI();
             });
         }
 
@@ -690,13 +902,16 @@
                         name: name.trim(),
                         favorites: [],
                         favoriteAmbients: [],
-                        quick_slots: {}
+                        quick_slots: {},
+                        scenes: JSON.parse(JSON.stringify(defaultPresetScenes))
                     };
                     tableProfiles.push(newProfile);
                     activeProfileId = newId;
                     favoriteSounds = newProfile.favorites;
                     favoriteAmbients = newProfile.favoriteAmbients;
                     quickSlots = newProfile.quick_slots;
+                    tableScenes = newProfile.scenes;
+                    activeSceneId = null;
 
                     syncActiveProfileChanges();
                     renderTableProfilesUI();
@@ -704,6 +919,7 @@
                     renderFavorites();
                     renderSFXCatalog();
                     renderAmbients();
+                    renderScenesUI();
                 }
             });
         }
@@ -752,6 +968,8 @@
                     favoriteSounds = nextP.favorites || [];
                     favoriteAmbients = nextP.favoriteAmbients || nextP.favorite_ambients || [];
                     quickSlots = nextP.quick_slots || {};
+                    tableScenes = nextP.scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+                    activeSceneId = null;
 
                     fetch('/api/gm-profiles?action=delete_profile', {
                         method: 'POST',
@@ -765,6 +983,7 @@
                     renderFavorites();
                     renderSFXCatalog();
                     renderAmbients();
+                    renderScenesUI();
                 }
             });
         }
@@ -828,13 +1047,16 @@
                     name: 'Mesa 1: Aventura Principal',
                     favorites: [],
                     favoriteAmbients: [],
-                    quick_slots: {}
+                    quick_slots: {},
+                    scenes: JSON.parse(JSON.stringify(defaultPresetScenes))
                 }
             ];
             activeProfileId = 'default_mesa';
             favoriteSounds = [];
             favoriteAmbients = [];
             quickSlots = {};
+            tableScenes = JSON.parse(JSON.stringify(defaultPresetScenes));
+            activeSceneId = null;
 
             updateAuthUI();
             renderTableProfilesUI();
@@ -842,6 +1064,7 @@
             renderFavorites();
             renderSFXCatalog();
             renderAmbients();
+            renderScenesUI();
         }
 
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
@@ -902,11 +1125,18 @@
                     currentUser = data.user;
                     localStorage.setItem('st_user', JSON.stringify(currentUser));
                     if (data.profiles && data.profiles.length > 0) {
-                        tableProfiles = data.profiles;
+                        tableProfiles = data.profiles.map(p => {
+                            if (!p.scenes || p.scenes.length === 0) {
+                                p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
+                            }
+                            return p;
+                        });
                         activeProfileId = tableProfiles[0].id;
                         favoriteSounds = tableProfiles[0].favorites || [];
                         favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
                         quickSlots = tableProfiles[0].quick_slots || {};
+                        tableScenes = tableProfiles[0].scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+                        activeSceneId = null;
                         localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
                         localStorage.setItem('st_active_profile', activeProfileId);
                     }
@@ -917,6 +1147,7 @@
                     renderFavorites();
                     renderSFXCatalog();
                     renderAmbients();
+                    renderScenesUI();
                     closeAuthModal();
                 } catch (err) {
                     if (authErrorMsg) {
@@ -952,11 +1183,18 @@
                 localStorage.setItem('st_user', JSON.stringify(currentUser));
 
                 if (data.profiles && data.profiles.length > 0) {
-                    tableProfiles = data.profiles;
+                    tableProfiles = data.profiles.map(p => {
+                        if (!p.scenes || p.scenes.length === 0) {
+                            p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
+                        }
+                        return p;
+                    });
                     activeProfileId = tableProfiles[0].id;
                     favoriteSounds = tableProfiles[0].favorites || [];
                     favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
                     quickSlots = tableProfiles[0].quick_slots || {};
+                    tableScenes = tableProfiles[0].scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+                    activeSceneId = null;
                     localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
                     localStorage.setItem('st_active_profile', activeProfileId);
                 }
@@ -967,6 +1205,7 @@
                 renderFavorites();
                 renderSFXCatalog();
                 renderAmbients();
+                renderScenesUI();
                 closeAuthModal();
             } catch (err) {
                 console.error('Google login error:', err);
@@ -1273,12 +1512,14 @@
             const container = document.getElementById('active-tracks-container');
             const noMsg = document.getElementById('no-active-tracks-msg');
             const countLabel = document.getElementById('active-tracks-count');
+            const saveSceneBadge = document.getElementById('save-scene-badge');
             if (!container) return;
 
             container.querySelectorAll('.active-track-bar').forEach(el => el.remove());
             const keys = Object.keys(activeTracks);
 
             if (countLabel) countLabel.textContent = `${keys.length} ${keys.length === 1 ? 'faixa tocando' : 'faixas tocando'}`;
+            if (saveSceneBadge) saveSceneBadge.textContent = `${keys.length} ${keys.length === 1 ? 'som' : 'sons'}`;
 
             if (keys.length === 0) {
                 if (noMsg) noMsg.classList.remove('hidden');
@@ -1623,9 +1864,18 @@
 
         if (resetAmbientsBtn) {
             resetAmbientsBtn.addEventListener('click', () => {
+                if (crossfadeIntervalId) {
+                    clearInterval(crossfadeIntervalId);
+                    crossfadeIntervalId = null;
+                }
+                isCrossfading = false;
+                crossfadeTargetScene = null;
+                activeSceneId = null;
+
                 Object.keys(activeTracks).forEach(ambId => {
                     stopAmbientTrack(ambId);
                 });
+                renderScenesUI();
             });
         }
 
@@ -1636,6 +1886,562 @@
                     syncActiveProfileChanges();
                     renderQuickSlots();
                 }
+            });
+        }
+
+        // ==========================================
+        // MOTOR DE CENAS & CROSSFADE DE 4 SEGUNDOS
+        // ==========================================
+
+        function renderScenesUI() {
+            renderCentralActiveSceneCard();
+            renderScenesCarousel();
+        }
+
+        function renderCentralActiveSceneCard() {
+            const container = document.getElementById('central-active-scene-card');
+            const statusTag = document.getElementById('active-scene-status-tag');
+            if (!container) return;
+
+            const activeScene = tableScenes.find(s => s.id === activeSceneId);
+            const activeCount = Object.keys(activeTracks).length;
+
+            if (isCrossfading && crossfadeTargetScene) {
+                if (statusTag) statusTag.textContent = 'Transicionando (4s)...';
+                container.className = 'central-scene-dropzone relative flex-grow bg-gradient-to-br from-amber-950/40 via-zinc-900 to-zinc-950 border-2 border-amber-500 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_35px_rgba(245,158,11,0.3)] min-h-[220px] crossfade-pulsing';
+                
+                container.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-amber-500 text-black text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1.5 animate-pulse">
+                                <i class="fa-solid fa-arrows-rotate animate-spin"></i> Crossfade em Andamento
+                            </span>
+                            <span class="text-xs font-mono font-bold text-amber-400" id="crossfade-countdown">4.0s</span>
+                        </div>
+
+                        <div class="flex items-center gap-3 my-2">
+                            <div class="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid ${crossfadeTargetScene.icon || 'fa-masks-theater'}"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-zinc-400 uppercase tracking-wider block">Transicionando para</span>
+                                <h3 class="text-base sm:text-lg font-bold text-white leading-tight font-title">${crossfadeTargetScene.name}</h3>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Progresso do Crossfade -->
+                        <div class="w-full bg-zinc-950 border border-zinc-800 rounded-full h-3.5 p-0.5 overflow-hidden my-3 shadow-inner">
+                            <div id="crossfade-progress-bar" class="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-yellow-300 rounded-full transition-all duration-75 ease-linear shadow-[0_0_12px_rgba(245,158,11,0.8)]" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-[11px] text-zinc-400 italic text-center border-t border-zinc-800/80 pt-2 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-sliders text-amber-500"></i> Ajustando volumes e alternando faixas suavemente...
+                    </div>
+                `;
+            } else if (activeScene) {
+                if (statusTag) statusTag.textContent = 'Cena Ativa';
+                container.className = 'central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/70 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_25px_rgba(245,158,11,0.2)] min-h-[220px]';
+
+                const soundPills = activeScene.tracks.map(t => {
+                    const amb = ambientData.find(a => a.id === t.id);
+                    const currentVol = activeTracks[t.id] ? activeTracks[t.id].vol : t.vol;
+                    const isPlaying = !!activeTracks[t.id] && !activeTracks[t.id].isPaused;
+                    return `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isPlaying ? 'bg-amber-500/15 border-amber-500/40 text-amber-300' : 'bg-zinc-800 border-zinc-700 text-zinc-400'} border text-[11px] font-semibold">
+                            <i class="fa-solid ${amb ? amb.icon : 'fa-compact-disc'} text-[10px]"></i>
+                            <span>${amb ? amb.name : t.id}</span>
+                            <span class="text-[10px] font-mono text-amber-400 font-bold">${currentVol}%</span>
+                        </span>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40 uppercase flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                Tocando Agora
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <button id="update-current-scene-btn" class="text-zinc-400 hover:text-amber-400 p-1 text-xs cursor-pointer" title="Sobrescrever preset com volumes atuais">
+                                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                                </button>
+                                <button id="rename-current-scene-btn" class="text-zinc-400 hover:text-amber-400 p-1 text-xs cursor-pointer" title="Renomear cena">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-2xl shrink-0 shadow-md">
+                                    <i class="fa-solid ${activeScene.icon || 'fa-masks-theater'}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg sm:text-xl font-bold text-white font-title leading-tight">${activeScene.name}</h3>
+                                    <span class="text-[10px] text-zinc-400 uppercase tracking-wider">${activeScene.tracks.length} ${activeScene.tracks.length === 1 ? 'faixa sonora' : 'faixas sonoras'} no preset</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-end gap-1 h-5">
+                                <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                                <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                                <span class="equalizer-bar w-1 bg-amber-500 rounded-full"></span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5 mb-3 max-h-24 overflow-y-auto no-scrollbar py-0.5">
+                            ${soundPills || '<span class="text-zinc-500 text-xs italic">Nenhum som atribuído</span>'}
+                        </div>
+                    </div>
+
+                    <!-- Drop Target Banner -->
+                    <div class="bg-zinc-950/80 border border-dashed border-zinc-700/80 hover:border-amber-500/60 rounded-xl p-2 text-center text-[11px] text-zinc-400 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-hand-holding-hand text-amber-400 text-xs"></i>
+                        <span>Arraste outro card para cá para transicionar em <strong>4s</strong></span>
+                    </div>
+                `;
+
+                const updateBtn = container.querySelector('#update-current-scene-btn');
+                if (updateBtn) {
+                    updateBtn.addEventListener('click', () => updateSceneWithCurrent(activeScene.id));
+                }
+                const renameBtn = container.querySelector('#rename-current-scene-btn');
+                if (renameBtn) {
+                    renameBtn.addEventListener('click', () => renameScene(activeScene.id));
+                }
+            } else {
+                if (statusTag) statusTag.textContent = activeCount > 0 ? `${activeCount} sons avulsos` : 'Nenhuma';
+                container.className = 'central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900/90 to-zinc-950 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-2xl p-5 flex flex-col items-center justify-center text-center transition-all min-h-[220px]';
+
+                container.innerHTML = `
+                    <div class="w-12 h-12 rounded-2xl bg-zinc-800/80 text-amber-500 border border-zinc-700/60 flex items-center justify-center text-2xl mb-2.5 shadow-inner">
+                        <i class="fa-solid fa-masks-theater"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white font-title mb-1">Palco Central de Cenas</h3>
+                    <p class="text-xs text-zinc-400 max-w-xs mb-3">
+                        Arraste um card de cena do deck ao lado para cá ou clique em <strong>Tocar (4s)</strong> para iniciar a narrativa sonora com crossfade.
+                    </p>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-arrow-down animate-bounce"></i> Solte uma cena aqui
+                    </div>
+                `;
+            }
+
+            // Drag and Drop Handlers para o Palco Central
+            container.ondragover = (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                container.classList.add('drag-over');
+            };
+
+            container.ondragleave = (e) => {
+                if (!container.contains(e.relatedTarget)) {
+                    container.classList.remove('drag-over');
+                }
+            };
+
+            container.ondrop = (e) => {
+                e.preventDefault();
+                container.classList.remove('drag-over');
+                const droppedSceneId = e.dataTransfer.getData('text/plain');
+                if (droppedSceneId) {
+                    const scene = tableScenes.find(s => s.id === droppedSceneId);
+                    if (scene) {
+                        transitionToScene(scene, 4000);
+                    }
+                }
+            };
+        }
+
+        function renderScenesCarousel() {
+            const track = document.getElementById('scenes-carousel-track');
+            const countLabel = document.getElementById('scenes-count-label');
+            if (!track) return;
+
+            track.innerHTML = '';
+            if (countLabel) countLabel.textContent = tableScenes.length;
+
+            if (tableScenes.length === 0) {
+                track.innerHTML = `
+                    <div class="w-full text-center py-8 text-zinc-500 text-xs italic flex flex-col items-center justify-center gap-2">
+                        <i class="fa-solid fa-folder-open text-xl text-zinc-600"></i>
+                        <span>Nenhuma cena criada nesta aventura. Ative sons e clique em <strong>"+ Salvar Cena Atual"</strong>!</span>
+                    </div>
+                `;
+                return;
+            }
+
+            tableScenes.forEach(scene => {
+                const isActive = scene.id === activeSceneId;
+                const card = document.createElement('div');
+                card.className = `scene-card min-w-[220px] sm:min-w-[235px] max-w-[245px] bg-zinc-900 border ${isActive ? 'is-active-scene border-amber-500 bg-amber-950/20' : 'border-zinc-800 hover:border-zinc-700'} rounded-xl p-3 sm:p-3.5 flex flex-col justify-between select-none relative group shrink-0 shadow-md cursor-grab active:cursor-grabbing`;
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-scene-id', scene.id);
+
+                const trackPreview = scene.tracks.slice(0, 3).map(t => {
+                    const amb = ambientData.find(a => a.id === t.id);
+                    return `
+                        <div class="flex items-center justify-between text-[10px] text-zinc-400 py-0.5">
+                            <span class="truncate max-w-[130px] flex items-center gap-1">
+                                <i class="fa-solid ${amb ? amb.icon : 'fa-compact-disc'} text-[9px] text-amber-500/80"></i>
+                                ${amb ? amb.name : t.id}
+                            </span>
+                            <span class="font-mono text-zinc-300 font-bold">${t.vol}%</span>
+                        </div>
+                    `;
+                }).join('');
+
+                const extraCount = scene.tracks.length > 3 ? `<span class="text-[9px] text-zinc-500 font-semibold">+${scene.tracks.length - 3} mais</span>` : '';
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Header do Card -->
+                        <div class="flex items-start justify-between gap-1.5 mb-2">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-8 h-8 rounded-lg ${isActive ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-amber-400 border border-zinc-700'} flex items-center justify-center text-sm shrink-0 transition-all">
+                                    <i class="fa-solid ${scene.icon || 'fa-masks-theater'}"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-white text-xs sm:text-sm truncate leading-tight font-title group-hover:text-amber-400 transition-colors">${scene.name}</h4>
+                                    <span class="text-[9px] text-zinc-500 uppercase tracking-wider">${scene.tracks.length} ${scene.tracks.length === 1 ? 'faixa' : 'faixas'}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button class="scene-rename-btn text-zinc-500 hover:text-amber-400 p-1 text-[11px] cursor-pointer" title="Renomear">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="scene-delete-btn text-zinc-500 hover:text-red-400 p-1 text-[11px] cursor-pointer" title="Excluir">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Sons da Cena -->
+                        <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-lg p-2 mb-2.5 flex flex-col gap-0.5">
+                            ${trackPreview || '<div class="text-[10px] text-zinc-500 italic">Sem faixas</div>'}
+                            ${extraCount}
+                        </div>
+                    </div>
+
+                    <!-- Botão de Ação: Tocar com Fade 4s -->
+                    <div class="flex items-center gap-1.5 pt-1.5 border-t border-zinc-800/80">
+                        <button class="scene-play-btn flex-grow bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-black border border-amber-500/40 font-bold uppercase text-[10px] tracking-wider py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid ${isActive ? 'fa-rotate' : 'fa-play'} text-[9px]"></i>
+                            <span>${isActive ? 'Reiniciar (4s)' : 'Tocar (4s)'}</span>
+                        </button>
+                        <button class="scene-update-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-amber-400 border border-zinc-700 font-bold text-[10px] py-1.5 px-2 rounded-lg transition-all cursor-pointer" title="Sobrescrever preset com sons tocando agora">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                        </button>
+                    </div>
+                `;
+
+                // Drag & Drop
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', scene.id);
+                    e.dataTransfer.effectAllowed = 'copyMove';
+                    card.classList.add('opacity-40');
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('opacity-40');
+                });
+
+                // Botões de Ação
+                const playBtn = card.querySelector('.scene-play-btn');
+                playBtn.addEventListener('click', () => {
+                    transitionToScene(scene, 4000);
+                });
+
+                const updateBtn = card.querySelector('.scene-update-btn');
+                updateBtn.addEventListener('click', () => {
+                    updateSceneWithCurrent(scene.id);
+                });
+
+                const renameBtn = card.querySelector('.scene-rename-btn');
+                renameBtn.addEventListener('click', () => {
+                    renameScene(scene.id);
+                });
+
+                const deleteBtn = card.querySelector('.scene-delete-btn');
+                deleteBtn.addEventListener('click', () => {
+                    deleteScene(scene.id);
+                });
+
+                track.appendChild(card);
+            });
+        }
+
+        // MOTOR CROSSFADE DE 4 SEGUNDOS (4000ms)
+        function transitionToScene(targetScene, durationMs = 4000) {
+            if (!targetScene || !targetScene.tracks) return;
+
+            if (crossfadeIntervalId) {
+                clearInterval(crossfadeIntervalId);
+                crossfadeIntervalId = null;
+            }
+
+            isCrossfading = true;
+            crossfadeTargetScene = targetScene;
+            const startTime = Date.now();
+
+            // Mapeia volumes alvo
+            const targetMap = {};
+            targetScene.tracks.forEach(t => {
+                targetMap[t.id] = parseInt(t.vol);
+            });
+
+            // Conjunto de todos os sons envolvidos
+            const allAmbIds = new Set([
+                ...Object.keys(activeTracks),
+                ...targetScene.tracks.map(t => t.id)
+            ]);
+
+            const trackFades = {};
+
+            allAmbIds.forEach(ambId => {
+                const currentTrack = activeTracks[ambId];
+                const startVol = currentTrack ? currentTrack.vol : 0;
+                const endVol = targetMap[ambId] !== undefined ? targetMap[ambId] : 0;
+
+                // Se não está tocando e deve entrar na cena, inicia com volume 0 imediatamente
+                if (!currentTrack && endVol > 0) {
+                    const ambObj = ambientData.find(a => a.id === ambId);
+                    if (ambObj) {
+                        startAmbientTrack(ambObj, 0);
+                    }
+                }
+
+                trackFades[ambId] = {
+                    startVol: startVol,
+                    endVol: endVol
+                };
+            });
+
+            activeSceneId = targetScene.id;
+            renderScenesUI();
+
+            crossfadeIntervalId = setInterval(() => {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / durationMs);
+                const remainingSec = Math.max(0, (durationMs - elapsed) / 1000).toFixed(1);
+
+                // Interpolação suave dos volumes de cada faixa
+                Object.keys(trackFades).forEach(ambId => {
+                    const fade = trackFades[ambId];
+                    const currentVol = Math.round(fade.startVol + (fade.endVol - fade.startVol) * progress);
+
+                    if (activeTracks[ambId]) {
+                        activeTracks[ambId].vol = currentVol;
+                        updateTrackVolume(ambId);
+                    }
+                });
+
+                // Atualiza a barra visual de progresso e contagem
+                updateCrossfadeProgressUI(progress, remainingSec);
+                renderActiveTracksHeaderPanel();
+
+                if (progress >= 1) {
+                    clearInterval(crossfadeIntervalId);
+                    crossfadeIntervalId = null;
+                    isCrossfading = false;
+                    crossfadeTargetScene = null;
+
+                    // Finaliza: interrompe faixas cujo volume chegou a 0
+                    Object.keys(trackFades).forEach(ambId => {
+                        const fade = trackFades[ambId];
+                        if (fade.endVol === 0) {
+                            stopAmbientTrack(ambId);
+                        } else if (activeTracks[ambId]) {
+                            activeTracks[ambId].vol = fade.endVol;
+                            updateTrackVolume(ambId);
+                        }
+                    });
+
+                    renderAmbients();
+                    renderActiveTracksHeaderPanel();
+                    renderScenesUI();
+                }
+            }, 50);
+        }
+
+        function updateCrossfadeProgressUI(progress, remainingSec) {
+            const bar = document.getElementById('crossfade-progress-bar');
+            const countdown = document.getElementById('crossfade-countdown');
+            if (bar) {
+                bar.style.width = `${Math.round(progress * 100)}%`;
+            }
+            if (countdown) {
+                countdown.textContent = `${remainingSec}s`;
+            }
+        }
+
+        function updateSceneWithCurrent(sceneId) {
+            const scene = tableScenes.find(s => s.id === sceneId);
+            if (!scene) return;
+
+            const activeKeys = Object.keys(activeTracks);
+            if (activeKeys.length === 0) {
+                alert('Nenhum som ambiente ativo no momento para salvar no preset!');
+                return;
+            }
+
+            if (confirm(`Deseja sobrescrever o preset da cena "${scene.name}" com os ${activeKeys.length} sons e volumes ativos no momento?`)) {
+                scene.tracks = activeKeys.map(id => ({
+                    id: id,
+                    vol: activeTracks[id].vol
+                }));
+                syncActiveProfileChanges();
+                renderScenesUI();
+            }
+        }
+
+        function renameScene(sceneId) {
+            const scene = tableScenes.find(s => s.id === sceneId);
+            if (!scene) return;
+
+            const newName = prompt('Digite o novo nome para esta Cena:', scene.name);
+            if (newName && newName.trim()) {
+                scene.name = newName.trim();
+                syncActiveProfileChanges();
+                renderScenesUI();
+            }
+        }
+
+        function deleteScene(sceneId) {
+            const scene = tableScenes.find(s => s.id === sceneId);
+            if (!scene) return;
+
+            if (confirm(`Deseja realmente excluir a cena "${scene.name}" desta aventura?`)) {
+                tableScenes = tableScenes.filter(s => s.id !== sceneId);
+                if (activeSceneId === sceneId) activeSceneId = null;
+                syncActiveProfileChanges();
+                renderScenesUI();
+            }
+        }
+
+        // MODAL DE SALVAR NOVA CENA
+        const saveSceneBtn = document.getElementById('save-scene-btn');
+        const saveSceneModal = document.getElementById('save-scene-modal');
+        const closeSceneModalBtn = document.getElementById('close-scene-modal');
+        const saveSceneForm = document.getElementById('save-scene-form');
+        const sceneNameInput = document.getElementById('scene-name-input');
+        const modalSoundsPreview = document.getElementById('modal-sounds-preview');
+        const suggestionBtns = document.querySelectorAll('.scene-tag-btn');
+        const iconBtns = document.querySelectorAll('.scene-icon-opt');
+
+        function openSaveSceneModal() {
+            if (!saveSceneModal) return;
+            const activeKeys = Object.keys(activeTracks);
+
+            if (modalSoundsPreview) {
+                if (activeKeys.length === 0) {
+                    modalSoundsPreview.innerHTML = `
+                        <div class="text-zinc-500 italic py-2 text-center">
+                            Nenhum som ambiente tocando agora. A cena será criada com faixas padrão ou você pode ativar sons antes de salvar!
+                        </div>
+                    `;
+                } else {
+                    modalSoundsPreview.innerHTML = activeKeys.map(id => {
+                        const trk = activeTracks[id];
+                        const amb = trk.ambObj;
+                        return `
+                            <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid ${amb.icon} text-amber-500"></i>
+                                    <span class="font-bold">${amb.name}</span>
+                                </span>
+                                <span class="text-amber-400 font-mono font-bold">${trk.vol}%</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            if (sceneNameInput) {
+                sceneNameInput.value = '';
+            }
+            saveSceneModal.classList.remove('hidden');
+            if (sceneNameInput) sceneNameInput.focus();
+        }
+
+        function closeSaveSceneModal() {
+            if (saveSceneModal) saveSceneModal.classList.add('hidden');
+        }
+
+        if (saveSceneBtn) saveSceneBtn.addEventListener('click', openSaveSceneModal);
+        if (closeSceneModalBtn) closeSceneModalBtn.addEventListener('click', closeSaveSceneModal);
+
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (sceneNameInput) {
+                    sceneNameInput.value = btn.textContent.replace(/[^\w\sÀ-ú]/gi, '').trim();
+                }
+            });
+        });
+
+        iconBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                iconBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-amber-600', 'text-black');
+                    b.classList.add('bg-zinc-800', 'text-amber-400');
+                });
+                btn.classList.add('active', 'bg-amber-600', 'text-black');
+                btn.classList.remove('bg-zinc-800', 'text-amber-400');
+                selectedModalIcon = btn.getAttribute('data-icon') || 'fa-masks-theater';
+            });
+        });
+
+        if (saveSceneForm) {
+            saveSceneForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = sceneNameInput.value.trim();
+                if (!name) return;
+
+                const activeKeys = Object.keys(activeTracks);
+                let tracksToSave = [];
+
+                if (activeKeys.length > 0) {
+                    tracksToSave = activeKeys.map(id => ({
+                        id: id,
+                        vol: activeTracks[id].vol
+                    }));
+                } else {
+                    // Fallback com 1 som ambiente inicial caso nenhum esteja tocando
+                    tracksToSave = [{ id: 'taverna', vol: 70 }];
+                }
+
+                const newScene = {
+                    id: `scene_${Date.now()}`,
+                    name: name,
+                    icon: selectedModalIcon,
+                    tracks: tracksToSave
+                };
+
+                tableScenes.unshift(newScene);
+                activeSceneId = newScene.id;
+                syncActiveProfileChanges();
+                renderScenesUI();
+                closeSaveSceneModal();
+            });
+        }
+
+        // CARROSSEL DE CENAS - BOTÕES DE SCROLL
+        const scrollLeftBtn = document.getElementById('scenes-scroll-left');
+        const scrollRightBtn = document.getElementById('scenes-scroll-right');
+        const scenesTrack = document.getElementById('scenes-carousel-track');
+
+        if (scrollLeftBtn && scenesTrack) {
+            scrollLeftBtn.addEventListener('click', () => {
+                scenesTrack.scrollBy({ left: -240, behavior: 'smooth' });
+            });
+        }
+        if (scrollRightBtn && scenesTrack) {
+            scrollRightBtn.addEventListener('click', () => {
+                scenesTrack.scrollBy({ left: 240, behavior: 'smooth' });
             });
         }
 
@@ -1691,6 +2497,7 @@
             renderSFXCatalog();
             renderAmbients();
             renderActiveTracksHeaderPanel();
+            renderScenesUI();
         });
     </script>
 </body>

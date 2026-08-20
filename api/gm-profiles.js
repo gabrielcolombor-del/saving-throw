@@ -39,10 +39,12 @@ async function ensureTablesExist() {
         favorites JSONB DEFAULT '[]'::jsonb,
         favorite_ambients JSONB DEFAULT '[]'::jsonb,
         quick_slots JSONB DEFAULT '{}'::jsonb,
+        scenes JSONB DEFAULT '[]'::jsonb,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS favorite_ambients JSONB DEFAULT '[]'::jsonb;
+      ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS scenes JSONB DEFAULT '[]'::jsonb;
     `);
   } catch (e) {
     console.error('Erro ao garantir tabelas no banco:', e.message);
@@ -83,9 +85,9 @@ module.exports = async (req, res) => {
         if (profiles.length === 0) {
           const defaultProfileId = `mesa_${Date.now()}`;
           await pool.query(`
-            INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots)
-            VALUES ($1, $2, $3, $4, $5, $6)
-          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify([]), JSON.stringify({})]);
+            INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, scenes)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify([]), JSON.stringify({}), JSON.stringify([])]);
 
           const resP = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
           profiles = resP.rows;
@@ -143,9 +145,9 @@ module.exports = async (req, res) => {
 
           const defaultProfileId = `mesa_${Date.now()}`;
           await pool.query(`
-            INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots)
-            VALUES ($1, $2, $3, $4, $5, $6)
-          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify([]), JSON.stringify({})]);
+            INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, scenes)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [defaultProfileId, userId, 'Mesa 1: Aventura Principal', JSON.stringify([]), JSON.stringify([]), JSON.stringify({}), JSON.stringify([])]);
 
           const { rows: profiles } = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
 
@@ -165,20 +167,21 @@ module.exports = async (req, res) => {
 
     // 4. SALVAR / ATUALIZAR PERFIL DE MESA
     if (action === 'save_profile') {
-      const { userId, profileId, name, favorites, favoriteAmbients, quickSlots } = req.body || {};
+      const { userId, profileId, name, favorites, favoriteAmbients, quickSlots, scenes } = req.body || {};
       if (!userId || !profileId) return res.status(400).json({ error: 'IDs inválidos.' });
 
       if (pool) {
         await pool.query(`
-          INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, updated_at)
-          VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+          INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, scenes, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             favorites = EXCLUDED.favorites,
             favorite_ambients = EXCLUDED.favorite_ambients,
             quick_slots = EXCLUDED.quick_slots,
+            scenes = EXCLUDED.scenes,
             updated_at = CURRENT_TIMESTAMP
-        `, [profileId, userId, name || 'Mesa do Mestre', JSON.stringify(favorites || []), JSON.stringify(favoriteAmbients || []), JSON.stringify(quickSlots || {})]);
+        `, [profileId, userId, name || 'Mesa do Mestre', JSON.stringify(favorites || []), JSON.stringify(favoriteAmbients || []), JSON.stringify(quickSlots || {}), JSON.stringify(scenes || [])]);
 
         const { rows: profiles } = await pool.query('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
         return res.status(200).json({ success: true, profiles });
