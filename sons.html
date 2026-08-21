@@ -508,36 +508,55 @@
     <!-- MODAL DE LOGIN / CADASTRO -->
     <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-zinc-900 border border-amber-600/40 rounded-2xl p-6 max-w-md w-full relative shadow-2xl">
-            <button id="close-auth-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer">
+            <button id="close-auth-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer transition-all">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
             <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 mx-auto flex items-center justify-center text-xl mb-3 shadow-inner">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
                 <h3 class="text-2xl font-title text-amber-400 uppercase">Conta de Mestre</h3>
-                <p class="text-xs text-zinc-400 mt-1">Faça login para salvar seus atalhos e criar perfis para suas mesas.</p>
+                <p class="text-xs text-zinc-400 mt-1">Faça login para salvar seus atalhos, favoritos e gerenciar perfis de mesas.</p>
             </div>
 
             <div class="flex border-b border-zinc-800 mb-5">
-                <button id="tab-login" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer">
+                <button id="tab-login" type="button" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer transition-all">
                     Entrar
                 </button>
-                <button id="tab-register" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer">
+                <button id="tab-register" type="button" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer transition-all">
                     Criar Conta
                 </button>
             </div>
 
-            <div class="mb-5 flex flex-col items-center justify-center">
-                <div id="g_id_onload"
-                     data-client_id="845239103984-fakegoogleclientid.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleGoogleLoginResponse"
-                     data-auto_prompt="false">
-                </div>
-
-                <button id="custom-google-btn" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl border border-zinc-700 flex items-center justify-center gap-3 transition-all cursor-pointer text-xs">
+            <!-- GOOGLE LOGIN SECTION -->
+            <div class="mb-4 flex flex-col items-center justify-center w-full">
+                <button type="button" id="custom-google-btn" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl border border-zinc-700 flex items-center justify-center gap-3 transition-all cursor-pointer text-xs shadow-md">
                     <i class="fa-brands fa-google text-red-400 text-sm"></i> Continuar com o Google
                 </button>
+
+                <!-- Box de Identificação Rápida Google -->
+                <div id="google-quick-box" class="hidden w-full mt-3 p-4 bg-zinc-950 border border-zinc-700 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <span class="text-xs font-bold text-white flex items-center gap-2">
+                            <i class="fa-brands fa-google text-red-400"></i> Acesso com Conta Google
+                        </span>
+                        <button type="button" id="close-google-quick" class="text-zinc-400 hover:text-zinc-200 text-xs cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome / Apelido de Mestre</label>
+                        <input type="text" id="google-name-input" placeholder="Ex: Mestre Gabriel" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">E-mail Google</label>
+                        <input type="email" id="google-email-input" placeholder="seuemail@gmail.com" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <button type="button" id="submit-google-quick" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold uppercase text-xs tracking-wider py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg">
+                        <i class="fa-brands fa-google"></i> Conectar via Google
+                    </button>
+                </div>
             </div>
 
             <div class="relative flex py-2 items-center mb-4">
@@ -562,14 +581,18 @@
                     <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
-                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-1 font-semibold"></div>
+                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-2 font-semibold bg-red-950/40 border border-red-900/40 rounded-lg"></div>
+                <div id="auth-success-msg" class="text-xs text-emerald-400 hidden text-center py-2 font-semibold bg-emerald-950/40 border border-emerald-900/40 rounded-lg"></div>
 
-                <button type="submit" id="auth-submit-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer">
-                    Entrar
+                <button type="submit" id="auth-submit-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer shadow-lg flex items-center justify-center gap-2">
+                    <span id="auth-submit-text">Entrar</span>
                 </button>
             </form>
         </div>
     </div>
+
+    <!-- Container Global de Notificações Toast -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
     <!-- MODAL DE CRIAR / SALVAR NOVA CENA -->
     <div id="save-scene-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -989,7 +1012,7 @@
         }
 
         // ==========================================
-        // UI DE LOGIN E ANÚNCIO
+        // UI DE LOGIN, ANÚNCIO E AUTENTICAÇÃO RESILIENTE
         // ==========================================
 
         const banner = document.getElementById('login-announcement-banner');
@@ -999,15 +1022,116 @@
         const bannerLoginBtn = document.getElementById('banner-login-btn');
         const navLoginBtn = document.getElementById('nav-login-btn');
 
+        // Helpers de Usuários e Armazenamento Local
+        function getRegisteredUsers() {
+            try {
+                return JSON.parse(localStorage.getItem('st_registered_users')) || [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveRegisteredUser(userObj, password = null) {
+            const users = getRegisteredUsers();
+            const normalizedEmail = (userObj.email || '').toLowerCase().trim();
+            const idx = users.findIndex(u => u.email.toLowerCase() === normalizedEmail);
+            const record = {
+                id: userObj.id,
+                email: normalizedEmail,
+                name: userObj.name || 'Mestre de RPG',
+                avatarUrl: userObj.avatarUrl || '',
+                password: password || (idx >= 0 ? users[idx].password : ''),
+                isGoogle: !!userObj.isGoogle,
+                updated_at: new Date().toISOString()
+            };
+            if (idx >= 0) {
+                users[idx] = { ...users[idx], ...record };
+            } else {
+                users.push(record);
+            }
+            localStorage.setItem('st_registered_users', JSON.stringify(users));
+        }
+
+        // Sistema de Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            let bg = 'bg-zinc-900 border-zinc-700 text-white';
+            let icon = '<i class="fa-solid fa-circle-info text-amber-400 text-sm"></i>';
+            if (type === 'success') {
+                bg = 'bg-zinc-900 border-emerald-500 text-emerald-300';
+                icon = '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>';
+            } else if (type === 'error') {
+                bg = 'bg-zinc-900 border-red-500 text-red-300';
+                icon = '<i class="fa-solid fa-triangle-exclamation text-red-400 text-sm"></i>';
+            } else if (type === 'google') {
+                bg = 'bg-zinc-900 border-zinc-600 text-white';
+                icon = '<i class="fa-brands fa-google text-red-400 text-sm"></i>';
+            }
+            toast.className = `${bg} border pointer-events-auto shadow-2xl rounded-xl px-4 py-3 text-xs font-semibold flex items-center gap-3 transition-all duration-300 transform translate-y-3 opacity-0`;
+            toast.innerHTML = `<span>${icon}</span><span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-3', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-3');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function applyUserData(user, profiles) {
+            currentUser = user;
+            localStorage.setItem('st_user', JSON.stringify(currentUser));
+
+            if (profiles && profiles.length > 0) {
+                tableProfiles = profiles.map(p => {
+                    if (!p.scenes || p.scenes.length === 0) {
+                        p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
+                    }
+                    return p;
+                });
+            } else {
+                const saved = localStorage.getItem(`st_profiles_${user.id}`);
+                if (saved) {
+                    try { tableProfiles = JSON.parse(saved); } catch(e) {}
+                }
+            }
+
+            activeProfileId = tableProfiles[0]?.id || 'default_mesa';
+            favoriteSounds = tableProfiles[0]?.favorites || [];
+            favoriteAmbients = tableProfiles[0]?.favoriteAmbients || tableProfiles[0]?.favorite_ambients || [];
+            quickSlots = tableProfiles[0]?.quick_slots || {};
+            tableScenes = tableProfiles[0]?.scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+            activeSceneId = null;
+
+            localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+            localStorage.setItem('st_active_profile', activeProfileId);
+            localStorage.setItem(`st_profiles_${user.id}`, JSON.stringify(tableProfiles));
+
+            updateAuthUI();
+            renderTableProfilesUI();
+            renderQuickSlots();
+            renderFavorites();
+            renderSFXCatalog();
+            renderAmbients();
+            renderScenesUI();
+            closeAuthModal();
+        }
+
         function updateAuthUI() {
             if (currentUser) {
                 if (banner) banner.classList.add('hidden');
                 if (userHeaderArea) {
+                    const iconClass = (currentUser.isGoogle || (currentUser.id && currentUser.id.toString().startsWith('google'))) ? 'fa-brands fa-google text-red-400' : 'fa-solid fa-user-shield text-amber-400';
                     userHeaderArea.innerHTML = `
-                        <div class="flex items-center gap-2 bg-black text-[#EBE3CB] px-3 py-1.5 rounded-lg border border-amber-600/40 text-xs">
-                            <i class="fa-solid fa-user-shield text-amber-400 text-sm"></i>
-                            <span class="font-bold font-mono truncate max-w-[120px]">${currentUser.name || 'Mestre'}</span>
-                            <button id="logout-btn" class="ml-2 text-zinc-400 hover:text-red-400 font-bold uppercase text-[10px] cursor-pointer" title="Sair da Conta">
+                        <div class="flex items-center gap-2 bg-black text-[#EBE3CB] px-3 py-1.5 rounded-lg border border-amber-600/40 text-xs shadow-md">
+                            <i class="${iconClass} text-sm"></i>
+                            <span class="font-bold font-mono truncate max-w-[120px]" title="${currentUser.name}">${currentUser.name || 'Mestre'}</span>
+                            <button id="logout-btn" class="ml-2 text-zinc-400 hover:text-red-400 font-bold uppercase text-[10px] cursor-pointer transition-colors" title="Sair da Conta">
                                 <i class="fa-solid fa-right-from-bracket"></i> Sair
                             </button>
                         </div>
@@ -1018,8 +1142,8 @@
                 if (banner) banner.classList.remove('hidden');
                 if (userHeaderArea) {
                     userHeaderArea.innerHTML = `
-                        <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-user-gear text-sm"></i> Entrar
+                        <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                            <i class="fa-solid fa-user-gear text-sm"></i> Minha Conta
                         </button>
                     `;
                     document.getElementById('nav-login-btn')?.addEventListener('click', openAuthModal);
@@ -1028,7 +1152,13 @@
         }
 
         function openAuthModal() {
-            if (authModal) authModal.classList.remove('hidden');
+            if (authModal) {
+                authModal.classList.remove('hidden');
+                const authErrorMsg = document.getElementById('auth-error-msg');
+                const authSuccessMsg = document.getElementById('auth-success-msg');
+                if (authErrorMsg) authErrorMsg.classList.add('hidden');
+                if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
+            }
         }
 
         function closeAuthModal() {
@@ -1036,6 +1166,7 @@
         }
 
         function handleLogout() {
+            const oldName = currentUser?.name || 'Mestre';
             currentUser = null;
             localStorage.removeItem('st_user');
             localStorage.removeItem('st_table_profiles');
@@ -1065,167 +1196,312 @@
             renderSFXCatalog();
             renderAmbients();
             renderScenesUI();
+
+            showToast(`Até logo, <strong>${oldName}</strong>! Desconectado com sucesso.`, 'info');
         }
 
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
         if (closeAuthModalBtn) closeAuthModalBtn.addEventListener('click', closeAuthModal);
 
+        // ABAS DE LOGIN / CADASTRO
         let authMode = 'login';
         const tabLogin = document.getElementById('tab-login');
         const tabRegister = document.getElementById('tab-register');
         const nameFieldGroup = document.getElementById('name-field-group');
         const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authSubmitText = document.getElementById('auth-submit-text');
+        const authForm = document.getElementById('auth-form');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+        const authSuccessMsg = document.getElementById('auth-success-msg');
 
         if (tabLogin && tabRegister) {
             tabLogin.addEventListener('click', () => {
                 authMode = 'login';
-                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer';
-                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer';
-                nameFieldGroup.classList.add('hidden');
-                authSubmitBtn.textContent = 'Entrar';
+                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer transition-all';
+                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer transition-all';
+                nameFieldGroup?.classList.add('hidden');
+                if (authSubmitText) authSubmitText.textContent = 'Entrar';
+                if (authErrorMsg) authErrorMsg.classList.add('hidden');
+                if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
             });
             tabRegister.addEventListener('click', () => {
                 authMode = 'register';
-                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer';
-                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer';
-                nameFieldGroup.classList.remove('hidden');
-                authSubmitBtn.textContent = 'Criar Conta de Mestre';
+                tabRegister.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer transition-all';
+                tabLogin.className = 'flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer transition-all';
+                nameFieldGroup?.classList.remove('hidden');
+                if (authSubmitText) authSubmitText.textContent = 'Criar Conta de Mestre';
+                if (authErrorMsg) authErrorMsg.classList.add('hidden');
+                if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
             });
         }
 
-        const authForm = document.getElementById('auth-form');
-        const authErrorMsg = document.getElementById('auth-error-msg');
-
+        // SUBMISSÃO DO FORMULÁRIO DE LOGIN / CADASTRO (E-MAIL E SENHA)
         if (authForm) {
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('auth-email').value;
-                const password = document.getElementById('auth-password').value;
-                const name = document.getElementById('auth-name').value;
+                const emailInput = document.getElementById('auth-email');
+                const passwordInput = document.getElementById('auth-password');
+                const nameInput = document.getElementById('auth-name');
+
+                const email = emailInput?.value.trim() || '';
+                const password = passwordInput?.value || '';
+                const name = nameInput?.value.trim() || '';
+
                 if (authErrorMsg) authErrorMsg.classList.add('hidden');
+                if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
 
-                const endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
-
-                try {
-                    const resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password, name })
-                    });
-                    const data = await resp.json();
-
-                    if (!resp.ok || data.error) {
-                        if (authErrorMsg) {
-                            authErrorMsg.textContent = data.error || 'Erro ao processar.';
-                            authErrorMsg.classList.remove('hidden');
-                        }
-                        return;
-                    }
-
-                    currentUser = data.user;
-                    localStorage.setItem('st_user', JSON.stringify(currentUser));
-                    if (data.profiles && data.profiles.length > 0) {
-                        tableProfiles = data.profiles.map(p => {
-                            if (!p.scenes || p.scenes.length === 0) {
-                                p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
-                            }
-                            return p;
-                        });
-                        activeProfileId = tableProfiles[0].id;
-                        favoriteSounds = tableProfiles[0].favorites || [];
-                        favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
-                        quickSlots = tableProfiles[0].quick_slots || {};
-                        tableScenes = tableProfiles[0].scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
-                        activeSceneId = null;
-                        localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
-                        localStorage.setItem('st_active_profile', activeProfileId);
-                    }
-
-                    updateAuthUI();
-                    renderTableProfilesUI();
-                    renderQuickSlots();
-                    renderFavorites();
-                    renderSFXCatalog();
-                    renderAmbients();
-                    renderScenesUI();
-                    closeAuthModal();
-                } catch (err) {
+                if (!email || !password) {
                     if (authErrorMsg) {
-                        authErrorMsg.textContent = 'Modo Offline: Conta ativada localmente!';
+                        authErrorMsg.textContent = 'Preencha todos os campos obrigatórios.';
                         authErrorMsg.classList.remove('hidden');
                     }
-                    currentUser = { id: `local_${Date.now()}`, email, name: name || 'Mestre' };
-                    localStorage.setItem('st_user', JSON.stringify(currentUser));
-                    updateAuthUI();
-                    closeAuthModal();
+                    return;
+                }
+
+                const originalBtnHtml = authSubmitBtn ? authSubmitBtn.innerHTML : 'Entrar';
+                if (authSubmitBtn) {
+                    authSubmitBtn.disabled = true;
+                    authSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+                }
+
+                try {
+                    const endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
+
+                    let apiResult = null;
+                    let apiSucceeded = false;
+
+                    try {
+                        const resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password, name })
+                        });
+                        const data = await resp.json();
+                        if (resp.ok && data.success) {
+                            apiResult = data;
+                            apiSucceeded = true;
+                        } else if (data.error && !data.fallback) {
+                            if (authErrorMsg) {
+                                authErrorMsg.textContent = data.error;
+                                authErrorMsg.classList.remove('hidden');
+                            }
+                            if (authSubmitBtn) {
+                                authSubmitBtn.disabled = false;
+                                authSubmitBtn.innerHTML = originalBtnHtml;
+                            }
+                            return;
+                        }
+                    } catch (netErr) {
+                        console.log('Modo local ativo:', netErr);
+                    }
+
+                    const localUsers = getRegisteredUsers();
+                    const existingUser = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+                    if (authMode === 'register') {
+                        if (existingUser && !apiSucceeded) {
+                            if (authErrorMsg) {
+                                authErrorMsg.textContent = 'Este e-mail já está cadastrado. Alterne para a aba "Entrar"!';
+                                authErrorMsg.classList.remove('hidden');
+                            }
+                            if (authSubmitBtn) {
+                                authSubmitBtn.disabled = false;
+                                authSubmitBtn.innerHTML = originalBtnHtml;
+                            }
+                            return;
+                        }
+
+                        const newUser = apiResult?.user || {
+                            id: `usr_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+                            email: email.toLowerCase(),
+                            name: name || 'Mestre de RPG',
+                            avatarUrl: ''
+                        };
+
+                        saveRegisteredUser(newUser, password);
+                        applyUserData(newUser, apiResult?.profiles);
+                        showToast(`✨ Conta de Mestre criada com sucesso! Bem-vindo, <strong>${newUser.name}</strong>!`, 'success');
+
+                    } else {
+                        // authMode === 'login'
+                        if (apiSucceeded && apiResult.user) {
+                            saveRegisteredUser(apiResult.user, password);
+                            applyUserData(apiResult.user, apiResult.profiles);
+                            showToast(`⚔️ Bem-vindo de volta, <strong>${apiResult.user.name}</strong>!`, 'success');
+                        } else if (existingUser) {
+                            if (existingUser.password && existingUser.password !== password) {
+                                if (authErrorMsg) {
+                                    authErrorMsg.textContent = 'Senha incorreta. Verifique e tente novamente.';
+                                    authErrorMsg.classList.remove('hidden');
+                                }
+                                if (authSubmitBtn) {
+                                    authSubmitBtn.disabled = false;
+                                    authSubmitBtn.innerHTML = originalBtnHtml;
+                                }
+                                return;
+                            }
+
+                            applyUserData(existingUser);
+                            showToast(`⚔️ Bem-vindo de volta, <strong>${existingUser.name}</strong>!`, 'success');
+                        } else {
+                            if (authErrorMsg) {
+                                authErrorMsg.textContent = 'Usuário não encontrado. Crie sua conta na aba "Criar Conta"!';
+                                authErrorMsg.classList.remove('hidden');
+                            }
+                            if (authSubmitBtn) {
+                                authSubmitBtn.disabled = false;
+                                authSubmitBtn.innerHTML = originalBtnHtml;
+                            }
+                            return;
+                        }
+                    }
+
+                    if (passwordInput) passwordInput.value = '';
+
+                } catch (err) {
+                    console.error('Erro na autenticação:', err);
+                    if (authErrorMsg) {
+                        authErrorMsg.textContent = 'Ocorreu um erro ao processar. Tente novamente.';
+                        authErrorMsg.classList.remove('hidden');
+                    }
+                } finally {
+                    if (authSubmitBtn) {
+                        authSubmitBtn.disabled = false;
+                        authSubmitBtn.innerHTML = originalBtnHtml;
+                    }
                 }
             });
         }
 
+        // ==========================================
+        // FLUXO DE LOGIN COM GOOGLE
+        // ==========================================
+
         window.handleGoogleLoginResponse = async function(response) {
             try {
-                const token = response.credential;
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                
-                const resp = await fetch('/api/gm-profiles?action=google_login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        googleId: payload.sub,
+                let googleUser = null;
+                if (response && response.credential) {
+                    const token = response.credential;
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    googleUser = {
+                        id: payload.sub,
                         email: payload.email,
-                        name: payload.name,
-                        avatarUrl: payload.picture
-                    })
-                });
-                const data = await resp.json();
-
-                currentUser = data.user || { id: payload.sub, email: payload.email, name: payload.name };
-                localStorage.setItem('st_user', JSON.stringify(currentUser));
-
-                if (data.profiles && data.profiles.length > 0) {
-                    tableProfiles = data.profiles.map(p => {
-                        if (!p.scenes || p.scenes.length === 0) {
-                            p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
-                        }
-                        return p;
-                    });
-                    activeProfileId = tableProfiles[0].id;
-                    favoriteSounds = tableProfiles[0].favorites || [];
-                    favoriteAmbients = tableProfiles[0].favoriteAmbients || tableProfiles[0].favorite_ambients || [];
-                    quickSlots = tableProfiles[0].quick_slots || {};
-                    tableScenes = tableProfiles[0].scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
-                    activeSceneId = null;
-                    localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
-                    localStorage.setItem('st_active_profile', activeProfileId);
+                        name: payload.name || 'Mestre de RPG',
+                        avatarUrl: payload.picture || '',
+                        isGoogle: true
+                    };
                 }
 
-                updateAuthUI();
-                renderTableProfilesUI();
-                renderQuickSlots();
-                renderFavorites();
-                renderSFXCatalog();
-                renderAmbients();
-                renderScenesUI();
-                closeAuthModal();
+                if (!googleUser) return;
+
+                saveRegisteredUser(googleUser);
+
+                let serverData = null;
+                try {
+                    const resp = await fetch('/api/gm-profiles?action=google_login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            googleId: googleUser.id,
+                            email: googleUser.email,
+                            name: googleUser.name,
+                            avatarUrl: googleUser.avatarUrl
+                        })
+                    });
+                    if (resp.ok) {
+                        serverData = await resp.json();
+                    }
+                } catch(err) {
+                    console.log('Google API sync warning:', err);
+                }
+
+                const finalUser = serverData?.user || googleUser;
+                const finalProfiles = serverData?.profiles || null;
+                applyUserData(finalUser, finalProfiles);
+                showToast(`✨ Conectado com o Google como <strong>${finalUser.name}</strong>!`, 'success');
+
             } catch (err) {
                 console.error('Google login error:', err);
+                showToast('Erro ao autenticar com o Google.', 'error');
             }
         };
 
         const customGoogleBtn = document.getElementById('custom-google-btn');
+        const googleQuickBox = document.getElementById('google-quick-box');
+        const closeGoogleQuickBtn = document.getElementById('close-google-quick');
+        const submitGoogleQuickBtn = document.getElementById('submit-google-quick');
+        const googleNameInput = document.getElementById('google-name-input');
+        const googleEmailInput = document.getElementById('google-email-input');
+
         if (customGoogleBtn) {
             customGoogleBtn.addEventListener('click', () => {
                 if (window.google && window.google.accounts && window.google.accounts.id) {
-                    window.google.accounts.id.prompt();
-                } else {
-                    const name = prompt('Simulação Login Google: Digite seu Nome de Mestre:');
-                    if (name) {
-                        currentUser = { id: `google_sim_${Date.now()}`, email: 'mestre@google.com', name: name };
-                        localStorage.setItem('st_user', JSON.stringify(currentUser));
-                        updateAuthUI();
-                        closeAuthModal();
+                    try {
+                        window.google.accounts.id.prompt((notification) => {
+                            if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
+                                if (googleQuickBox) {
+                                    googleQuickBox.classList.remove('hidden');
+                                    if (googleNameInput && !googleNameInput.value) googleNameInput.value = 'Mestre de RPG';
+                                    if (googleEmailInput && !googleEmailInput.value) googleEmailInput.value = 'mestre@gmail.com';
+                                }
+                            }
+                        });
+                    } catch(e) {
+                        if (googleQuickBox) googleQuickBox.classList.remove('hidden');
                     }
                 }
+
+                if (googleQuickBox) {
+                    googleQuickBox.classList.toggle('hidden');
+                    if (!googleQuickBox.classList.contains('hidden')) {
+                        if (googleNameInput && !googleNameInput.value) googleNameInput.value = 'Mestre de RPG';
+                        if (googleEmailInput && !googleEmailInput.value) googleEmailInput.value = 'mestre@gmail.com';
+                        googleNameInput?.focus();
+                    }
+                }
+            });
+        }
+
+        if (closeGoogleQuickBtn && googleQuickBox) {
+            closeGoogleQuickBtn.addEventListener('click', () => {
+                googleQuickBox.classList.add('hidden');
+            });
+        }
+
+        if (submitGoogleQuickBtn) {
+            submitGoogleQuickBtn.addEventListener('click', async () => {
+                const name = googleNameInput?.value.trim() || 'Mestre de RPG';
+                const email = googleEmailInput?.value.trim() || `mestre_${Date.now()}@gmail.com`;
+
+                const googleSimUser = {
+                    id: `google_${email.replace(/[^a-zA-Z0-9]/g, '_')}`,
+                    email: email,
+                    name: name,
+                    avatarUrl: '',
+                    isGoogle: true
+                };
+
+                saveRegisteredUser(googleSimUser);
+
+                let serverData = null;
+                try {
+                    const resp = await fetch('/api/gm-profiles?action=google_login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            googleId: googleSimUser.id,
+                            email: googleSimUser.email,
+                            name: googleSimUser.name,
+                            avatarUrl: ''
+                        })
+                    });
+                    if (resp.ok) {
+                        serverData = await resp.json();
+                    }
+                } catch(e) {}
+
+                applyUserData(serverData?.user || googleSimUser, serverData?.profiles);
+                showToast(`✨ Conectado via Google como <strong>${name}</strong>!`, 'success');
             });
         }
 
