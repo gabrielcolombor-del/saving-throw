@@ -841,7 +841,7 @@
                 p = tableProfiles[0];
                 activeProfileId = p.id;
             }
-            if (p && (!p.scenes || p.scenes.length === 0)) {
+            if (p && !p.scenes) {
                 p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
             }
             return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], favoriteAmbients: [], quick_slots: {}, scenes: JSON.parse(JSON.stringify(defaultPresetScenes)) };
@@ -1106,7 +1106,7 @@
 
             if (profiles && profiles.length > 0) {
                 tableProfiles = profiles.map(p => {
-                    if (!p.scenes || p.scenes.length === 0) {
+                    if (!p.scenes) {
                         p.scenes = JSON.parse(JSON.stringify(defaultPresetScenes));
                     }
                     return p;
