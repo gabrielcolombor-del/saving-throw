@@ -63,12 +63,7 @@
         .bg-parchment .bg-black i,
         .bg-parchment a.bg-black i,
         .bg-parchment button.bg-black i {
-            color: inherit;
-        }
-        .bg-parchment .bg-black i.fa-whatsapp,
-        .bg-parchment a.bg-black i.fa-whatsapp,
-        .bg-parchment button.bg-black i.fa-whatsapp {
-            color: #25D366 !important;
+            color: inherit !important;
         }
         .text-parchment-dark { color: #4A4435 !important; }
         .transition-all { transition: all 0.25s ease; }
@@ -124,12 +119,7 @@
             .bg-parchment .bg-black i,
             .bg-parchment a.bg-black i,
             .bg-parchment button.bg-black i {
-                color: inherit;
-            }
-            .bg-parchment .bg-black i.fa-whatsapp,
-            .bg-parchment a.bg-black i.fa-whatsapp,
-            .bg-parchment button.bg-black i.fa-whatsapp {
-                color: #25D366 !important;
+                color: inherit !important;
             }
             .text-parchment-dark {
                 color: #4A4435 !important;
@@ -220,22 +210,13 @@
         [draggable="true"]:active { cursor: grabbing; opacity: 0.75; }
     </style>
 </head>
-<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black">
 
-    <!-- Top Banner Informativo / Login Status -->
-    <div id="top-login-banner" class="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-black text-xs font-bold py-2 px-4 flex justify-between items-center shadow-md">
-        <div class="container mx-auto flex items-center justify-between">
-            <span class="flex items-center gap-2">
-                <i class="fa-solid fa-crown text-black"></i> 
-                <span>Salve suas próprias configurações de mesa, favoritos e cenas personalizadas!</span>
-            </span>
-            <button id="banner-login-btn" class="bg-black text-[#EBE3CB] hover:bg-zinc-900 px-3 py-1 rounded text-[11px] font-extrabold uppercase tracking-wider transition-all cursor-pointer">
-                Entrar / Cadastrar
-            </button>
-        </div>
+    <div class="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
+        🛡️ Produção Artesanal Premium: Peças sob encomenda com envio em até 7 dias úteis.
     </div>
 
-    <!-- Header Navigation -->
+    <!-- CABEÇALHO GLOBAL -->
     <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
         <div class="container mx-auto px-4 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex justify-between items-center w-full md:w-auto">
@@ -259,7 +240,7 @@
 
                 <div class="flex flex-col md:flex-row items-center gap-2.5 w-full md:w-auto">
                     <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 hover:text-white transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm shrink-0">
-                        <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i> Fale Conosco
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
                     </a>
                     <div id="user-header-area" class="w-full md:w-auto flex items-center justify-center shrink-0">
                         <button id="nav-login-btn" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 hover:text-white transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-sm">
@@ -618,7 +599,7 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP DO GOOGLE (Interface Autêntica Google Identity) -->
+    <!-- MODAL POPUP DO GOOGLE (Interface de Seleção Rápida de Conta Google) -->
     <div id="google-popup-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white text-zinc-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full relative shadow-2xl border border-zinc-200">
             <button id="close-google-modal-btn" type="button" class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-700 text-lg cursor-pointer p-1">
@@ -635,43 +616,62 @@
                 </svg>
             </div>
 
-            <div class="text-center mb-5">
-                <h4 class="text-xl font-bold text-zinc-900">Fazer login com o Google</h4>
+            <div class="text-center mb-4">
+                <h4 class="text-xl font-bold text-zinc-900">Escolha sua conta Google</h4>
                 <p class="text-xs text-zinc-500 mt-1">para continuar em <strong class="text-zinc-800">Saving Throw RPG</strong></p>
             </div>
 
-            <form id="google-login-form" class="space-y-3.5">
+            <!-- CONTAINER DE BOTÃO OFICIAL DO GOOGLE (GSI) -->
+            <div id="g_id_signin_container" class="w-full flex justify-center mb-3"></div>
+
+            <!-- LISTA DE SELEÇÃO RÁPIDA DE CONTA (1 CLIQUE - SEM PRECISAR DIGITAR) -->
+            <div class="space-y-2 mb-3">
+                <button type="button" id="google-quick-account-btn" class="w-full bg-zinc-50 hover:bg-blue-50/70 border border-zinc-200 hover:border-blue-300 rounded-2xl p-3.5 flex items-center gap-3 transition-all cursor-pointer text-left group shadow-xs">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                        <span id="google-account-avatar-letter">G</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-zinc-900 truncate" id="google-account-display-name">Mestre Gabriel</div>
+                        <div class="text-[11px] text-zinc-500 truncate" id="google-account-display-email">mestre.gabriel@gmail.com</div>
+                    </div>
+                    <div class="text-blue-600 text-xs font-bold shrink-0 opacity-80 group-hover:opacity-100 flex items-center gap-1">
+                        <span>Entrar</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- OPÇÃO DE DIGITAR OUTRA CONTA SE DESEJAR -->
+            <div class="text-center">
+                <button type="button" id="toggle-custom-google-form-btn" class="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">
+                    Usar outra conta Google...
+                </button>
+            </div>
+
+            <!-- FORMULÁRIO COLAPSÁVEL DE CONTA PERSONALIZADA -->
+            <form id="google-login-form" class="space-y-3 pt-3 mt-3 border-t border-zinc-100 hidden">
                 <div>
-                    <label class="text-[11px] font-bold uppercase text-zinc-600 block mb-1">Nome / Apelido de Mestre</label>
+                    <label class="text-[10px] font-bold uppercase text-zinc-500 block mb-1">Nome / Apelido de Mestre</label>
                     <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3 top-3 text-zinc-400 text-xs"></i>
-                        <input type="text" id="google-popup-name" required placeholder="Ex: Mestre Gabriel" class="w-full bg-zinc-50 border border-zinc-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium">
+                        <i class="fa-solid fa-user absolute left-3 top-2.5 text-zinc-400 text-xs"></i>
+                        <input type="text" id="google-popup-name" placeholder="Ex: Mestre Gabriel" class="w-full bg-zinc-50 border border-zinc-300 rounded-xl pl-8 pr-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-blue-500 transition-all font-medium">
                     </div>
                 </div>
 
                 <div>
-                    <label class="text-[11px] font-bold uppercase text-zinc-600 block mb-1">E-mail Google (Gmail)</label>
+                    <label class="text-[10px] font-bold uppercase text-zinc-500 block mb-1">E-mail Gmail</label>
                     <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-3 top-3 text-zinc-400 text-xs"></i>
-                        <input type="email" id="google-popup-email" required placeholder="seuemail@gmail.com" class="w-full bg-zinc-50 border border-zinc-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-medium">
+                        <i class="fa-solid fa-envelope absolute left-3 top-2.5 text-zinc-400 text-xs"></i>
+                        <input type="email" id="google-popup-email" placeholder="seuemail@gmail.com" class="w-full bg-zinc-50 border border-zinc-300 rounded-xl pl-8 pr-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-blue-500 transition-all font-medium">
                     </div>
                 </div>
 
-                <div class="pt-2">
-                    <button type="submit" id="google-popup-submit" class="w-full bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
-                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 48 48">
-                            <path fill="#ffffff" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                            <path fill="#ffffff" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                            <path fill="#ffffff" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                            <path fill="#ffffff" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                        </svg>
-                        <span id="google-popup-btn-text">Confirmar e Entrar com Google</span>
-                    </button>
-                </div>
+                <button type="submit" id="google-popup-submit" class="w-full bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold text-xs uppercase tracking-wider py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                    <span id="google-popup-btn-text">Entrar com este Gmail</span>
+                </button>
             </form>
 
             <div class="mt-4 text-center">
-                <p class="text-[10px] text-zinc-400">Autenticação rápida sincronizada com o Saving Throw RPG.</p>
+                <p class="text-[10px] text-zinc-400">Autenticação com 1 clique para Saving Throw RPG.</p>
             </div>
         </div>
     </div>
@@ -1514,22 +1514,44 @@
         const customGoogleBtn = document.getElementById('custom-google-btn');
         const googlePopupModal = document.getElementById('google-popup-modal');
         const closeGoogleModalBtn = document.getElementById('close-google-modal-btn');
+        const googleQuickAccountBtn = document.getElementById('google-quick-account-btn');
+        const toggleCustomGoogleFormBtn = document.getElementById('toggle-custom-google-form-btn');
         const googleLoginForm = document.getElementById('google-login-form');
         const googlePopupName = document.getElementById('google-popup-name');
         const googlePopupEmail = document.getElementById('google-popup-email');
         const googlePopupSubmit = document.getElementById('google-popup-submit');
         const googlePopupBtnText = document.getElementById('google-popup-btn-text');
+        const googleAccountDisplayName = document.getElementById('google-account-display-name');
+        const googleAccountDisplayEmail = document.getElementById('google-account-display-email');
+        const googleAccountAvatarLetter = document.getElementById('google-account-avatar-letter');
 
         function openGoogleModal() {
             if (googlePopupModal) {
+                // Recupera último usuário ou usa padrão Mestre
+                const savedGoogle = getRegisteredUsers().find(u => u.isGoogle) || null;
+                const activeUser = currentUser || savedGoogle;
+
+                const defaultName = activeUser ? activeUser.name : 'Mestre Gabriel';
+                const defaultEmail = activeUser ? activeUser.email : 'mestre.gabriel@gmail.com';
+
+                if (googleAccountDisplayName) googleAccountDisplayName.textContent = defaultName;
+                if (googleAccountDisplayEmail) googleAccountDisplayEmail.textContent = defaultEmail;
+                if (googleAccountAvatarLetter) googleAccountAvatarLetter.textContent = defaultName.charAt(0).toUpperCase();
+
+                if (googlePopupName) googlePopupName.value = defaultName;
+                if (googlePopupEmail) googlePopupEmail.value = defaultEmail;
+
                 googlePopupModal.classList.remove('hidden');
-                if (googlePopupName && !googlePopupName.value) {
-                    googlePopupName.value = 'Mestre Gabriel';
-                }
-                if (googlePopupEmail && !googlePopupEmail.value) {
-                    googlePopupEmail.value = 'mestre@gmail.com';
-                }
-                setTimeout(() => googlePopupName?.focus(), 50);
+
+                // Tenta renderizar botão nativo se GSI estiver disponível
+                try {
+                    if (window.google && window.google.accounts && window.google.accounts.id && document.getElementById('g_id_signin_container')) {
+                        window.google.accounts.id.renderButton(
+                            document.getElementById('g_id_signin_container'),
+                            { theme: 'outline', size: 'large', type: 'standard', shape: 'pill', text: 'continue_with', width: 280 }
+                        );
+                    }
+                } catch(e) {}
             }
         }
 
@@ -1556,6 +1578,64 @@
             });
         }
 
+        if (toggleCustomGoogleFormBtn && googleLoginForm) {
+            toggleCustomGoogleFormBtn.addEventListener('click', () => {
+                googleLoginForm.classList.toggle('hidden');
+                if (!googleLoginForm.classList.contains('hidden')) {
+                    googlePopupEmail?.focus();
+                }
+            });
+        }
+
+        async function processGoogleLogin(name, email) {
+            const googleUser = {
+                id: `google_${email.replace(/[^a-zA-Z0-9]/g, '_')}`,
+                email: email,
+                name: name,
+                avatarUrl: '',
+                isGoogle: true
+            };
+
+            saveRegisteredUser(googleUser);
+
+            let serverData = null;
+            try {
+                const resp = await fetch('/api/gm-profiles?action=google_login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        googleId: googleUser.id,
+                        email: googleUser.email,
+                        name: googleUser.name,
+                        avatarUrl: ''
+                    })
+                });
+                if (resp.ok) {
+                    serverData = await resp.json();
+                }
+            } catch(netErr) {
+                console.log('Google API sync local fallback:', netErr);
+            }
+
+            const finalUser = serverData?.user || googleUser;
+            const finalProfiles = serverData?.profiles || null;
+
+            applyUserData(finalUser, finalProfiles);
+            closeGoogleModal();
+            closeAuthModal();
+
+            showToast(`✨ Conectado via Google como <strong>${finalUser.name}</strong>!`, 'google');
+        }
+
+        // 1 CLIQUE: Clicou no card da conta e entrou direto!
+        if (googleQuickAccountBtn) {
+            googleQuickAccountBtn.addEventListener('click', async () => {
+                const name = googleAccountDisplayName?.textContent.trim() || 'Mestre Gabriel';
+                const email = (googleAccountDisplayEmail?.textContent.trim() || 'mestre.gabriel@gmail.com').toLowerCase();
+                await processGoogleLogin(name, email);
+            });
+        }
+
         if (googleLoginForm) {
             googleLoginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1567,49 +1647,13 @@
                     return;
                 }
 
-                const originalBtnText = googlePopupBtnText ? googlePopupBtnText.textContent : 'Confirmar e Entrar com Google';
+                const originalBtnText = googlePopupBtnText ? googlePopupBtnText.textContent : 'Entrar com este Gmail';
                 if (googlePopupSubmit) {
                     googlePopupSubmit.disabled = true;
                     if (googlePopupBtnText) googlePopupBtnText.textContent = 'Autenticando...';
                 }
 
-                const googleUser = {
-                    id: `google_${email.replace(/[^a-zA-Z0-9]/g, '_')}`,
-                    email: email,
-                    name: name,
-                    avatarUrl: '',
-                    isGoogle: true
-                };
-
-                saveRegisteredUser(googleUser);
-
-                let serverData = null;
-                try {
-                    const resp = await fetch('/api/gm-profiles?action=google_login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            googleId: googleUser.id,
-                            email: googleUser.email,
-                            name: googleUser.name,
-                            avatarUrl: ''
-                        })
-                    });
-                    if (resp.ok) {
-                        serverData = await resp.json();
-                    }
-                } catch(netErr) {
-                    console.log('Google API sync local fallback:', netErr);
-                }
-
-                const finalUser = serverData?.user || googleUser;
-                const finalProfiles = serverData?.profiles || null;
-
-                applyUserData(finalUser, finalProfiles);
-                closeGoogleModal();
-                closeAuthModal();
-
-                showToast(`✨ Conectado via Google como <strong>${finalUser.name}</strong>!`, 'google');
+                await processGoogleLogin(name, email);
 
                 if (googlePopupSubmit) {
                     googlePopupSubmit.disabled = false;
