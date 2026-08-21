@@ -2389,6 +2389,36 @@
                     card.classList.remove('opacity-40');
                 });
 
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+
+                card.addEventListener('dragenter', (e) => {
+                    e.preventDefault();
+                    card.classList.add('border-amber-500', 'scale-[1.02]');
+                });
+
+                card.addEventListener('dragleave', (e) => {
+                    card.classList.remove('border-amber-500', 'scale-[1.02]');
+                });
+
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.classList.remove('border-amber-500', 'scale-[1.02]');
+                    const draggedSceneId = e.dataTransfer.getData('text/plain');
+                    
+                    const draggedIndex = tableScenes.findIndex(s => s.id === draggedSceneId);
+                    const targetIndex = tableScenes.findIndex(s => s.id === scene.id);
+                    
+                    if (draggedIndex > -1 && targetIndex > -1 && draggedIndex !== targetIndex) {
+                        const [draggedScene] = tableScenes.splice(draggedIndex, 1);
+                        tableScenes.splice(targetIndex, 0, draggedScene);
+                        syncActiveProfileChanges();
+                        renderScenesUI();
+                    }
+                });
+
                 // Botões de Ação
                 const playBtn = card.querySelector('.scene-play-btn');
                 playBtn.addEventListener('click', () => {
