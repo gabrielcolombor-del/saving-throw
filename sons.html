@@ -2087,6 +2087,12 @@
                     }
                 });
 
+                if (allPaused) {
+                    pauseAllBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i> Pausar Todos';
+                } else {
+                    pauseAllBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i> Tocar Todos';
+                }
+
                 renderAmbients();
                 renderActiveTracksHeaderPanel();
             });
@@ -2106,6 +2112,10 @@
                     stopAmbientTrack(ambId);
                 });
                 renderScenesUI();
+
+                if (pauseAllBtn) {
+                    pauseAllBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i> Pausar Todos';
+                }
             });
         }
 
