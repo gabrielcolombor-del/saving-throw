@@ -570,11 +570,91 @@
         </div>
     </div>
 
+    <!-- MODAL 3: EDITAR PRODUTO DO SITE -->
+    <div id="modal-edit-prod" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full border border-black/10 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                    </div>
+                    <h3 class="font-title text-xl text-black" id="edit-prod-modal-title">Editar Produto</h3>
+                </div>
+                <button onclick="closeEditProductModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
+            </div>
+            <form id="form-edit-prod-modal" class="space-y-3 text-left">
+                <input type="hidden" id="edit-prod-id">
+                <input type="hidden" id="edit-prod-type">
+
+                <div class="flex gap-3 items-center p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                    <img id="edit-prod-preview" src="" class="w-14 h-14 object-cover rounded-lg border border-zinc-300 bg-white">
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-bold uppercase text-zinc-600 mb-1">Trocar Foto (Opcional)</label>
+                        <input type="file" id="edit-prod-image" accept="image/*" class="w-full text-xs text-zinc-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-black file:text-[#EBE3CB] cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça / Item *</label>
+                    <input type="text" id="edit-prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                </div>
+
+                <div id="edit-field-category-mini">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
+                    <select id="edit-prod-category-mini" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                        <option value="npcs">NPCs</option>
+                        <option value="monstros">Monstros</option>
+                        <option value="cenario">Cenário</option>
+                    </select>
+                </div>
+
+                <div id="edit-field-category-arsenal" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Arsenal)</label>
+                    <select id="edit-prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                        <option value="escudo">Escudo do Mestre</option>
+                        <option value="acessorios">Acessórios & Dados</option>
+                        <option value="terreno">Terreno & Cenários</option>
+                        <option value="geral">Outros Equipamentos</option>
+                    </select>
+                </div>
+
+                <div id="edit-fields-prices-mini" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="49.90">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="89.90">
+                    </div>
+                </div>
+
+                <div id="edit-field-price-arsenal" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R$)</label>
+                    <input type="number" step="0.01" id="edit-prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto *</label>
+                    <textarea id="edit-prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required></textarea>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditProductModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
+                    <button type="submit" id="btn-save-edit-prod" class="flex-1 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs flex items-center justify-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk text-amber-500"></i> Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let token = localStorage.getItem('adminToken');
         let currentTab = 'miniatura';
         let costChartInstance = null;
         let cachedFinanceData = [];
+        let cachedProductsList = [];
 
         if (token) {
             showDashboard();
@@ -789,25 +869,52 @@
                 const res = await fetch(`/api/products?type=${currentTab}&limit=50`);
                 const data = await res.json();
                 grid.innerHTML = '';
-                if(data.products && data.products.length > 0) {
-                    data.products.forEach(p => {
-                        const priceToUse = p.price || p.price_painted || p.price_unpainted || 0;
-                        grid.innerHTML += `
-                            <div class="border border-black/10 rounded-xl p-3 flex flex-col justify-between relative bg-white shadow-xs hover:shadow-md transition-shadow">
-                                <div class="flex gap-3">
-                                    <img src="${p.image_url}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200">
-                                    <div class="flex-1">
-                                        <h4 class="font-bold text-xs line-clamp-1 text-zinc-900">${p.name}</h4>
-                                        <span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category || p.type}</span>
-                                        <div class="mt-1 text-[11px] text-zinc-500 line-clamp-1">${p.description}</div>
+                cachedProductsList = data.products || [];
+                if(cachedProductsList.length > 0) {
+                    cachedProductsList.forEach(p => {
+                        const isMini = p.type === 'miniatura' || p.price_unpainted != null;
+                        const mainPrice = isMini ? (p.price_unpainted || p.price || 0) : (p.price || 0);
+                        
+                        let priceHtml = '';
+                        if (isMini) {
+                            priceHtml = `
+                                <div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-xs font-black text-black">R$ ${Number(mainPrice).toFixed(2).replace('.', ',')}</span>
+                                        <span class="text-[9px] uppercase font-bold text-zinc-500">(Sem Pintura)</span>
                                     </div>
-                                    <button onclick="deleteProduct('${p.id}')" class="text-zinc-400 hover:text-black text-xs p-1 cursor-pointer self-start" title="Excluir produto">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                    ${p.price_painted ? `<div class="text-[10px] text-amber-700 font-bold">C/ Pintura: R$ ${Number(p.price_painted).toFixed(2).replace('.', ',')}</div>` : ''}
                                 </div>
-                                <div class="mt-3 pt-2 border-t border-zinc-100 flex justify-between items-center">
-                                    <span class="text-xs font-bold text-black">R$ ${Number(priceToUse).toFixed(2).replace('.', ',')}</span>
-                                    <button onclick="openSaleModal('${p.name.replace(/'/g, "\\'")}', '${priceToUse}')" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer shadow-xs">
+                            `;
+                        } else {
+                            priceHtml = `
+                                <div>
+                                    <span class="text-xs font-black text-black">R$ ${Number(mainPrice).toFixed(2).replace('.', ',')}</span>
+                                </div>
+                            `;
+                        }
+
+                        grid.innerHTML += `
+                            <div class="border border-black/10 rounded-xl p-3.5 flex flex-col justify-between relative bg-white shadow-xs hover:shadow-md transition-shadow">
+                                <div class="flex gap-3">
+                                    <img src="${p.image_url}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200 shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-bold text-xs line-clamp-1 text-zinc-900" title="${p.name}">${p.name}</h4>
+                                        <span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category || p.type}</span>
+                                        <div class="mt-1 text-[11px] text-zinc-500 line-clamp-2">${p.description}</div>
+                                    </div>
+                                    <div class="flex items-center gap-1 self-start shrink-0">
+                                        <button onclick="openEditProductModal('${p.id}')" class="text-zinc-500 hover:text-black text-xs p-1.5 cursor-pointer rounded hover:bg-zinc-100" title="Editar este produto">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button onclick="deleteProduct('${p.id}')" class="text-zinc-400 hover:text-red-600 text-xs p-1.5 cursor-pointer rounded hover:bg-zinc-100" title="Excluir produto">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-3 pt-2.5 border-t border-zinc-100 flex justify-between items-center">
+                                    ${priceHtml}
+                                    <button onclick="openSaleModal('${p.name.replace(/'/g, "\\'")}', '${mainPrice}')" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer shadow-xs">
                                         <i class="fa-solid fa-cart-shopping text-amber-500"></i> Registrar Venda
                                     </button>
                                 </div>
@@ -820,6 +927,100 @@
                 loader.classList.add('hidden'); grid.classList.remove('hidden');
             } catch(e) { console.error(e); }
         }
+
+        function openEditProductModal(id) {
+            const p = cachedProductsList.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('edit-prod-type').value = p.type || 'miniatura';
+            document.getElementById('edit-prod-name').value = p.name || '';
+            document.getElementById('edit-prod-desc').value = p.description || '';
+            document.getElementById('edit-prod-preview').src = p.image_url || '';
+            document.getElementById('edit-prod-image').value = '';
+
+            const isMini = (p.type === 'miniatura' || p.price_unpainted != null);
+            if (isMini) {
+                document.getElementById('edit-field-category-mini').classList.remove('hidden');
+                document.getElementById('edit-field-category-arsenal').classList.add('hidden');
+                document.getElementById('edit-fields-prices-mini').classList.remove('hidden');
+                document.getElementById('edit-field-price-arsenal').classList.add('hidden');
+                document.getElementById('edit-prod-category-mini').value = p.category || 'npcs';
+                document.getElementById('edit-prod-price-unpainted').value = p.price_unpainted || '';
+                document.getElementById('edit-prod-price-painted').value = p.price_painted || '';
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Miniatura';
+            } else {
+                document.getElementById('edit-field-category-mini').classList.add('hidden');
+                document.getElementById('edit-field-category-arsenal').classList.remove('hidden');
+                document.getElementById('edit-fields-prices-mini').classList.add('hidden');
+                document.getElementById('edit-field-price-arsenal').classList.remove('hidden');
+                document.getElementById('edit-prod-category-arsenal').value = p.category || 'escudo';
+                document.getElementById('edit-prod-price').value = p.price || '';
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Item de Arsenal';
+            }
+
+            document.getElementById('modal-edit-prod').classList.remove('hidden');
+        }
+
+        function closeEditProductModal() {
+            document.getElementById('modal-edit-prod').classList.add('hidden');
+        }
+
+        document.getElementById('form-edit-prod-modal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-edit-prod');
+            btn.disabled = true;
+
+            const id = document.getElementById('edit-prod-id').value;
+            const type = document.getElementById('edit-prod-type').value;
+            const isMini = (type === 'miniatura');
+
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('type', type);
+            formData.append('name', document.getElementById('edit-prod-name').value);
+            formData.append('description', document.getElementById('edit-prod-desc').value);
+
+            if (isMini) {
+                formData.append('category', document.getElementById('edit-prod-category-mini').value);
+                formData.append('price_unpainted', document.getElementById('edit-prod-price-unpainted').value);
+                formData.append('price_painted', document.getElementById('edit-prod-price-painted').value);
+            } else {
+                formData.append('category', document.getElementById('edit-prod-category-arsenal').value);
+                formData.append('price', document.getElementById('edit-prod-price').value);
+            }
+
+            const imageFileInput = document.getElementById('edit-prod-image');
+            if (imageFileInput.files.length > 0) {
+                formData.append('image', imageFileInput.files[0]);
+            }
+
+            try {
+                const res = await fetch('/api/admin/products', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (res.status === 401) {
+                    alert('Sua sessão expirou. Faça login novamente.');
+                    logout();
+                    return;
+                }
+                if (res.ok) {
+                    alert('Produto atualizado com sucesso no site!');
+                    closeEditProductModal();
+                    loadProducts();
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    alert('Erro ao atualizar produto: ' + (errData.error || `Status ${res.status}`));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão ao salvar alterações do produto.');
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();

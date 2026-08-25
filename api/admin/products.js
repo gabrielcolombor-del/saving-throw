@@ -115,8 +115,83 @@ export default async function handler(req, res) {
                 return res.status(500).json({ error: e.message });
             }
         });
+    } else if (req.method === 'PUT') {
+        const form = new formidable.IncomingForm({
+            maxFileSize: 10 * 1024 * 1024 // 10MB
+        });
+
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Erro ao processar formulário de edição' });
+            }
+
+            try {
+                const id = Array.isArray(fields.id) ? fields.id[0] : fields.id;
+                if (!id) return res.status(400).json({ error: 'ID do produto ausente' });
+
+                const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
+                const description = Array.isArray(fields.description) ? fields.description[0] : fields.description;
+                const category = Array.isArray(fields.category) ? fields.category[0] : fields.category;
+                const priceUnpainted = Array.isArray(fields.price_unpainted) ? fields.price_unpainted[0] : fields.price_unpainted;
+                const pricePainted = Array.isArray(fields.price_painted) ? fields.price_painted[0] : fields.price_painted;
+                const price = Array.isArray(fields.price) ? fields.price[0] : fields.price;
+
+                const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
+
+                if (imageFile && imageFile.filepath && imageFile.size > 0) {
+                    const fileBuffer = fs.readFileSync(imageFile.filepath);
+                    const mimeType = imageFile.mimetype || 'image/jpeg';
+                    const imageUrl = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+
+                    const queryText = `
+                        UPDATE st_products 
+                        SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6, image_url = $7
+                        WHERE id = $8
+                        RETURNING *
+                    `;
+                    const queryValues = [
+                        category || null,
+                        name,
+                        price ? parseFloat(price) : null,
+                        priceUnpainted ? parseFloat(priceUnpainted) : null,
+                        pricePainted ? parseFloat(pricePainted) : null,
+                        description,
+                        imageUrl,
+                        id
+                    ];
+
+                    const { rows } = await pool.query(queryText, queryValues);
+                    if (rows.length === 0) return res.status(404).json({ error: 'Produto não encontrado' });
+                    return res.status(200).json(rows[0]);
+                } else {
+                    const queryText = `
+                        UPDATE st_products 
+                        SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6
+                        WHERE id = $7
+                        RETURNING *
+                    `;
+                    const queryValues = [
+                        category || null,
+                        name,
+                        price ? parseFloat(price) : null,
+                        priceUnpainted ? parseFloat(priceUnpainted) : null,
+                        pricePainted ? parseFloat(pricePainted) : null,
+                        description,
+                        id
+                    ];
+
+                    const { rows } = await pool.query(queryText, queryValues);
+                    if (rows.length === 0) return res.status(404).json({ error: 'Produto não encontrado' });
+                    return res.status(200).json(rows[0]);
+                }
+            } catch(e) {
+                console.error(e);
+                return res.status(500).json({ error: e.message });
+            }
+        });
     } else {
-        res.setHeader('Allow', ['POST', 'DELETE']);
+        res.setHeader('Allow', ['POST', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
