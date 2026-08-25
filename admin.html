@@ -847,6 +847,11 @@
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
+                if (res.status === 401) {
+                    alert('Sua sessão expirou ou não é válida. Por favor, faça login novamente no painel.');
+                    logout();
+                    return;
+                }
                 if (res.ok) {
                     alert('Produto publicado no site com sucesso!');
                     document.getElementById('product-form').reset();
