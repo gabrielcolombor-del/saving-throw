@@ -751,12 +751,12 @@
 
         // TAB PRODUTOS (Miniaturas / Arsenal)
         function switchTab(tab) {
-            currentTab = tab;
+            currentTab = tab === 'miniaturas' ? 'miniatura' : tab;
             const tabMin = document.getElementById('tab-miniaturas');
             const tabArs = document.getElementById('tab-arsenal');
             const typeInput = document.getElementById('prod-type');
             
-            if (tab === 'miniaturas') {
+            if (currentTab === 'miniatura') {
                 tabMin.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all bg-black text-[#EBE3CB] shadow-sm flex items-center gap-2 cursor-pointer';
                 tabArs.className = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer';
                 document.getElementById('form-title').innerText = 'Adicionar Miniatura';
@@ -832,7 +832,7 @@
             formData.append('description', document.getElementById('prod-desc').value);
             formData.append('image', document.getElementById('prod-image').files[0]);
 
-            if (currentTab === 'miniaturas') {
+            if (currentTab === 'miniatura') {
                 formData.append('category', document.getElementById('prod-category').value);
                 formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
                 formData.append('price_painted', document.getElementById('prod-price-painted').value);
@@ -851,8 +851,14 @@
                     alert('Produto publicado no site com sucesso!');
                     document.getElementById('product-form').reset();
                     loadProducts();
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    alert('Erro ao salvar: ' + (errData.error || `Status ${res.status}`));
                 }
-            } catch(err) { alert('Erro ao salvar.'); }
+            } catch(err) { 
+                console.error(err);
+                alert('Erro na comunicação com o servidor.'); 
+            }
             finally { btn.disabled = false; }
         });
 
