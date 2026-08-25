@@ -478,15 +478,15 @@
                                     <p class="text-xs text-zinc-500 line-clamp-2 mb-3" title="${p.description}">${p.description}</p>
                                 </div>
                                 <div class="border-t border-zinc-100 pt-3 mt-auto">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[10px] uppercase font-bold text-zinc-400">S/ Pintura</span>
-                                        <span class="text-xs font-bold text-zinc-700">R$ ${Number(p.price_unpainted).toFixed(2).replace('.',',')}</span>
+                                    <div class="flex justify-between items-baseline mb-1">
+                                        <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Sem Pintura</span>
+                                        <span class="text-base font-black text-black">R$ ${Number(p.price_unpainted || p.price || 0).toFixed(2).replace('.',',')}</span>
                                     </div>
                                     <div class="flex justify-between items-center mb-3">
-                                        <span class="text-[10px] uppercase font-bold text-amber-600">C/ Pintura</span>
-                                        <span class="text-sm font-black text-amber-600">R$ ${Number(p.price_painted).toFixed(2).replace('.',',')}</span>
+                                        <span class="text-[10px] uppercase font-bold text-amber-700">Com Pintura</span>
+                                        <span class="text-xs font-bold text-amber-700">${p.price_painted ? `R$ ${Number(p.price_painted).toFixed(2).replace('.',',')}` : 'Sob consulta'}</span>
                                     </div>
-                                    <a href="https://wa.me/5527997947604?text=${encodeURIComponent('Olá! Gostaria de encomendar a miniatura: ' + p.name)}" target="_blank" class="block w-full text-center bg-black hover:bg-zinc-800 text-white text-[10px] font-bold uppercase py-2 rounded transition-colors">
+                                    <a href="https://wa.me/5527997947604?text=${encodeURIComponent('Olá! Gostaria de encomendar a miniatura: ' + p.name + ' (Sem Pintura: R$ ' + Number(p.price_unpainted || 0).toFixed(2).replace('.',',') + (p.price_painted ? ' / Com Pintura: R$ ' + Number(p.price_painted).toFixed(2).replace('.',',') : '') + ')')}" target="_blank" class="block w-full text-center bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase py-2.5 rounded-md transition-colors shadow-xs">
                                         Encomendar
                                     </a>
                                 </div>
