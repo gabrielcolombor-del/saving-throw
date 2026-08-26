@@ -241,24 +241,8 @@
                             </button>
                         </div>
 
-                        <!-- Micro-badges de Destaque -->
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
-                                <i class="fa-solid fa-gem text-amber-600 text-base mb-1 block"></i>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Alta Definição</span>
-                                <span class="text-[9px] text-zinc-500">Riqueza em relevo</span>
-                            </div>
-                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
-                                <i class="fa-solid fa-spray-can-sparkles text-amber-600 text-base mb-1 block"></i>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Curada & Lavada</span>
-                                <span class="text-[9px] text-zinc-500">Pronta p/ uso</span>
-                            </div>
-                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
-                                <i class="fa-solid fa-box-open text-amber-600 text-base mb-1 block"></i>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Envio Protegido</span>
-                                <span class="text-[9px] text-zinc-500">Embalagem especial</span>
-                            </div>
-                        </div>
+                        <!-- Micro-badges de Destaque (Renderizados dinamicamente via JS) -->
+                        <div id="product-micro-badges" class="grid grid-cols-3 gap-2 text-center"></div>
                     </div>
 
                     <!-- Coluna Direita: Informações, Opções & CTA WhatsApp -->
@@ -374,40 +358,12 @@
                     </div>
                 </div>
 
-                <!-- Detalhes Adicionais & Especificações -->
+                <!-- Detalhes Adicionais & Especificações (Renderizados dinamicamente via JS) -->
                 <div class="mt-16 pt-12 border-t border-zinc-200">
-                    <h3 class="font-title text-3xl mb-8 text-zinc-950 text-center">Garantias & Especificações Técnicas</h3>
+                    <h3 id="specs-main-title" class="font-title text-3xl mb-8 text-zinc-950 text-center">Garantias & Especificações Técnicas</h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
-                                <i class="fa-solid fa-cube"></i>
-                            </div>
-                            <h4 class="font-bold text-base mb-2">Material e Resolução</h4>
-                            <p class="text-zinc-600 text-xs leading-relaxed">
-                                Produzido em Resina Fotopolimerizável de alta tenacidade em impressoras 3D 8K/12K. Apresenta microdetalhes expressivos e resistência ideal para manuseio em mesas de RPG.
-                            </p>
-                        </div>
-
-                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
-                                <i class="fa-solid fa-brush"></i>
-                            </div>
-                            <h4 class="font-bold text-base mb-2">Pintura e Finalização</h4>
-                            <p class="text-zinc-600 text-xs leading-relaxed">
-                                Quando encomendada com pintura, cada peça recebe primer de aderência, tintas acrílicas para modelismo e camada de verniz fosco ultra-resistente para proteção contra marcas de dedos.
-                            </p>
-                        </div>
-
-                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
-                                <i class="fa-solid fa-truck-fast"></i>
-                            </div>
-                            <h4 class="font-bold text-base mb-2">Prazos & Envio</h4>
-                            <p class="text-zinc-600 text-xs leading-relaxed">
-                                O envio é feito via Correios ou transportadora para todo o território nacional. Embalamos cada miniatura individualmente em cápsula de proteção com plástico bolha e caixa reforçada.
-                            </p>
-                        </div>
+                    <div id="specs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Inserido dinamicamente via JS de acordo com a categoria do produto -->
                     </div>
                 </div>
 
@@ -556,32 +512,204 @@
             loadRelatedProducts(currentProduct);
         }
 
+        function getProductProfile(p) {
+            const type = (p.type || '').toLowerCase();
+            const cat = (p.category || '').toLowerCase();
+            const name = (p.name || '').toLowerCase();
+            const id = (p.id || '').toLowerCase();
+
+            // 1. Serviço Exclusivo / Miniatura Personalizada
+            if (id === 'personalizada' || cat.includes('exclusivo') || name.includes('personalizada') || name.includes('dê vida ao seu')) {
+                return {
+                    categoryKey: 'personalizada',
+                    breadcrumbCategory: 'Miniaturas',
+                    breadcrumbHref: 'miniaturas',
+                    catalogLabel: 'as Miniaturas',
+                    typeLabel: 'Serviço Exclusivo Sob Demanda',
+                    tagBadge: 'Feito Sob Medida',
+                    categoryBadge: p.category || 'Serviço Exclusivo',
+                    microBadges: [
+                        { icon: 'fa-wand-magic-sparkles', title: '100% Sob Medida', subtitle: 'Com seu personagem' },
+                        { icon: 'fa-box', title: 'Caixa de MDF', subtitle: 'Gravada a laser' },
+                        { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                    ],
+                    specs: [
+                        {
+                            icon: 'fa-fingerprint',
+                            title: 'Criação Exclusiva',
+                            text: 'Trabalhamos diretamente com a sua referência visual. Escolhemos ou adaptamos o modelo 3D ideal para representar fielmente o seu personagem.'
+                        },
+                        {
+                            icon: 'fa-brush',
+                            title: 'Pintura & Caixa de Luxo',
+                            text: 'Pintura manual profissional detalhada e entrega em uma Caixa de MDF de Luxo cortada e gravada a laser com o nome, classe e símbolos do seu herói.'
+                        },
+                        {
+                            icon: 'fa-truck-fast',
+                            title: 'Prazos & Envio',
+                            text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                        }
+                    ]
+                };
+            }
+
+            // 2. Escudos do Mestre & Arsenal em MDF / Laser
+            if (type === 'arsenal' || type === 'escudo' || cat.includes('arsenal') || cat.includes('escudo') || name.includes('escudo')) {
+                return {
+                    categoryKey: 'arsenal',
+                    breadcrumbCategory: 'Arsenal de RPG',
+                    breadcrumbHref: 'arsenal',
+                    catalogLabel: 'o Arsenal',
+                    typeLabel: 'Arsenal & Acessórios',
+                    tagBadge: 'MDF Nobre & Corte Laser',
+                    categoryBadge: p.category || 'Arsenal de RPG',
+                    microBadges: [
+                        { icon: 'fa-vector-square', title: 'Corte a Laser', subtitle: 'Precisão milimétrica' },
+                        { icon: 'fa-shield-halved', title: 'Estrutura Nobre', subtitle: 'MDF de alta densidade' },
+                        { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                    ],
+                    specs: [
+                        {
+                            icon: 'fa-tree',
+                            title: 'Material e Entalhe',
+                            text: 'Fabricado em MDF nobre de alta densidade com corte e entalhe a laser de extrema precisão. Estrutura sólida projetada para facilitar o gerenciamento de mesas de RPG.'
+                        },
+                        {
+                            icon: 'fa-wand-magic-sparkles',
+                            title: 'Design e Ergonomia',
+                            text: 'Projetado para mestres, com presilhas na parte de trás para prender suas folhas de consulta rápida, módulos funcionais e acabamento refinado.'
+                        },
+                        {
+                            icon: 'fa-truck-fast',
+                            title: 'Prazos & Envio',
+                            text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                        }
+                    ]
+                };
+            }
+
+            // 3. Acessórios de Dados (Torres, Bandejas, Dice Trays)
+            if (cat.includes('dados') || cat.includes('torre') || cat.includes('bandeja') || name.includes('torre') || name.includes('bandeja') || name.includes('dados')) {
+                return {
+                    categoryKey: 'dados',
+                    breadcrumbCategory: 'Arsenal de RPG',
+                    breadcrumbHref: 'arsenal',
+                    catalogLabel: 'os Acessórios',
+                    typeLabel: 'Acessórios de Dados',
+                    tagBadge: 'Corte a Laser & Forração',
+                    categoryBadge: p.category || 'Acessório de Dados',
+                    microBadges: [
+                        { icon: 'fa-dice-d20', title: 'Rolagem Precisa', subtitle: 'Aleatoriedade balanceada' },
+                        { icon: 'fa-layer-group', title: 'Amortecimento', subtitle: 'Protege dados e mesa' },
+                        { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                    ],
+                    specs: [
+                        {
+                            icon: 'fa-dice',
+                            title: 'Mecânica de Rolagem',
+                            text: 'Defletores internos calculados para aleatoriedade máxima e forração que reduz o ruído da rolagem, preservando seus dados especiais de resina, acrílico ou metal.'
+                        },
+                        {
+                            icon: 'fa-cube',
+                            title: 'Material e Estrutura',
+                            text: 'MDF selecionado de alta qualidade com encaixes precisos, garantindo firmeza durante as partidas e praticidade no transporte.'
+                        },
+                        {
+                            icon: 'fa-truck-fast',
+                            title: 'Prazos & Envio',
+                            text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                        }
+                    ]
+                };
+            }
+
+            // 4. One Shots, Kits de Aventura & Módulos Narrativos
+            if (type === 'oneshot' || type === 'aventura' || cat.includes('oneshot') || cat.includes('aventura') || cat.includes('campanha') || cat.includes('livro') || name.includes('one shot') || name.includes('kit de aventura') || name.includes('aventura') || name.includes('herdeiro')) {
+                return {
+                    categoryKey: 'oneshot',
+                    breadcrumbCategory: 'One Shots & Aventuras',
+                    breadcrumbHref: 'oneshots',
+                    catalogLabel: 'as Aventuras',
+                    typeLabel: 'Módulos & Kits de Aventura',
+                    tagBadge: 'Material Físico Completo',
+                    categoryBadge: p.category || 'Aventura Pronta',
+                    microBadges: [
+                        { icon: 'fa-book-open', title: 'História Pronta', subtitle: 'Mapas e fichas inclusos' },
+                        { icon: 'fa-chess-knight', title: 'Miniaturas Inclusas', subtitle: 'Monstros e heróis' },
+                        { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                    ],
+                    specs: [
+                        {
+                            icon: 'fa-scroll',
+                            title: 'Conteúdo e Estrutura',
+                            text: 'Módulo de campanha completo pronto para mestrar, incluindo narrativa balanceada, tabelas de encontros, mapas táticos e fichas de personagens prontas.'
+                        },
+                        {
+                            icon: 'fa-boxes-stacked',
+                            title: 'Componentes Gráficos e Físicos',
+                            text: 'Material impresso em alta gramatura acompanhado do conjunto de miniaturas em resina dos principais encontros da história.'
+                        },
+                        {
+                            icon: 'fa-truck-fast',
+                            title: 'Prazos & Envio',
+                            text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                        }
+                    ]
+                };
+            }
+
+            // 5. Miniaturas de Resina 3D (Padrão para miniaturas e bestiário)
+            return {
+                categoryKey: 'miniatura',
+                breadcrumbCategory: 'Miniaturas',
+                breadcrumbHref: 'miniaturas',
+                catalogLabel: 'as Miniaturas',
+                typeLabel: 'Miniatura em Resina',
+                tagBadge: 'Resina Premium 8K',
+                categoryBadge: p.category || 'Miniatura',
+                microBadges: [
+                    { icon: 'fa-gem', title: 'Alta Definição', subtitle: 'Riqueza em relevo' },
+                    { icon: 'fa-spray-can-sparkles', title: 'Curada & Lavada', subtitle: 'Pronta p/ uso' },
+                    { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                ],
+                specs: [
+                    {
+                        icon: 'fa-cube',
+                        title: 'Material e Resolução',
+                        text: 'Produzido em Resina Fotopolimerizável de alta tenacidade em impressoras 3D 8K/12K. Apresenta microdetalhes expressivos e resistência ideal para manuseio em mesas de RPG.'
+                    },
+                    {
+                        icon: 'fa-brush',
+                        title: 'Pintura e Finalização',
+                        text: 'Quando encomendada com pintura, cada peça recebe primer de aderência, tintas acrílicas para modelismo e camada de verniz fosco ultra-resistente para proteção contra marcas de dedos.'
+                    },
+                    {
+                        icon: 'fa-truck-fast',
+                        title: 'Prazos & Envio',
+                        text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                    }
+                ]
+            };
+        }
+
         function renderProductDetails(p) {
             const contentEl = document.getElementById('product-content');
+            const profile = getProductProfile(p);
             
             // Atualizar título da aba
             document.title = `${p.name} | Saving Throw`;
 
             // Breadcrumbs & Categorias
-            const isArsenal = p.type === 'arsenal' || p.type === 'escudo' || (p.category && p.category.toLowerCase().includes('arsenal'));
             const breadcrumbCat = document.getElementById('breadcrumb-category');
             const breadcrumbName = document.getElementById('breadcrumb-name');
             const btnBack = document.getElementById('btn-back-catalog');
             const btnViewAll = document.getElementById('btn-view-all');
 
-            if (isArsenal) {
-                breadcrumbCat.innerText = 'Arsenal de RPG';
-                breadcrumbCat.href = 'arsenal';
-                btnBack.href = 'arsenal';
-                btnBack.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar para o Arsenal';
-                btnViewAll.href = 'arsenal';
-            } else {
-                breadcrumbCat.innerText = 'Miniaturas';
-                breadcrumbCat.href = 'miniaturas';
-                btnBack.href = 'miniaturas';
-                btnBack.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar para as Miniaturas';
-                btnViewAll.href = 'miniaturas';
-            }
+            breadcrumbCat.innerText = profile.breadcrumbCategory;
+            breadcrumbCat.href = profile.breadcrumbHref;
+            btnBack.href = profile.breadcrumbHref;
+            btnBack.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Voltar para ${profile.catalogLabel}`;
+            btnViewAll.href = profile.breadcrumbHref;
 
             breadcrumbName.innerText = p.name;
 
@@ -590,13 +718,41 @@
             imgEl.src = p.image_url || './assets/imagens/minis.png';
             imgEl.alt = p.name;
 
-            document.getElementById('product-category-badge').innerText = p.category || (isArsenal ? 'Arsenal' : 'Miniatura');
-            document.getElementById('product-tag-badge').innerText = isArsenal ? 'Madeira & Laser' : 'Resina Premium';
-            document.getElementById('product-type-label').innerText = isArsenal ? 'Arsenal & Acessórios' : 'Miniatura em Resina';
+            document.getElementById('product-category-badge').innerText = profile.categoryBadge;
+            document.getElementById('product-tag-badge').innerText = profile.tagBadge;
+            document.getElementById('product-type-label').innerText = profile.typeLabel;
+
+            // Renderizar Micro-badges dinamicamente
+            const microBadgesContainer = document.getElementById('product-micro-badges');
+            if (microBadgesContainer) {
+                microBadgesContainer.innerHTML = profile.microBadges.map(b => `
+                    <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
+                        <i class="fa-solid ${b.icon} text-amber-600 text-base mb-1 block"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">${b.title}</span>
+                        <span class="text-[9px] text-zinc-500">${b.subtitle}</span>
+                    </div>
+                `).join('');
+            }
 
             // Textos
             document.getElementById('product-title').innerText = p.name;
             document.getElementById('product-description').innerText = p.description || 'Peça produzida com altíssimo padrão de acabamento e fidelidade aos mínimos detalhes.';
+
+            // Renderizar Especificações e Garantias dinamicamente
+            const specsContainer = document.getElementById('specs-grid');
+            if (specsContainer) {
+                specsContainer.innerHTML = profile.specs.map(s => `
+                    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                        <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg shadow-sm">
+                            <i class="fa-solid ${s.icon}"></i>
+                        </div>
+                        <h4 class="font-bold text-base mb-2 text-zinc-900">${s.title}</h4>
+                        <p class="text-zinc-600 text-xs leading-relaxed">
+                            ${s.text}
+                        </p>
+                    </div>
+                `).join('');
+            }
 
             // Configurar Opções de Preço
             const hasDualPrice = p.price_unpainted !== undefined && p.price_unpainted !== null && p.price_painted !== undefined && p.price_painted !== null;
@@ -608,7 +764,7 @@
                 document.getElementById('badge-price-painted').innerText = `R$ ${formatPrice(p.price_painted)}`;
                 selectOption('unpainted');
             } else {
-                // Produto com preço único (ex: Arsenal / Escudo)
+                // Produto com preço único (ex: Arsenal / Escudo / Torre)
                 optionsContainer.classList.add('hidden');
                 const singlePrice = p.price || p.price_unpainted || 0;
                 document.getElementById('selected-option-title').innerText = 'Produto Completo';

@@ -47,6 +47,17 @@ module.exports = async function handler(req, res) {
                     price_painted: 139.90,
                     description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
                     image_url: './assets/imagens/capapersonagem1.png'
+                },
+                'preco-herdeiro': {
+                    id: 'preco-herdeiro',
+                    type: 'oneshot',
+                    category: 'One Shots & Aventuras',
+                    name: 'Kit de Aventura: O Preço do Herdeiro',
+                    price: null,
+                    price_unpainted: 169.90,
+                    price_painted: 349.90,
+                    description: 'Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.',
+                    image_url: './assets/imagens/preco_herdeiro.png'
                 }
             };
 
