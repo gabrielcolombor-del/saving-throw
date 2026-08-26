@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <meta name="samsung-dark-mode" content="false">
+    <meta name="theme-color" content="#EBE3CB">
+    <title>Detalhes do Produto | Saving Throw</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        :root, html, body, header, main, footer, section, div, article, nav, aside {
+            color-scheme: light !important;
+            supported-color-schemes: light !important;
+            forced-color-adjust: none !important;
+            -webkit-forced-color-adjust: none !important;
+        }
+
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, h4, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .bg-parchment a:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+        .bg-parchment button:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+        .bg-parchment nav a:not(.bg-black) {
+            color: #000000 !important;
+        }
+        .bg-parchment .bg-black,
+        .bg-parchment a.bg-black,
+        .bg-parchment button.bg-black {
+            color: #EBE3CB !important;
+        }
+        .bg-parchment .bg-black i,
+        .bg-parchment a.bg-black i,
+        .bg-parchment button.bg-black i {
+            color: inherit !important;
+        }
+        .text-parchment-dark { color: #4A4435 !important; }
+        .transition-all { transition: all 0.3s ease; }
+
+        .bg-\[\#EBE3CB\] {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .text-\[\#EBE3CB\] {
+            color: #EBE3CB !important;
+        }
+        .bg-white {
+            background-color: #ffffff !important;
+            background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
+            color: #000000 !important;
+        }
+        .bg-zinc-50 {
+            background-color: #f4f4f5 !important;
+            background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
+            color: #000000 !important;
+        }
+
+        .option-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .option-card.selected {
+            border-color: #d97706 !important;
+            background-color: #fffbeb !important;
+            box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.15) !important;
+        }
+        .option-card.selected .radio-circle {
+            border-color: #d97706 !important;
+            background-color: #d97706 !important;
+        }
+        .option-card.selected .radio-dot {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root, html, body, header, main, footer, section, div, article, nav, aside {
+                color-scheme: light !important;
+                supported-color-schemes: light !important;
+                forced-color-adjust: none !important;
+                -webkit-forced-color-adjust: none !important;
+            }
+            *, ::before, ::after {
+                forced-color-adjust: none !important;
+                -webkit-forced-color-adjust: none !important;
+                filter: none !important;
+                -webkit-filter: none !important;
+            }
+            .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
+                background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+                color: #000000 !important;
+            }
+            .bg-parchment a:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+            .bg-parchment button:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+            .bg-parchment nav a:not(.bg-black) {
+                color: #000000 !important;
+            }
+            .bg-parchment .bg-black,
+            .bg-parchment a.bg-black,
+            .bg-parchment button.bg-black {
+                color: #EBE3CB !important;
+            }
+            .bg-parchment .bg-black i,
+            .bg-parchment a.bg-black i,
+            .bg-parchment button.bg-black i {
+                color: inherit !important;
+            }
+            .text-parchment-dark {
+                color: #4A4435 !important;
+            }
+            .bg-\[\#EBE3CB\] {
+                background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+                color: #000000 !important;
+            }
+            .text-\[\#EBE3CB\] {
+                color: #EBE3CB !important;
+            }
+            .bg-white {
+                background-color: #ffffff !important;
+                background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
+                color: #000000 !important;
+            }
+            .bg-zinc-50 {
+                background-color: #f4f4f5 !important;
+                background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex justify-between items-center w-full md:w-auto">
+                <a href="/" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                    Saving Throw
+                </a>
+                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer" aria-label="Abrir Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+                <nav class="flex flex-col md:flex-row items-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
+                    <a href="oneshots" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">One Shots</a>
+                    <a href="miniaturas" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Miniaturas</a>
+                    <a href="arsenal" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Arsenal de RPG</a>
+                    <a href="sistema" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Sistema ST</a>
+                    <a href="habilidades" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Habilidades & Feitiços</a>
+                    <a href="sons" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
+                </nav>
+
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 hover:text-white transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm shrink-0">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow bg-white text-black py-10 md:py-16">
+        <div class="container mx-auto px-4 max-w-6xl">
+            
+            <!-- Breadcrumbs -->
+            <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                <a href="/" class="hover:text-amber-600 transition-colors">Início</a>
+                <span class="text-zinc-300">/</span>
+                <a id="breadcrumb-category" href="miniaturas" class="hover:text-amber-600 transition-colors">Miniaturas</a>
+                <span class="text-zinc-300">/</span>
+                <span id="breadcrumb-name" class="text-zinc-900 font-extrabold truncate max-w-xs md:max-w-md">Carregando...</span>
+            </nav>
+
+            <!-- Loading State -->
+            <div id="product-loading" class="text-center py-24 text-zinc-500">
+                <i class="fa-solid fa-spinner fa-spin text-4xl text-amber-600 mb-4"></i>
+                <p class="text-sm font-bold uppercase tracking-widest text-zinc-700">Carregando Informações do Produto...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="product-error" class="hidden text-center py-20 bg-zinc-50 border border-zinc-200 rounded-xl p-8 max-w-xl mx-auto">
+                <div class="text-5xl mb-4">🎲</div>
+                <h2 class="font-title text-3xl mb-2 text-zinc-900">Produto não encontrado</h2>
+                <p class="text-zinc-600 text-sm mb-6">O artefato ou miniatura que você procurava não foi localizado em nosso acervo.</p>
+                <div class="flex justify-center gap-4">
+                    <a href="miniaturas" class="bg-black hover:bg-zinc-800 text-white text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Miniaturas</a>
+                    <a href="arsenal" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Arsenal</a>
+                </div>
+            </div>
+
+            <!-- Product Details Container -->
+            <div id="product-content" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                    
+                    <!-- Coluna Esquerda: Imagem & Badges -->
+                    <div class="lg:col-span-6 flex flex-col gap-4">
+                        <div class="relative w-full aspect-[4/5] bg-zinc-100 border border-zinc-200 rounded-2xl overflow-hidden shadow-md group flex items-center justify-center">
+                            <img id="product-image" src="" alt="Imagem do Produto" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out">
+                            
+                            <!-- Badges Flutuantes -->
+                            <div class="absolute top-4 left-4 flex flex-col gap-2 z-10">
+                                <span id="product-category-badge" class="bg-black/90 text-[#EBE3CB] text-xs font-black uppercase px-3 py-1.5 rounded-md shadow-md tracking-wider backdrop-blur-xs">
+                                    Categoria
+                                </span>
+                                <span id="product-tag-badge" class="bg-amber-600 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-md tracking-wider">
+                                    Resina Premium 8K
+                                </span>
+                            </div>
+
+                            <!-- Botão de Zoom -->
+                            <button id="btn-zoom-image" class="absolute bottom-4 right-4 bg-black/75 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center transition-all opacity-80 hover:opacity-100 shadow-md cursor-pointer" title="Ver imagem ampliada">
+                                <i class="fa-solid fa-expand text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Micro-badges de Destaque -->
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
+                                <i class="fa-solid fa-gem text-amber-600 text-base mb-1 block"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Alta Definição</span>
+                                <span class="text-[9px] text-zinc-500">Riqueza em relevo</span>
+                            </div>
+                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
+                                <i class="fa-solid fa-spray-can-sparkles text-amber-600 text-base mb-1 block"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Curada & Lavada</span>
+                                <span class="text-[9px] text-zinc-500">Pronta p/ uso</span>
+                            </div>
+                            <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
+                                <i class="fa-solid fa-box-open text-amber-600 text-base mb-1 block"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-700 block">Envio Protegido</span>
+                                <span class="text-[9px] text-zinc-500">Embalagem especial</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Informações, Opções & CTA WhatsApp -->
+                    <div class="lg:col-span-6 flex flex-col justify-between">
+                        <div>
+                            <!-- Header do Produto -->
+                            <div class="mb-4">
+                                <span id="product-type-label" class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">
+                                    Miniatura em Resina
+                                </span>
+                                <h1 id="product-title" class="text-3xl md:text-5xl font-title tracking-tight text-zinc-950 mb-3">
+                                    Nome do Produto
+                                </h1>
+                            </div>
+
+                            <!-- Descrição do Produto -->
+                            <div class="border-y border-zinc-200 py-4 mb-6">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Descrição & Detalhes</h3>
+                                <p id="product-description" class="text-zinc-700 text-sm md:text-base leading-relaxed">
+                                    Descrição completa da peça forjada artesanalmente para compor o seu cenário ou ficha de personagem.
+                                </p>
+                            </div>
+
+                            <!-- Seletor de Opções (Com Pintura / Sem Pintura) -->
+                            <div id="options-container" class="mb-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-palette text-amber-600"></i> Escolha o Acabamento:
+                                    </label>
+                                    <span class="text-[11px] text-zinc-500 font-medium">Selecione para ver o valor</span>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="options-grid">
+                                    <!-- Opção 1: Sem Pintura -->
+                                    <div id="opt-unpainted" onclick="selectOption('unpainted')" class="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
+                                                    <div class="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
+                                                </div>
+                                                <span class="font-bold text-sm text-zinc-900">Sem Pintura</span>
+                                            </div>
+                                            <span id="badge-price-unpainted" class="font-black text-xs text-zinc-800">R$ --</span>
+                                        </div>
+                                        <p class="text-[11px] text-zinc-500 pl-7 leading-normal">
+                                            Modelo em Resina cinza de alta resolução, limpo e curado, pronto para você aplicar sua própria pintura.
+                                        </p>
+                                    </div>
+
+                                    <!-- Opção 2: Com Pintura Artística -->
+                                    <div id="opt-painted" onclick="selectOption('painted')" class="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
+                                                    <div class="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
+                                                </div>
+                                                <span class="font-bold text-sm text-amber-900 flex items-center gap-1">
+                                                    Com Pintura <i class="fa-solid fa-wand-magic-sparkles text-[10px] text-amber-600"></i>
+                                                </span>
+                                            </div>
+                                            <span id="badge-price-painted" class="font-black text-xs text-amber-700">R$ --</span>
+                                        </div>
+                                        <p class="text-[11px] text-zinc-500 pl-7 leading-normal">
+                                            Pintura manual profissional com degradê, sombras, iluminação e acabamento em verniz protetor.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preço em Destaque -->
+                            <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                                <div>
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-amber-800 block">
+                                        Valor Estimado:
+                                    </span>
+                                    <span id="selected-option-title" class="text-xs text-zinc-600 font-medium">
+                                        Opção: Sem Pintura
+                                    </span>
+                                </div>
+                                <div class="text-left sm:text-right">
+                                    <div id="display-price" class="text-3xl md:text-4xl font-black text-zinc-950 tracking-tight transition-all">
+                                        R$ 0,00
+                                    </div>
+                                    <span class="text-[10px] text-zinc-500 uppercase font-semibold">Produção artesanal sob demanda</span>
+                                </div>
+                            </div>
+
+                            <!-- Botão WhatsApp CTA -->
+                            <div class="flex flex-col gap-3">
+                                <a id="btn-whatsapp-order" href="#" target="_blank" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] hover:text-white font-bold uppercase text-sm py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                    <i class="fa-brands fa-whatsapp text-xl text-green-400"></i>
+                                    <span>Encomendar via WhatsApp</span>
+                                </a>
+                                
+                                <div class="flex items-center justify-center gap-2 text-center text-xs text-zinc-500">
+                                    <i class="fa-solid fa-lock text-[10px] text-zinc-400"></i>
+                                    <span>Você será redirecionado para conversar diretamente conosco no WhatsApp.</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Botão Voltar -->
+                        <div class="mt-8 pt-6 border-t border-zinc-100 flex items-center justify-between">
+                            <a id="btn-back-catalog" href="miniaturas" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-600 hover:text-black transition-colors">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar para o Catálogo
+                            </a>
+                            <button onclick="navigator.share ? navigator.share({title: document.title, url: window.location.href}) : copyLink()" class="text-xs font-bold text-zinc-500 hover:text-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-share-nodes"></i> Compartilhar
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Detalhes Adicionais & Especificações -->
+                <div class="mt-16 pt-12 border-t border-zinc-200">
+                    <h3 class="font-title text-3xl mb-8 text-zinc-950 text-center">Garantias & Especificações Técnicas</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-2">Material e Resolução</h4>
+                            <p class="text-zinc-600 text-xs leading-relaxed">
+                                Produzido em Resina Fotopolimerizável de alta tenacidade em impressoras 3D 8K/12K. Apresenta microdetalhes expressivos e resistência ideal para manuseio em mesas de RPG.
+                            </p>
+                        </div>
+
+                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
+                                <i class="fa-solid fa-brush"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-2">Pintura e Finalização</h4>
+                            <p class="text-zinc-600 text-xs leading-relaxed">
+                                Quando encomendada com pintura, cada peça recebe primer de aderência, tintas acrílicas para modelismo e camada de verniz fosco ultra-resistente para proteção contra marcas de dedos.
+                            </p>
+                        </div>
+
+                        <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                            <div class="w-10 h-10 bg-black text-[#EBE3CB] rounded-lg flex items-center justify-center mb-4 text-lg">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-2">Prazos & Envio</h4>
+                            <p class="text-zinc-600 text-xs leading-relaxed">
+                                O envio é feito via Correios ou transportadora para todo o território nacional. Embalamos cada miniatura individualmente em cápsula de proteção com plástico bolha e caixa reforçada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção Outros Produtos Recomendados -->
+                <div class="mt-20 pt-12 border-t border-zinc-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-baseline mb-8">
+                        <div>
+                            <span class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Continue Explorando</span>
+                            <h3 class="font-title text-3xl text-zinc-950">Mais Peças do Nosso Acervo</h3>
+                        </div>
+                        <a id="btn-view-all" href="miniaturas" class="text-xs font-bold uppercase tracking-wider text-amber-700 hover:text-black transition-colors mt-2 sm:mt-0">
+                            Ver Todos os Modelos <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+
+                    <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        <!-- Itens recomendados via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Lightbox da Imagem -->
+    <div id="image-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
+            <button id="btn-close-modal" class="absolute -top-12 right-0 text-white hover:text-amber-500 text-2xl p-2 cursor-pointer transition-colors" aria-label="Fechar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="modal-image" src="" alt="Imagem Ampliada" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl border border-zinc-700">
+            <span id="modal-caption" class="text-white/80 text-xs mt-3 font-semibold uppercase tracking-wider text-center"></span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-parchment text-black py-12 border-t border-black/10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-16 md:h-24 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1" aria-label="TikTok">
+                    <i class="fa-brands fa-tiktok text-lg"></i>
+                </a>
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1" aria-label="WhatsApp">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-black/10 text-center flex flex-col md:flex-row justify-between text-xs font-bold uppercase tracking-wider text-parchment-dark/70">
+            <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
+            <p class="mt-2 md:mt-0">Forjado de RPGista para RPGista.</p>
+        </div>
+    </footer>
+
+    <script>
+        const WHATSAPP_NUMBER = "5527997947604";
+        let currentProduct = null;
+        let selectedOption = 'unpainted'; // 'unpainted' ou 'painted'
+
+        // Fallbacks para produtos especiais
+        const STATIC_FALLBACKS = {
+            'escudo-mestre': {
+                id: 'escudo-mestre',
+                type: 'arsenal',
+                category: 'Arsenal de RPG',
+                name: 'Escudo do Mestre Personalizado',
+                price: 299.90,
+                price_unpainted: null,
+                price_painted: null,
+                description: 'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
+                image_url: './assets/imagens/escudo_mestre.png'
+            },
+            'personalizada': {
+                id: 'personalizada',
+                type: 'miniatura',
+                category: 'Serviço Exclusivo',
+                name: 'Miniatura Personalizada com Caixa de MDF de Luxo',
+                price: null,
+                price_unpainted: 89.90,
+                price_painted: 139.90,
+                description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
+                image_url: './assets/imagens/capapersonagem1.png'
+            }
+        };
+
+        // Menu Hamburguer
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            const navContent = document.getElementById('nav-content');
+            const menuIcon = this.querySelector('i');
+            navContent.classList.toggle('hidden');
+            if (navContent.classList.contains('hidden')) {
+                menuIcon.classList.replace('fa-xmark', 'fa-bars');
+            } else {
+                menuIcon.classList.replace('fa-bars', 'fa-xmark');
+            }
+        });
+
+        // Carregar Detalhes do Produto
+        async function loadProduct() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            const loadingEl = document.getElementById('product-loading');
+            const errorEl = document.getElementById('product-error');
+            const contentEl = document.getElementById('product-content');
+
+            if (!productId) {
+                loadingEl.classList.add('hidden');
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // Tenta buscar da API
+                const res = await fetch(`/api/products?id=${encodeURIComponent(productId)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.product) {
+                        currentProduct = data.product;
+                    }
+                }
+            } catch (err) {
+                console.warn("Erro ao buscar produto da API, tentando fallback...", err);
+            }
+
+            // Se não encontrou na API, tenta o fallback estático
+            if (!currentProduct && STATIC_FALLBACKS[productId]) {
+                currentProduct = STATIC_FALLBACKS[productId];
+            }
+
+            loadingEl.classList.add('hidden');
+
+            if (!currentProduct) {
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            renderProductDetails(currentProduct);
+            loadRelatedProducts(currentProduct);
+        }
+
+        function renderProductDetails(p) {
+            const contentEl = document.getElementById('product-content');
+            
+            // Atualizar título da aba
+            document.title = `${p.name} | Saving Throw`;
+
+            // Breadcrumbs & Categorias
+            const isArsenal = p.type === 'arsenal' || p.type === 'escudo' || (p.category && p.category.toLowerCase().includes('arsenal'));
+            const breadcrumbCat = document.getElementById('breadcrumb-category');
+            const breadcrumbName = document.getElementById('breadcrumb-name');
+            const btnBack = document.getElementById('btn-back-catalog');
+            const btnViewAll = document.getElementById('btn-view-all');
+
+            if (isArsenal) {
+                breadcrumbCat.innerText = 'Arsenal de RPG';
+                breadcrumbCat.href = 'arsenal';
+                btnBack.href = 'arsenal';
+                btnBack.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar para o Arsenal';
+                btnViewAll.href = 'arsenal';
+            } else {
+                breadcrumbCat.innerText = 'Miniaturas';
+                breadcrumbCat.href = 'miniaturas';
+                btnBack.href = 'miniaturas';
+                btnBack.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar para as Miniaturas';
+                btnViewAll.href = 'miniaturas';
+            }
+
+            breadcrumbName.innerText = p.name;
+
+            // Imagem e Badges
+            const imgEl = document.getElementById('product-image');
+            imgEl.src = p.image_url || './assets/imagens/minis.png';
+            imgEl.alt = p.name;
+
+            document.getElementById('product-category-badge').innerText = p.category || (isArsenal ? 'Arsenal' : 'Miniatura');
+            document.getElementById('product-tag-badge').innerText = isArsenal ? 'Madeira & Laser' : 'Resina Premium';
+            document.getElementById('product-type-label').innerText = isArsenal ? 'Arsenal & Acessórios' : 'Miniatura em Resina';
+
+            // Textos
+            document.getElementById('product-title').innerText = p.name;
+            document.getElementById('product-description').innerText = p.description || 'Peça produzida com altíssimo padrão de acabamento e fidelidade aos mínimos detalhes.';
+
+            // Configurar Opções de Preço
+            const hasDualPrice = p.price_unpainted !== undefined && p.price_unpainted !== null && p.price_painted !== undefined && p.price_painted !== null;
+            const optionsContainer = document.getElementById('options-container');
+
+            if (hasDualPrice) {
+                optionsContainer.classList.remove('hidden');
+                document.getElementById('badge-price-unpainted').innerText = `R$ ${formatPrice(p.price_unpainted)}`;
+                document.getElementById('badge-price-painted').innerText = `R$ ${formatPrice(p.price_painted)}`;
+                selectOption('unpainted');
+            } else {
+                // Produto com preço único (ex: Arsenal / Escudo)
+                optionsContainer.classList.add('hidden');
+                const singlePrice = p.price || p.price_unpainted || 0;
+                document.getElementById('selected-option-title').innerText = 'Produto Completo';
+                document.getElementById('display-price').innerText = `R$ ${formatPrice(singlePrice)}`;
+                updateWhatsAppButton(p.name, 'Padrão / Completo', singlePrice);
+            }
+
+            contentEl.classList.remove('hidden');
+        }
+
+        function formatPrice(val) {
+            return Number(val || 0).toFixed(2).replace('.', ',');
+        }
+
+        function selectOption(opt) {
+            selectedOption = opt;
+            const optUnpainted = document.getElementById('opt-unpainted');
+            const optPainted = document.getElementById('opt-painted');
+            const displayPrice = document.getElementById('display-price');
+            const selectedTitle = document.getElementById('selected-option-title');
+
+            if (!currentProduct) return;
+
+            if (opt === 'unpainted') {
+                optUnpainted.classList.add('selected');
+                optPainted.classList.remove('selected');
+
+                const price = currentProduct.price_unpainted || currentProduct.price || 0;
+                selectedTitle.innerText = 'Opção: Sem Pintura (Resina Cinza)';
+                animatePrice(price);
+                updateWhatsAppButton(currentProduct.name, 'Sem Pintura (Resina Cinza)', price);
+            } else {
+                optPainted.classList.add('selected');
+                optUnpainted.classList.remove('selected');
+
+                const price = currentProduct.price_painted || 0;
+                selectedTitle.innerText = 'Opção: Com Pintura Artística Feita à Mão';
+                animatePrice(price);
+                updateWhatsAppButton(currentProduct.name, 'Com Pintura Artística', price);
+            }
+        }
+
+        function animatePrice(newPrice) {
+            const displayPrice = document.getElementById('display-price');
+            displayPrice.classList.add('text-amber-600', 'scale-105');
+            displayPrice.innerText = `R$ ${formatPrice(newPrice)}`;
+            setTimeout(() => {
+                displayPrice.classList.remove('text-amber-600', 'scale-105');
+            }, 250);
+        }
+
+        function updateWhatsAppButton(productName, optionLabel, priceValue) {
+            const btn = document.getElementById('btn-whatsapp-order');
+            
+            const message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${productName}\n*Opção:* ${optionLabel}\n*Valor Estimado:* R$ ${formatPrice(priceValue)}\n\nGostaria de saber mais informações e combinar o pagamento e envio!`;
+            
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            btn.href = url;
+        }
+
+        // Carregar Produtos Relacionados
+        async function loadRelatedProducts(currentP) {
+            const grid = document.getElementById('related-grid');
+            try {
+                const typeParam = (currentP.type === 'arsenal' || currentP.type === 'escudo') ? 'arsenal' : 'miniatura';
+                const res = await fetch(`/api/products?type=${typeParam}&limit=4`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.products && data.products.length > 0) {
+                        const filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 4);
+                        if (filtered.length > 0) {
+                            grid.innerHTML = filtered.map(item => `
+                                <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+                                    <div>
+                                        <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100">
+                                            <img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <span class="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[9px] font-bold uppercase px-2 py-0.5 rounded">${item.category || 'Destaque'}</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <h4 class="font-bold text-xs text-zinc-900 line-clamp-1 mb-1 group-hover:text-amber-700 transition-colors">${item.name}</h4>
+                                            <p class="text-[10px] text-zinc-500 line-clamp-2 mb-2">${item.description || ''}</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 pt-0 border-t border-zinc-100 mt-auto">
+                                        <div class="flex justify-between items-baseline mb-2">
+                                            <span class="text-[9px] uppercase font-bold text-zinc-400">A partir de</span>
+                                            <span class="text-xs font-black text-black">R$ ${formatPrice(item.price_unpainted || item.price || 0)}</span>
+                                        </div>
+                                        <div class="w-full text-center bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase py-2 rounded transition-colors">
+                                            Saiba Mais
+                                        </div>
+                                    </div>
+                                </a>
+                            `).join('');
+                            return;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Erro ao buscar produtos relacionados:", err);
+            }
+            grid.parentElement.classList.add('hidden');
+        }
+
+        // Modal Lightbox da Imagem
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        const modalCaption = document.getElementById('modal-caption');
+        const btnZoom = document.getElementById('btn-zoom-image');
+        const btnClose = document.getElementById('btn-close-modal');
+
+        btnZoom.addEventListener('click', () => {
+            if (!currentProduct) return;
+            modalImg.src = currentProduct.image_url || './assets/imagens/minis.png';
+            modalCaption.innerText = currentProduct.name;
+            modal.classList.remove('hidden');
+        });
+
+        btnClose.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Link do produto copiado para a área de transferência!");
+        }
+
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

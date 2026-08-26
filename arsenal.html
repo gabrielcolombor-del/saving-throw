@@ -216,7 +216,7 @@
                             </div>
                             <div>
                                 <span class="font-black text-xl block mb-3">R$ 299,90</span>
-                                <a href="https://wa.me/5527997947604?text=Ol%C3%A1!%20Gostaria%20de%20encomendar%20o%20Escudo%20do%20Mestre%20Personalizado%20%28R%24%20299%2C90%29." target="_blank" class="w-full bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all py-3 rounded text-center block text-xs font-bold uppercase tracking-wider">Encomendar via WhatsApp</a>
+                                <a href="produto?id=escudo-mestre" class="w-full bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all py-3 rounded text-center block text-xs font-bold uppercase tracking-wider shadow-sm">Saiba Mais</a>
                             </div>
                         </div>
                     </div>
@@ -374,13 +374,13 @@
                 
                 if (data.products && data.products.length > 0) {
                     grid.innerHTML = data.products.map(p => `
-                        <div class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col h-full">
+                        <div onclick="window.location.href='produto?id=${p.id}'" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                             <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100" style="aspect-ratio: 4/5;">
                                 <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             </div>
                             <div class="p-4 flex flex-col flex-1 justify-between">
                                 <div>
-                                    <h3 class="font-bold text-sm text-zinc-900 mb-1 line-clamp-2" title="${p.name}">${p.name}</h3>
+                                    <h3 class="font-bold text-sm text-zinc-900 mb-1 line-clamp-2 group-hover:text-amber-700 transition-colors" title="${p.name}">${p.name}</h3>
                                     <p class="text-xs text-zinc-500 line-clamp-2 mb-3" title="${p.description}">${p.description}</p>
                                 </div>
                                 <div class="border-t border-zinc-100 pt-3 mt-auto">
@@ -388,8 +388,8 @@
                                         <span class="text-[10px] uppercase font-bold text-zinc-400">Valor</span>
                                         <span class="text-sm font-black text-amber-600">R$ ${Number(p.price).toFixed(2).replace('.',',')}</span>
                                     </div>
-                                    <a href="https://wa.me/5527997947604?text=${encodeURIComponent('Olá! Gostaria de encomendar o produto: ' + p.name)}" target="_blank" class="block w-full text-center bg-black hover:bg-zinc-800 text-white text-[10px] font-bold uppercase py-2 rounded transition-colors">
-                                        Encomendar
+                                    <a href="produto?id=${p.id}" onclick="event.stopPropagation()" class="block w-full text-center bg-black hover:bg-zinc-800 text-white text-[10px] font-bold uppercase py-2 rounded transition-colors shadow-xs">
+                                        Saiba Mais
                                     </a>
                                 </div>
                             </div>

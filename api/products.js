@@ -1,6 +1,6 @@
 const { pool, ensureProductsTable } = require('./_lib/db');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -22,7 +22,45 @@ export default async function handler(req, res) {
     await ensureProductsTable();
 
     try {
-        const { type, category, search, page = 1, limit = 8 } = req.query;
+        const { type, category, search, page = 1, limit = 8, id } = req.query;
+
+        if (id) {
+            const specialProducts = {
+                'escudo-mestre': {
+                    id: 'escudo-mestre',
+                    type: 'arsenal',
+                    category: 'Arsenal de RPG',
+                    name: 'Escudo do Mestre Personalizado',
+                    price: 299.90,
+                    price_unpainted: null,
+                    price_painted: null,
+                    description: 'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
+                    image_url: './assets/imagens/escudo_mestre.png'
+                },
+                'personalizada': {
+                    id: 'personalizada',
+                    type: 'miniatura',
+                    category: 'Serviço Exclusivo',
+                    name: 'Miniatura Personalizada com Caixa de MDF de Luxo',
+                    price: null,
+                    price_unpainted: 89.90,
+                    price_painted: 139.90,
+                    description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
+                    image_url: './assets/imagens/capapersonagem1.png'
+                }
+            };
+
+            const { rows } = await pool.query('SELECT * FROM st_products WHERE id = $1', [id]);
+            if (rows.length > 0) {
+                return res.status(200).json({ product: rows[0] });
+            }
+
+            if (specialProducts[id]) {
+                return res.status(200).json({ product: specialProducts[id] });
+            }
+
+            return res.status(404).json({ error: 'Produto não encontrado' });
+        }
         
         let whereClauses = [];
         let params = [];
