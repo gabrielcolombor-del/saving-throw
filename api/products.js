@@ -35,7 +35,11 @@ module.exports = async function handler(req, res) {
                     price_unpainted: null,
                     price_painted: null,
                     description: 'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
-                    image_url: './assets/imagens/escudo_mestre.png'
+                    image_url: './assets/imagens/escudo_mestre.png',
+                    images: [
+                        './assets/imagens/escudo_mestre.png',
+                        './assets/imagens/escudo_mestre2.png'
+                    ]
                 },
                 'personalizada': {
                     id: 'personalizada',
@@ -46,7 +50,11 @@ module.exports = async function handler(req, res) {
                     price_unpainted: 89.90,
                     price_painted: 139.90,
                     description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
-                    image_url: './assets/imagens/capapersonagem1.png'
+                    image_url: './assets/imagens/capapersonagem1.png',
+                    images: [
+                        './assets/imagens/capapersonagem1.png',
+                        './assets/imagens/capapersonagem2.png'
+                    ]
                 },
                 'preco-herdeiro': {
                     id: 'preco-herdeiro',
@@ -57,7 +65,10 @@ module.exports = async function handler(req, res) {
                     price_unpainted: 169.90,
                     price_painted: 349.90,
                     description: 'Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.',
-                    image_url: './assets/imagens/preco_herdeiro.png'
+                    image_url: './assets/imagens/preco_herdeiro.png',
+                    images: [
+                        './assets/imagens/preco_herdeiro.png'
+                    ]
                 }
             };
 

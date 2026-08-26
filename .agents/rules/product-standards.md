@@ -45,8 +45,23 @@ Olá Saving Throw! 🎲
 
 Tenho interesse em encomendar o produto:
 *Item:* [Nome do Produto]
-*Opção:* [Opção Selecionada ou Padrão]
-*Valor Estimado:* R$ [Valor Formatado]
+*Opção:* [Opção Selecionada ou Omitido se único]
+*Preço:* R$ [Valor Formatado]
 
 Gostaria de saber mais informações e combinar o pagamento e envio!
 ```
+
+---
+
+## 5. Galeria de Imagens & Enquadramento Visual (Aspect Ratio)
+
+1. **Enquadramento Adaptativo (Paisagem vs Retrato)**:
+   - **Fotos Horizontais (`largura > altura`)**: Devem ser enquadradas em proporção **5:4** (modo paisagem), garantindo exibição ampla sem cortes indevidos (ex: Escudo do Mestre).
+   - **Fotos Verticais (`altura >= largura`)**: Devem ser enquadradas em proporção **4:5** (modo retrato).
+2. **Produtos com Múltiplas Imagens**:
+   - Sempre que o produto possuir mais de uma foto (`images.length > 1`), ativar automaticamente o **Slider / Galeria interativa**:
+     - Botões de navegação lateral (Anterior / Próximo) no hover e no lightbox.
+     - Indicador de bolinhas (dots) flutuante com transição.
+     - Linha de miniaturas (thumbnails) clicáveis com anel de destaque da foto ativa.
+     - Suporte a gestos touch (swipe lateral em dispositivos móveis) e setas do teclado.
+

@@ -80,6 +80,13 @@
             color: #000000 !important;
         }
 
+        .frame-ratio-5-4 {
+            aspect-ratio: 5 / 4 !important;
+        }
+        .frame-ratio-4-5 {
+            aspect-ratio: 4 / 5 !important;
+        }
+
         .option-card {
             transition: all 0.2s ease-in-out;
             cursor: pointer;
@@ -220,25 +227,45 @@
             <div id="product-content" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                     
-                    <!-- Coluna Esquerda: Imagem & Badges -->
+                    <!-- Coluna Esquerda: Slider de Imagens, Frame Adaptativo (4:5 / 5:4) & Badges -->
                     <div class="lg:col-span-6 flex flex-col gap-4">
-                        <div class="relative w-full aspect-[4/5] bg-zinc-100 border border-zinc-200 rounded-2xl overflow-hidden shadow-md group flex items-center justify-center">
-                            <img id="product-image" src="" alt="Imagem do Produto" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out">
+                        <!-- Frame Principal com Aspect Ratio Dinâmico (5:4 para fotos horizontais e 4:5 para verticais) -->
+                        <div id="main-image-frame" class="relative w-full frame-ratio-5-4 bg-zinc-100 border border-zinc-200 rounded-2xl overflow-hidden shadow-md group flex items-center justify-center transition-all duration-300">
+                            <!-- Imagem Principal -->
+                            <img id="product-image" src="" alt="Imagem do Produto" class="w-full h-full object-cover object-center group-hover:scale-105 transition-all duration-500 ease-out select-none">
                             
                             <!-- Badges Flutuantes -->
-                            <div class="absolute top-4 left-4 flex flex-col gap-2 z-10">
+                            <div class="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
                                 <span id="product-category-badge" class="bg-black/90 text-[#EBE3CB] text-xs font-black uppercase px-3 py-1.5 rounded-md shadow-md tracking-wider backdrop-blur-xs">
                                     Categoria
                                 </span>
                                 <span id="product-tag-badge" class="bg-amber-600 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-md tracking-wider">
-                                    Resina Premium 8K
+                                    Tag
                                 </span>
                             </div>
 
-                            <!-- Botão de Zoom -->
-                            <button id="btn-zoom-image" class="absolute bottom-4 right-4 bg-black/75 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center transition-all opacity-80 hover:opacity-100 shadow-md cursor-pointer" title="Ver imagem ampliada">
+                            <!-- Botões de Navegação do Slider (Anterior / Próximo) -->
+                            <button id="slider-prev-btn" onclick="prevSlide(event)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Foto anterior">
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
+                            </button>
+                            <button id="slider-next-btn" onclick="nextSlide(event)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Próxima foto">
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
+                            </button>
+
+                            <!-- Indicador de Posição / Bolinhas Flutuantes -->
+                            <div id="slider-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20 hidden bg-black/40 backdrop-blur-xs px-3 py-1.5 rounded-full">
+                                <!-- Preenchido via JS -->
+                            </div>
+
+                            <!-- Botão de Zoom / Lightbox -->
+                            <button id="btn-zoom-image" type="button" class="absolute bottom-4 right-4 bg-black/75 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center transition-all opacity-80 hover:opacity-100 shadow-md cursor-pointer z-20" title="Ver imagem ampliada">
                                 <i class="fa-solid fa-expand text-sm"></i>
                             </button>
+                        </div>
+
+                        <!-- Miniaturas / Thumbnails para navegação rápida -->
+                        <div id="slider-thumbnails" class="flex items-center gap-2.5 overflow-x-auto pb-1 hidden scrollbar-hide">
+                            <!-- Miniaturas geradas via JS -->
                         </div>
 
                         <!-- Micro-badges de Destaque (Renderizados dinamicamente via JS) -->
@@ -315,11 +342,11 @@
                             <!-- Preço em Destaque -->
                             <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                                 <div>
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-amber-800 block">
-                                        Valor Estimado:
+                                    <span class="text-xs font-black uppercase tracking-widest text-zinc-900 block">
+                                        Preço:
                                     </span>
-                                    <span id="selected-option-title" class="text-xs text-zinc-600 font-medium">
-                                        Opção: Sem Pintura
+                                    <span id="selected-option-title" class="text-xs text-zinc-600 font-medium hidden">
+                                        Sem Pintura (Resina Cinza)
                                     </span>
                                 </div>
                                 <div class="text-left sm:text-right">
@@ -391,11 +418,20 @@
 
     <!-- Modal Lightbox da Imagem -->
     <div id="image-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
+        <div class="relative max-w-5xl max-h-[90vh] flex flex-col items-center">
             <button id="btn-close-modal" class="absolute -top-12 right-0 text-white hover:text-amber-500 text-2xl p-2 cursor-pointer transition-colors" aria-label="Fechar">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <img id="modal-image" src="" alt="Imagem Ampliada" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl border border-zinc-700">
+            <div class="relative flex items-center justify-center w-full">
+                <img id="modal-image" src="" alt="Imagem Ampliada" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl border border-zinc-700">
+                
+                <button id="modal-prev-btn" onclick="prevSlide(event)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition-all z-30 cursor-pointer shadow-lg hidden" aria-label="Foto anterior">
+                    <i class="fa-solid fa-chevron-left text-base"></i>
+                </button>
+                <button id="modal-next-btn" onclick="nextSlide(event)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition-all z-30 cursor-pointer shadow-lg hidden" aria-label="Próxima foto">
+                    <i class="fa-solid fa-chevron-right text-base"></i>
+                </button>
+            </div>
             <span id="modal-caption" class="text-white/80 text-xs mt-3 font-semibold uppercase tracking-wider text-center"></span>
         </div>
     </div>
@@ -441,7 +477,11 @@
                 price_unpainted: null,
                 price_painted: null,
                 description: 'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
-                image_url: './assets/imagens/escudo_mestre.png'
+                image_url: './assets/imagens/escudo_mestre.png',
+                images: [
+                    './assets/imagens/escudo_mestre.png',
+                    './assets/imagens/escudo_mestre2.png'
+                ]
             },
             'personalizada': {
                 id: 'personalizada',
@@ -452,9 +492,30 @@
                 price_unpainted: 89.90,
                 price_painted: 139.90,
                 description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
-                image_url: './assets/imagens/capapersonagem1.png'
+                image_url: './assets/imagens/capapersonagem1.png',
+                images: [
+                    './assets/imagens/capapersonagem1.png',
+                    './assets/imagens/capapersonagem2.png'
+                ]
+            },
+            'preco-herdeiro': {
+                id: 'preco-herdeiro',
+                type: 'oneshot',
+                category: 'One Shots & Aventuras',
+                name: 'Kit de Aventura: O Preço do Herdeiro',
+                price: null,
+                price_unpainted: 169.90,
+                price_painted: 349.90,
+                description: 'Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.',
+                image_url: './assets/imagens/preco_herdeiro.png',
+                images: [
+                    './assets/imagens/preco_herdeiro.png'
+                ]
             }
         };
+
+        let productImages = [];
+        let currentImageIndex = 0;
 
         // Menu Hamburguer
         document.getElementById('menu-btn').addEventListener('click', function() {
@@ -713,11 +774,13 @@
 
             breadcrumbName.innerText = p.name;
 
-            // Imagem e Badges
-            const imgEl = document.getElementById('product-image');
-            imgEl.src = p.image_url || './assets/imagens/minis.png';
-            imgEl.alt = p.name;
+            // Inicializar Galeria / Slider com Aspect Ratio Adaptativo
+            const rawImages = (p.images && Array.isArray(p.images) && p.images.length > 0) 
+                ? p.images 
+                : (p.image_url ? [p.image_url] : ['./assets/imagens/minis.png']);
+            initGallery(rawImages, p.name);
 
+            // Badges
             document.getElementById('product-category-badge').innerText = profile.categoryBadge;
             document.getElementById('product-tag-badge').innerText = profile.tagBadge;
             document.getElementById('product-type-label').innerText = profile.typeLabel;
@@ -757,22 +820,188 @@
             // Configurar Opções de Preço
             const hasDualPrice = p.price_unpainted !== undefined && p.price_unpainted !== null && p.price_painted !== undefined && p.price_painted !== null;
             const optionsContainer = document.getElementById('options-container');
+            const selectedTitle = document.getElementById('selected-option-title');
 
             if (hasDualPrice) {
                 optionsContainer.classList.remove('hidden');
                 document.getElementById('badge-price-unpainted').innerText = `R$ ${formatPrice(p.price_unpainted)}`;
                 document.getElementById('badge-price-painted').innerText = `R$ ${formatPrice(p.price_painted)}`;
+                selectedTitle.classList.remove('hidden');
                 selectOption('unpainted');
             } else {
                 // Produto com preço único (ex: Arsenal / Escudo / Torre)
                 optionsContainer.classList.add('hidden');
                 const singlePrice = p.price || p.price_unpainted || 0;
-                document.getElementById('selected-option-title').innerText = 'Produto Completo';
+                selectedTitle.innerText = '';
+                selectedTitle.classList.add('hidden');
                 document.getElementById('display-price').innerText = `R$ ${formatPrice(singlePrice)}`;
-                updateWhatsAppButton(p.name, 'Padrão / Completo', singlePrice);
+                updateWhatsAppButton(p.name, '', singlePrice);
             }
 
             contentEl.classList.remove('hidden');
+        }
+
+        // --- SISTEMA DE GALERIA E SLIDER COM ASPECT RATIO ADAPTATIVO (4:5 Retrato / 5:4 Paisagem) ---
+        function applyFrameAspectRatio(imgSrc) {
+            const frame = document.getElementById('main-image-frame');
+            if (!frame) return;
+
+            const temp = new Image();
+            temp.onload = function() {
+                if (this.naturalWidth >= this.naturalHeight) {
+                    frame.style.aspectRatio = '5 / 4';
+                    frame.classList.remove('frame-ratio-4-5', 'aspect-[4/5]');
+                    frame.classList.add('frame-ratio-5-4');
+                } else {
+                    frame.style.aspectRatio = '4 / 5';
+                    frame.classList.remove('frame-ratio-5-4', 'aspect-[5/4]');
+                    frame.classList.add('frame-ratio-4-5');
+                }
+            };
+            temp.src = imgSrc;
+            if (temp.complete && temp.naturalWidth) {
+                if (temp.naturalWidth >= temp.naturalHeight) {
+                    frame.style.aspectRatio = '5 / 4';
+                    frame.classList.remove('frame-ratio-4-5', 'aspect-[4/5]');
+                    frame.classList.add('frame-ratio-5-4');
+                } else {
+                    frame.style.aspectRatio = '4 / 5';
+                    frame.classList.remove('frame-ratio-5-4', 'aspect-[5/4]');
+                    frame.classList.add('frame-ratio-4-5');
+                }
+            }
+        }
+
+        function initGallery(images, productName) {
+            productImages = images;
+            currentImageIndex = 0;
+
+            const prevBtn = document.getElementById('slider-prev-btn');
+            const nextBtn = document.getElementById('slider-next-btn');
+            const dotsContainer = document.getElementById('slider-dots');
+            const thumbsContainer = document.getElementById('slider-thumbnails');
+            const modalPrevBtn = document.getElementById('modal-prev-btn');
+            const modalNextBtn = document.getElementById('modal-next-btn');
+
+            if (productImages.length > 1) {
+                if (prevBtn) prevBtn.classList.remove('hidden');
+                if (nextBtn) nextBtn.classList.remove('hidden');
+                if (dotsContainer) dotsContainer.classList.remove('hidden');
+                if (thumbsContainer) thumbsContainer.classList.remove('hidden');
+                if (modalPrevBtn) modalPrevBtn.classList.remove('hidden');
+                if (modalNextBtn) modalNextBtn.classList.remove('hidden');
+
+                // Renderizar Bolinhas Indicadoras
+                if (dotsContainer) {
+                    dotsContainer.innerHTML = productImages.map((_, i) => `
+                        <button onclick="goToSlide(${i})" type="button" class="slider-dot w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === 0 ? 'bg-amber-500 w-6' : 'bg-white/50 hover:bg-white/80'}" aria-label="Ir para foto ${i + 1}"></button>
+                    `).join('');
+                }
+
+                // Renderizar Miniaturas (Thumbnails)
+                if (thumbsContainer) {
+                    thumbsContainer.innerHTML = productImages.map((imgSrc, i) => `
+                        <button onclick="goToSlide(${i})" type="button" class="slider-thumb relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${i === 0 ? 'border-amber-600 scale-105 shadow-md ring-2 ring-amber-500/30' : 'border-zinc-200 opacity-60 hover:opacity-100'}">
+                            <img src="${imgSrc}" alt="${productName} - Foto ${i + 1}" class="w-full h-full object-cover">
+                        </button>
+                    `).join('');
+                }
+            } else {
+                if (prevBtn) prevBtn.classList.add('hidden');
+                if (nextBtn) nextBtn.classList.add('hidden');
+                if (dotsContainer) dotsContainer.classList.add('hidden');
+                if (thumbsContainer) thumbsContainer.classList.add('hidden');
+                if (modalPrevBtn) modalPrevBtn.classList.add('hidden');
+                if (modalNextBtn) modalNextBtn.classList.add('hidden');
+            }
+
+            goToSlide(0);
+            setupTouchSwipe();
+        }
+
+        function goToSlide(index) {
+            if (!productImages || productImages.length === 0) return;
+            if (index < 0) index = productImages.length - 1;
+            if (index >= productImages.length) index = 0;
+
+            currentImageIndex = index;
+            const imgSrc = productImages[index];
+            const imgEl = document.getElementById('product-image');
+            const modalImg = document.getElementById('modal-image');
+            const modalCaption = document.getElementById('modal-caption');
+
+            applyFrameAspectRatio(imgSrc);
+
+            imgEl.style.opacity = '0.35';
+            imgEl.onload = function() {
+                imgEl.style.opacity = '1';
+                applyFrameAspectRatio(imgSrc);
+            };
+            imgEl.src = imgSrc;
+            if (imgEl.complete) {
+                imgEl.style.opacity = '1';
+            }
+
+            if (modalImg) {
+                modalImg.src = imgSrc;
+            }
+            if (modalCaption && currentProduct) {
+                modalCaption.innerText = productImages.length > 1 
+                    ? `${currentProduct.name} (${currentImageIndex + 1} de ${productImages.length})`
+                    : currentProduct.name;
+            }
+
+            // Atualizar Bolinhas
+            const dots = document.querySelectorAll('.slider-dot');
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.className = 'slider-dot w-6 h-2.5 rounded-full bg-amber-500 transition-all duration-300 cursor-pointer';
+                } else {
+                    dot.className = 'slider-dot w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-300 cursor-pointer';
+                }
+            });
+
+            // Atualizar Miniaturas
+            const thumbs = document.querySelectorAll('.slider-thumb');
+            thumbs.forEach((thumb, i) => {
+                if (i === index) {
+                    thumb.className = 'slider-thumb relative w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-600 scale-105 shadow-md ring-2 ring-amber-500/30 transition-all flex-shrink-0 cursor-pointer';
+                } else {
+                    thumb.className = 'slider-thumb relative w-16 h-16 rounded-xl overflow-hidden border-2 border-zinc-200 opacity-60 hover:opacity-100 transition-all flex-shrink-0 cursor-pointer';
+                }
+            });
+        }
+
+        function nextSlide(e) {
+            if (e) e.stopPropagation();
+            goToSlide(currentImageIndex + 1);
+        }
+
+        function prevSlide(e) {
+            if (e) e.stopPropagation();
+            goToSlide(currentImageIndex - 1);
+        }
+
+        function setupTouchSwipe() {
+            const frame = document.getElementById('main-image-frame');
+            if (!frame || frame._swipeConfigured) return;
+            frame._swipeConfigured = true;
+
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            frame.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            frame.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) > 40) {
+                    if (diff < 0) nextSlide();
+                    else prevSlide();
+                }
+            }, { passive: true });
         }
 
         function formatPrice(val) {
@@ -783,7 +1012,6 @@
             selectedOption = opt;
             const optUnpainted = document.getElementById('opt-unpainted');
             const optPainted = document.getElementById('opt-painted');
-            const displayPrice = document.getElementById('display-price');
             const selectedTitle = document.getElementById('selected-option-title');
 
             if (!currentProduct) return;
@@ -793,7 +1021,8 @@
                 optPainted.classList.remove('selected');
 
                 const price = currentProduct.price_unpainted || currentProduct.price || 0;
-                selectedTitle.innerText = 'Opção: Sem Pintura (Resina Cinza)';
+                selectedTitle.classList.remove('hidden');
+                selectedTitle.innerText = 'Sem Pintura (Resina Cinza)';
                 animatePrice(price);
                 updateWhatsAppButton(currentProduct.name, 'Sem Pintura (Resina Cinza)', price);
             } else {
@@ -801,7 +1030,8 @@
                 optUnpainted.classList.remove('selected');
 
                 const price = currentProduct.price_painted || 0;
-                selectedTitle.innerText = 'Opção: Com Pintura Artística Feita à Mão';
+                selectedTitle.classList.remove('hidden');
+                selectedTitle.innerText = 'Com Pintura Artística Feita à Mão';
                 animatePrice(price);
                 updateWhatsAppButton(currentProduct.name, 'Com Pintura Artística', price);
             }
@@ -819,7 +1049,11 @@
         function updateWhatsAppButton(productName, optionLabel, priceValue) {
             const btn = document.getElementById('btn-whatsapp-order');
             
-            const message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${productName}\n*Opção:* ${optionLabel}\n*Valor Estimado:* R$ ${formatPrice(priceValue)}\n\nGostaria de saber mais informações e combinar o pagamento e envio!`;
+            let message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${productName}\n`;
+            if (optionLabel && optionLabel.trim() !== '') {
+                message += `*Opção:* ${optionLabel}\n`;
+            }
+            message += `*Preço:* R$ ${formatPrice(priceValue)}\n\nGostaria de saber mais informações e combinar o pagamento e envio!`;
             
             const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
             btn.href = url;
@@ -878,8 +1112,11 @@
 
         btnZoom.addEventListener('click', () => {
             if (!currentProduct) return;
-            modalImg.src = currentProduct.image_url || './assets/imagens/minis.png';
-            modalCaption.innerText = currentProduct.name;
+            const imgSrc = (productImages && productImages.length > 0) ? productImages[currentImageIndex] : (currentProduct.image_url || './assets/imagens/minis.png');
+            modalImg.src = imgSrc;
+            modalCaption.innerText = productImages.length > 1 
+                ? `${currentProduct.name} (${currentImageIndex + 1} de ${productImages.length})` 
+                : currentProduct.name;
             modal.classList.remove('hidden');
         });
 
@@ -889,6 +1126,17 @@
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        // Atalhos de Teclado (Seta Esquerda / Direita e ESC)
+        document.addEventListener('keydown', (e) => {
+            if (productImages.length > 1) {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+            }
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
                 modal.classList.add('hidden');
             }
         });

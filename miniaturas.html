@@ -368,7 +368,7 @@
             const nomeLimpo = nome.split('(')[0].trim();
             const textoOpcaoLimpo = textoOpcao.split('(')[0].trim();
             
-            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar:\n*Produto:* ${nomeLimpo}\n*Opção:* ${textoOpcaoLimpo}\n*Valor Estimado:* R$ ${valor}\n\nComo procedemos com o pagamento e envio?`;
+            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar:\n*Produto:* ${nomeLimpo}\n*Opção:* ${textoOpcaoLimpo}\n*Preço:* R$ ${valor}\n\nComo procedemos com o pagamento e envio?`;
             const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
             window.open(urlWhatsApp, '_blank');
         }
