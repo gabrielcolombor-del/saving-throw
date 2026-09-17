@@ -1681,7 +1681,7 @@
                     const hotkeyBtn = card.querySelector('.hotkey-btn');
                     hotkeyBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        const slotNum = prompt(\`Digite o número do atalho para "\${sfx.name}" (1 a 9):\`);
+                        const slotNum = prompt(`Digite o número do atalho para "${sfx.name}" (1 a 9):`);
                         if (slotNum !== null) {
                             const parsedNum = parseInt(slotNum);
                             if (!isNaN(parsedNum) && parsedNum >= 1 && parsedNum <= 9) {
