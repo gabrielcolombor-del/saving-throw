@@ -1688,7 +1688,7 @@
                                 quickSlots[parsedNum] = sfx.id;
                                 syncActiveProfileChanges();
                                 renderQuickSlots();
-                                showToast(\`Som "\${sfx.name}" adicionado ao atalho T\${parsedNum}!\`, 'success');
+                                showToast(`Som "${sfx.name}" adicionado ao atalho T${parsedNum}!`, 'success');
                             } else {
                                 showToast('Número de atalho inválido. Use de 1 a 9.', 'error');
                             }
