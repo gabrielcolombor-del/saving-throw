@@ -262,9 +262,12 @@
                 <h1 class="text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
                     Estúdio Sonoro da Mesa
                 </h1>
-                <p class="text-[#EBE3CB] text-xs sm:text-sm max-w-3xl mx-auto mb-5 px-2">
-                    Monte sua mesa: Alterne entre perfis de diferentes mesas de RPG. Clique na estrela ⭐ para favoritar ou arraste para os atalhos!
-                </p>
+                <div class="mb-5">
+                    <a href="instrucoes-mesa" target="_blank" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold uppercase text-[11px] sm:text-xs tracking-wider px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 group">
+                        <i class="fa-solid fa-book-open group-hover:scale-110 transition-transform"></i>
+                        <span>Aprenda a Usar a Mesa</span>
+                    </a>
+                </div>
 
                 <!-- BARRA MASTER DE ÁUDIO & GERENCIADOR DE PERFIS DE MESAS -->
                 <div class="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
@@ -1641,6 +1644,9 @@
                     card.setAttribute('data-id', sfx.id);
 
                     card.innerHTML = `
+                        <button class="hotkey-btn absolute top-2 left-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer" title="Adicionar ao Atalho">
+                            <i class="fa-solid fa-keyboard"></i>
+                        </button>
                         <button class="fav-star absolute top-2 right-2 text-zinc-600 hover:text-amber-400 p-1 text-xs cursor-pointer ${isFav ? 'text-amber-400' : ''}" title="Favoritar">
                             <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
                         </button>
@@ -1653,6 +1659,7 @@
 
                     card.addEventListener('click', (e) => {
                         if (e.target.closest('.fav-star')) return;
+                        if (e.target.closest('.hotkey-btn')) return;
                         playSFX(sfx.id);
                         card.classList.add('sfx-active');
                         setTimeout(() => card.classList.remove('sfx-active'), 200);
@@ -1669,6 +1676,23 @@
                         syncActiveProfileChanges();
                         renderFavorites();
                         renderSFXCatalog();
+                    });
+
+                    const hotkeyBtn = card.querySelector('.hotkey-btn');
+                    hotkeyBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const slotNum = prompt(\`Digite o número do atalho para "\${sfx.name}" (1 a 9):\`);
+                        if (slotNum !== null) {
+                            const parsedNum = parseInt(slotNum);
+                            if (!isNaN(parsedNum) && parsedNum >= 1 && parsedNum <= 9) {
+                                quickSlots[parsedNum] = sfx.id;
+                                syncActiveProfileChanges();
+                                renderQuickSlots();
+                                showToast(\`Som "\${sfx.name}" adicionado ao atalho T\${parsedNum}!\`, 'success');
+                            } else {
+                                showToast('Número de atalho inválido. Use de 1 a 9.', 'error');
+                            }
+                        }
                     });
 
                     card.addEventListener('dragstart', (e) => {
