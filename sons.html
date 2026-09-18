@@ -870,8 +870,11 @@
 
             localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
             localStorage.setItem('st_active_profile', activeProfileId);
-
+            
             if (currentUser && currentUser.id) {
+                // Salvar localmente atrelado à conta do usuário
+                localStorage.setItem(`st_profiles_${currentUser.id}`, JSON.stringify(tableProfiles));
+                
                 fetch('/api/gm-profiles?action=save_profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
