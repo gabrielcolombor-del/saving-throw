@@ -876,7 +876,7 @@
             });
             p.active_state = {
                 activeTracks: stateTracks,
-                masterVolume: masterVolumeSlider ? parseInt(masterVolumeSlider.value) : 80
+                masterVolume: typeof masterVolumeValue !== 'undefined' ? Math.round(masterVolumeValue * 100) : 80
             };
 
             localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
