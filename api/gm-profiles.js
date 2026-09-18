@@ -81,35 +81,7 @@ module.exports = async (req, res) => {
 
   const action = req.query.action || (req.body && req.body.action);
 
-  const defaultPresetScenes = [
-    {
-      id: 'scene_taverna_fogueira',
-      name: 'Taverna Aconchegante',
-      icon: 'fa-beer-mug-empty',
-      tracks: [
-        { id: 'taverna', vol: 80 },
-        { id: 'fogueira', vol: 30 }
-      ]
-    },
-    {
-      id: 'scene_combate_tempestade',
-      name: 'Batalha na Tempestade',
-      icon: 'fa-shield-halved',
-      tracks: [
-        { id: 'combate-1', vol: 75 },
-        { id: 'chuva', vol: 45 }
-      ]
-    },
-    {
-      id: 'scene_exploracao_sombria',
-      name: 'Exploração Misteriosa',
-      icon: 'fa-compass',
-      tracks: [
-        { id: 'exploracao-suspense', vol: 70 },
-        { id: 'fogueira', vol: 15 }
-      ]
-    }
-  ];
+  const defaultPresetScenes = [];
 
   try {
     // 1. LOGIN / REGISTRO VIA GOOGLE
