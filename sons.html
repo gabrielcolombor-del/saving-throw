@@ -831,6 +831,35 @@
         let crossfadeTargetScene = null;
         let selectedModalIcon = 'fa-masks-theater';
 
+        function restoreActiveState(state) {
+            if (!state) return;
+            
+            if (state.masterVolume !== undefined) {
+                masterVolumeValue = state.masterVolume / 100;
+                if (masterVolInput) masterVolInput.value = state.masterVolume;
+                if (masterVolLabel) masterVolLabel.textContent = `${state.masterVolume}%`;
+            }
+
+            Object.keys(activeTracks).forEach(ambId => stopAmbientTrack(ambId));
+
+            if (state.activeTracks) {
+                Object.keys(state.activeTracks).forEach(ambId => {
+                    const ambDef = ambientsData.find(a => a.id === ambId);
+                    if (ambDef) {
+                        startAmbientTrack(ambDef, state.activeTracks[ambId].vol);
+                    }
+                });
+            }
+        }
+
+        let debouncedSyncTimeout = null;
+        function debouncedSyncActiveProfileChanges() {
+            if (debouncedSyncTimeout) clearTimeout(debouncedSyncTimeout);
+            debouncedSyncTimeout = setTimeout(() => {
+                syncActiveProfileChanges();
+            }, 1000);
+        }
+
         function syncActiveProfileChanges() {
             const p = getActiveProfile();
             p.favorites = favoriteSounds;
@@ -838,6 +867,17 @@
             p.favorite_ambients = favoriteAmbients;
             p.quick_slots = quickSlots;
             p.scenes = tableScenes;
+            
+            // Gravar Estado ao Vivo (Quais sons estão tocando e volumes)
+            const activeKeys = Object.keys(activeTracks);
+            let stateTracks = {};
+            activeKeys.forEach(k => {
+                stateTracks[k] = { vol: activeTracks[k].vol };
+            });
+            p.active_state = {
+                activeTracks: stateTracks,
+                masterVolume: masterVolumeSlider ? parseInt(masterVolumeSlider.value) : 80
+            };
 
             localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
             localStorage.setItem('st_active_profile', activeProfileId);
@@ -856,7 +896,8 @@
                         favorites: p.favorites,
                         favoriteAmbients: p.favoriteAmbients,
                         quickSlots: p.quick_slots,
-                        scenes: p.scenes
+                        scenes: p.scenes,
+                        activeState: p.active_state
                     })
                 }).catch(e => console.log('Sync server err:', e));
             }
@@ -897,6 +938,8 @@
                 renderSFXCatalog();
                 renderAmbients();
                 renderScenesUI();
+                
+                restoreActiveState(p.active_state);
             });
         }
 
@@ -1113,6 +1156,7 @@
             renderSFXCatalog();
             renderAmbients();
             renderScenesUI();
+            restoreActiveState(tableProfiles[0]?.active_state);
             closeAuthModal();
         }
 
@@ -1939,6 +1983,7 @@
                         activeTracks[amb.id].vol = val;
                         updateTrackVolume(amb.id);
                         renderActiveTracksHeaderPanel();
+                        debouncedSyncActiveProfileChanges();
                     }
                 });
 
@@ -1999,6 +2044,7 @@
 
             renderAmbients();
             renderActiveTracksHeaderPanel();
+            debouncedSyncActiveProfileChanges();
         }
 
         function togglePlayPauseTrack(ambId) {
@@ -2018,6 +2064,7 @@
             }
             renderAmbients();
             renderActiveTracksHeaderPanel();
+            debouncedSyncActiveProfileChanges();
         }
 
         function stopAmbientTrack(ambId) {
@@ -2032,6 +2079,7 @@
             }
             renderAmbients();
             renderActiveTracksHeaderPanel();
+            debouncedSyncActiveProfileChanges();
         }
 
         function updateTrackVolume(ambId) {
@@ -2057,6 +2105,7 @@
                 masterVolumeValue = val;
                 masterVolLabel.textContent = `${e.target.value}%`;
                 Object.keys(activeTracks).forEach(ambId => updateTrackVolume(ambId));
+                debouncedSyncActiveProfileChanges();
             });
         }
 
@@ -2079,6 +2128,7 @@
                         }
                     });
                 }
+                debouncedSyncActiveProfileChanges();
             });
         }
 
@@ -2818,6 +2868,7 @@
             renderAmbients();
             renderActiveTracksHeaderPanel();
             renderScenesUI();
+            restoreActiveState(getActiveProfile()?.active_state);
         });
     </script>
 </body>

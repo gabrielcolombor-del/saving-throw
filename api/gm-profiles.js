@@ -48,11 +48,13 @@ async function ensureTablesExist() {
       favorite_ambients JSONB DEFAULT '[]'::jsonb,
       quick_slots JSONB DEFAULT '{}'::jsonb,
       scenes JSONB DEFAULT '[]'::jsonb,
+      active_state JSONB DEFAULT '{}'::jsonb,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS favorite_ambients JSONB DEFAULT '[]'::jsonb;
     ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS scenes JSONB DEFAULT '[]'::jsonb;
+    ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS active_state JSONB DEFAULT '{}'::jsonb;
   `;
   await executeDbQuery(query);
 }
@@ -225,20 +227,21 @@ module.exports = async (req, res) => {
 
     // 4. SALVAR / ATUALIZAR PERFIL DE MESA
     if (action === 'save_profile') {
-      const { userId, profileId, name, favorites, favoriteAmbients, quickSlots, scenes } = req.body || {};
+      const { userId, profileId, name, favorites, favoriteAmbients, quickSlots, scenes, activeState } = req.body || {};
       if (!userId || !profileId) return sendJson(400, { error: 'IDs inválidos.' });
 
       await executeDbQuery(`
-        INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, scenes, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
+        INSERT INTO gm_table_profiles (id, user_id, name, favorites, favorite_ambients, quick_slots, scenes, active_state, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           favorites = EXCLUDED.favorites,
           favorite_ambients = EXCLUDED.favorite_ambients,
           quick_slots = EXCLUDED.quick_slots,
           scenes = EXCLUDED.scenes,
+          active_state = EXCLUDED.active_state,
           updated_at = CURRENT_TIMESTAMP
-      `, [profileId, userId, name || 'Mesa do Mestre', JSON.stringify(favorites || []), JSON.stringify(favoriteAmbients || []), JSON.stringify(quickSlots || {}), JSON.stringify(scenes || defaultPresetScenes)]);
+      `, [profileId, userId, name || 'Mesa do Mestre', JSON.stringify(favorites || []), JSON.stringify(favoriteAmbients || []), JSON.stringify(quickSlots || {}), JSON.stringify(scenes || defaultPresetScenes), JSON.stringify(activeState || {})]);
 
       const pRes = await executeDbQuery('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
       return sendJson(200, { success: true, profiles: pRes ? pRes.rows : [] });
