@@ -2563,24 +2563,10 @@
 
             if (confirm(`Deseja sobrescrever o preset da cena "${scene.name}" com os ${activeKeys.length} sons e volumes ativos no momento?`)) {
                 scene.tracks = activeKeys.map(id => ({
-                    id: id,
-                    vol: activeTracks[id].vol
-                }));
-                syncActiveProfileChanges();
-                renderScenesUI();
-            }
-        }
+                     let editingSceneId = null;
 
         function renameScene(sceneId) {
-            const scene = tableScenes.find(s => s.id === sceneId);
-            if (!scene) return;
-
-            const newName = prompt('Digite o novo nome para esta Cena:', scene.name);
-            if (newName && newName.trim()) {
-                scene.name = newName.trim();
-                syncActiveProfileChanges();
-                renderScenesUI();
-            }
+            openSaveSceneModal(sceneId);
         }
 
         function deleteScene(sceneId) {
@@ -2605,37 +2591,76 @@
         const suggestionBtns = document.querySelectorAll('.scene-tag-btn');
         const iconBtns = document.querySelectorAll('.scene-icon-opt');
 
-        function openSaveSceneModal() {
+        function openSaveSceneModal(sceneIdToEdit = null) {
             if (!saveSceneModal) return;
+            
+            editingSceneId = (typeof sceneIdToEdit === 'string') ? sceneIdToEdit : null;
             const activeKeys = Object.keys(activeTracks);
 
-            if (modalSoundsPreview) {
-                if (activeKeys.length === 0) {
-                    modalSoundsPreview.innerHTML = `
-                        <div class="text-zinc-500 italic py-2 text-center">
-                            Nenhum som ambiente tocando agora. A cena será criada com faixas padrão ou você pode ativar sons antes de salvar!
-                        </div>
-                    `;
-                } else {
-                    modalSoundsPreview.innerHTML = activeKeys.map(id => {
-                        const trk = activeTracks[id];
-                        const amb = trk.ambObj;
-                        return `
-                            <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
-                                <span class="flex items-center gap-2">
-                                    <i class="fa-solid ${amb.icon} text-amber-500"></i>
-                                    <span class="font-bold">${amb.name}</span>
-                                </span>
-                                <span class="text-amber-400 font-mono font-bold">${trk.vol}%</span>
+            if (editingSceneId) {
+                const scene = tableScenes.find(s => s.id === editingSceneId);
+                if (scene) {
+                    if (sceneNameInput) sceneNameInput.value = scene.name;
+                    
+                    iconBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-amber-600', 'text-black');
+                        b.classList.add('bg-zinc-800', 'text-amber-400');
+                    });
+                    const targetBtn = Array.from(iconBtns).find(b => b.getAttribute('data-icon') === scene.icon) || iconBtns[0];
+                    if (targetBtn) {
+                        targetBtn.classList.add('active', 'bg-amber-600', 'text-black');
+                        targetBtn.classList.remove('bg-zinc-800', 'text-amber-400');
+                        selectedModalIcon = targetBtn.getAttribute('data-icon');
+                    }
+
+                    if (modalSoundsPreview) {
+                        if (!scene.tracks || scene.tracks.length === 0) {
+                            modalSoundsPreview.innerHTML = `<div class="text-zinc-500 italic py-2 text-center">Nenhum som salvo nesta cena.</div>`;
+                        } else {
+                            modalSoundsPreview.innerHTML = `<div class="text-amber-500 text-[10px] uppercase font-bold text-center mb-2">Mantendo sons da cena original</div>` + 
+                            scene.tracks.map(trk => {
+                                const amb = ambientData.find(a => a.id === trk.id);
+                                if (!amb) return '';
+                                return `
+                                    <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fa-solid ${amb.icon} text-amber-500"></i>
+                                            <span class="font-bold">${amb.name}</span>
+                                        </span>
+                                        <span class="text-amber-400 font-mono font-bold">${trk.vol}%</span>
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+                    }
+                }
+            } else {
+                if (sceneNameInput) sceneNameInput.value = '';
+                if (modalSoundsPreview) {
+                    if (activeKeys.length === 0) {
+                        modalSoundsPreview.innerHTML = `
+                            <div class="text-zinc-500 italic py-2 text-center">
+                                Nenhum som ambiente tocando agora. A cena será criada com faixas padrão ou você pode ativar sons antes de salvar!
                             </div>
                         `;
-                    }).join('');
+                    } else {
+                        modalSoundsPreview.innerHTML = activeKeys.map(id => {
+                            const trk = activeTracks[id];
+                            const amb = trk.ambObj;
+                            return `
+                                <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
+                                    <span class="flex items-center gap-2">
+                                        <i class="fa-solid ${amb.icon} text-amber-500"></i>
+                                        <span class="font-bold">${amb.name}</span>
+                                    </span>
+                                    <span class="text-amber-400 font-mono font-bold">${trk.vol}%</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
                 }
             }
 
-            if (sceneNameInput) {
-                sceneNameInput.value = '';
-            }
             saveSceneModal.classList.remove('hidden');
             if (sceneNameInput) sceneNameInput.focus();
         }
@@ -2650,7 +2675,7 @@
         suggestionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (sceneNameInput) {
-                    sceneNameInput.value = btn.textContent.replace(/[^\w\sÀ-ú]/gi, '').trim();
+                    sceneNameInput.value = btn.textContent.replace(/[^\w\s\u00C0-\u00FF]/gi, '').trim();
                 }
             });
         });
@@ -2673,28 +2698,36 @@
                 const name = sceneNameInput.value.trim();
                 if (!name) return;
 
-                const activeKeys = Object.keys(activeTracks);
-                let tracksToSave = [];
-
-                if (activeKeys.length > 0) {
-                    tracksToSave = activeKeys.map(id => ({
-                        id: id,
-                        vol: activeTracks[id].vol
-                    }));
+                if (editingSceneId) {
+                    const scene = tableScenes.find(s => s.id === editingSceneId);
+                    if (scene) {
+                        scene.name = name;
+                        scene.icon = selectedModalIcon;
+                    }
                 } else {
-                    // Fallback com 1 som ambiente inicial caso nenhum esteja tocando
-                    tracksToSave = [{ id: 'taverna', vol: 70 }];
+                    const activeKeys = Object.keys(activeTracks);
+                    let tracksToSave = [];
+
+                    if (activeKeys.length > 0) {
+                        tracksToSave = activeKeys.map(id => ({
+                            id: id,
+                            vol: activeTracks[id].vol
+                        }));
+                    } else {
+                        tracksToSave = [{ id: 'taverna', vol: 70 }];
+                    }
+
+                    const newScene = {
+                        id: `scene_${Date.now()}`,
+                        name: name,
+                        icon: selectedModalIcon,
+                        tracks: tracksToSave
+                    };
+
+                    tableScenes.unshift(newScene);
+                    activeSceneId = newScene.id;
                 }
 
-                const newScene = {
-                    id: `scene_${Date.now()}`,
-                    name: name,
-                    icon: selectedModalIcon,
-                    tracks: tracksToSave
-                };
-
-                tableScenes.unshift(newScene);
-                activeSceneId = newScene.id;
                 syncActiveProfileChanges();
                 renderScenesUI();
                 closeSaveSceneModal();
