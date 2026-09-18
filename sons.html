@@ -2381,6 +2381,12 @@
                     </div>
                 `;
 
+                // Ativar cena ao clicar no card
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+                    transitionToScene(scene, 4000);
+                });
+
                 // Drag & Drop
                 card.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('text/plain', scene.id);
