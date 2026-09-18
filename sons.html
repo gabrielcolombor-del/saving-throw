@@ -2237,7 +2237,7 @@
                 container.className = 'central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/70 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_25px_rgba(245,158,11,0.2)] min-h-[220px]';
 
                 const soundPills = activeScene.tracks.map(t => {
-                    const amb = ambientData.find(a => a.id === t.id);
+                    const amb = ambientsData.find(a => a.id === t.id);
                     const currentVol = activeTracks[t.id] ? activeTracks[t.id].vol : t.vol;
                     const isPlaying = !!activeTracks[t.id] && !activeTracks[t.id].isPaused;
                     return `
@@ -2374,7 +2374,7 @@
                 card.setAttribute('data-scene-id', scene.id);
 
                 const trackPreview = scene.tracks.slice(0, 3).map(t => {
-                    const amb = ambientData.find(a => a.id === t.id);
+                    const amb = ambientsData.find(a => a.id === t.id);
                     return `
                         <div class="flex items-center justify-between text-[10px] text-zinc-400 py-0.5">
                             <span class="truncate max-w-[130px] flex items-center gap-1">
@@ -2537,7 +2537,7 @@
 
                 // Se não está tocando e deve entrar na cena, inicia com volume 0 imediatamente
                 if (!currentTrack && endVol > 0) {
-                    const ambObj = ambientData.find(a => a.id === ambId);
+                    const ambObj = ambientsData.find(a => a.id === ambId);
                     if (ambObj) {
                         startAmbientTrack(ambObj, 0);
                     }
@@ -2684,7 +2684,7 @@
                         } else {
                             modalSoundsPreview.innerHTML = `<div class="text-amber-500 text-[10px] uppercase font-bold text-center mb-2">Mantendo sons da cena original</div>` + 
                             scene.tracks.map(trk => {
-                                const amb = ambientData.find(a => a.id === trk.id);
+                                const amb = ambientsData.find(a => a.id === trk.id);
                                 if (!amb) return '';
                                 return `
                                     <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
