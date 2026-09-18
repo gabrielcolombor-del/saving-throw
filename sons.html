@@ -2564,7 +2564,15 @@
 
             if (confirm(`Deseja sobrescrever o preset da cena "${scene.name}" com os ${activeKeys.length} sons e volumes ativos no momento?`)) {
                 scene.tracks = activeKeys.map(id => ({
-                     let editingSceneId = null;
+                    id: id,
+                    vol: activeTracks[id].vol
+                }));
+                syncActiveProfileChanges();
+                renderScenesUI();
+            }
+        }
+
+        let editingSceneId = null;
 
         function renameScene(sceneId) {
             openSaveSceneModal(sceneId);
