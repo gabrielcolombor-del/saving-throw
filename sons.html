@@ -632,7 +632,7 @@
             <form id="save-scene-form" class="space-y-4">
                 <div>
                     <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome da Cena</label>
-                    <input type="text" id="scene-name-input" required placeholder="Ex: Taverna Festiva, Combate na Chuva..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <input type="text" id="scene-name-input" placeholder="Ex: Taverna Festiva, Combate na Chuva..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
                 <div>
@@ -2760,8 +2760,10 @@
         if (saveSceneForm) {
             saveSceneForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const name = sceneNameInput.value.trim();
-                if (!name) return;
+                let name = sceneNameInput.value.trim();
+                if (!name) {
+                    name = "Nova Cena";
+                }
 
                 if (editingSceneId) {
                     const scene = tableScenes.find(s => s.id === editingSceneId);
@@ -2796,6 +2798,7 @@
                 syncActiveProfileChanges();
                 renderScenesUI();
                 closeSaveSceneModal();
+                showToast(`Cena "${name}" salva com sucesso!`, 'success');
             });
         }
 
