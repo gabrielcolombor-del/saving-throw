@@ -55,6 +55,7 @@ async function ensureTablesExist() {
     ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS favorite_ambients JSONB DEFAULT '[]'::jsonb;
     ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS scenes JSONB DEFAULT '[]'::jsonb;
     ALTER TABLE gm_table_profiles ADD COLUMN IF NOT EXISTS active_state JSONB DEFAULT '{}'::jsonb;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_ambients JSONB DEFAULT '[]'::jsonb;
   `;
   await executeDbQuery(query);
 }
@@ -131,7 +132,7 @@ module.exports = async (req, res) => {
 
       return sendJson(200, {
         success: true,
-        user: { id: userId, email: email.toLowerCase().trim(), name: userName, avatarUrl: avatarUrl || '' },
+        user: { id: userId, email: email.toLowerCase().trim(), name: userName, avatarUrl: avatarUrl || '', customAmbients: (dbUserRes && dbUserRes.rows && dbUserRes.rows[0]) ? dbUserRes.rows[0].custom_ambients : [] },
         profiles,
         source: dbUserRes ? 'database' : 'local_fallback'
       });
@@ -160,7 +161,7 @@ module.exports = async (req, res) => {
 
         return sendJson(200, {
           success: true,
-          user: { id: user.id, email: user.email, name: user.name, avatarUrl: user.avatar_url },
+          user: { id: user.id, email: user.email, name: user.name, avatarUrl: user.avatar_url, customAmbients: user.custom_ambients || [] },
           profiles,
           source: 'database'
         });
@@ -219,7 +220,7 @@ module.exports = async (req, res) => {
 
       return sendJson(200, {
         success: true,
-        user: { id: userId, email: normalizedEmail, name: userName },
+        user: { id: userId, email: normalizedEmail, name: userName, customAmbients: [] },
         profiles: defaultProfiles,
         source: dbSuccess ? 'database' : 'local_fallback'
       });
@@ -255,6 +256,15 @@ module.exports = async (req, res) => {
       await executeDbQuery('DELETE FROM gm_table_profiles WHERE id = $1 AND user_id = $2', [profileId, userId]);
       const pRes = await executeDbQuery('SELECT * FROM gm_table_profiles WHERE user_id = $1 ORDER BY created_at ASC', [userId]);
       return sendJson(200, { success: true, profiles: pRes ? pRes.rows : [] });
+    }
+
+    // 6. SALVAR CUSTOM AMBIENTS NA NUVEM
+    if (action === 'save_custom_ambients') {
+      const { userId, customAmbients } = req.body || {};
+      if (!userId) return sendJson(400, { error: 'ID inválido.' });
+
+      await executeDbQuery('UPDATE users SET custom_ambients = $1 WHERE id = $2', [JSON.stringify(customAmbients || []), userId]);
+      return sendJson(200, { success: true });
     }
 
     return sendJson(200, {
