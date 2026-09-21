@@ -552,9 +552,12 @@
                                 <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome do Som</label>
                                 <input type="text" id="custom-ambient-name" required placeholder="Ex: Tema Épico" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
                             </div>
-                            <div class="w-full sm:w-auto">
-                                <button type="submit" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
+                            <div class="w-full sm:w-auto flex items-center gap-2">
+                                <button type="submit" id="custom-ambient-submit-btn" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
                                     Adicionar
+                                </button>
+                                <button type="button" id="custom-ambient-cancel-btn" onclick="cancelEditCustomAmbient()" class="hidden w-full sm:w-auto bg-zinc-700 hover:bg-zinc-600 text-white font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
+                                    Cancelar
                                 </button>
                             </div>
                         </form>
@@ -815,11 +818,40 @@
 
         let currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
         let customAmbients = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`)) || [];
+        let editingCustomAmbientId = null;
 
         function getAmbientData() {
             return [...defaultAmbientData, ...customAmbients];
         }
 
+
+        function editCustomAmbient(ambId) {
+            const amb = customAmbients.find(a => a.id === ambId);
+            if (!amb) return;
+            
+            editingCustomAmbientId = amb.id;
+            
+            document.getElementById('custom-ambient-url').value = `https://youtube.com/watch?v=${amb.ytId}`;
+            document.getElementById('custom-ambient-name').value = amb.name;
+            
+            const btn = document.getElementById('custom-ambient-submit-btn');
+            if (btn) btn.innerHTML = 'Salvar';
+            
+            const cancelBtn = document.getElementById('custom-ambient-cancel-btn');
+            if (cancelBtn) cancelBtn.classList.remove('hidden');
+
+            document.getElementById('custom-ambient-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function cancelEditCustomAmbient() {
+            editingCustomAmbientId = null;
+            document.getElementById('custom-ambient-form').reset();
+            const btn = document.getElementById('custom-ambient-submit-btn');
+            if (btn) btn.innerHTML = 'Adicionar';
+            
+            const cancelBtn = document.getElementById('custom-ambient-cancel-btn');
+            if (cancelBtn) cancelBtn.classList.add('hidden');
+        }
 
         function deleteCustomAmbient(ambId) {
             if (!confirm('Deseja realmente remover este som personalizado?')) return;
@@ -1993,7 +2025,15 @@
                 card.setAttribute('data-category', amb.category);
 
                 card.innerHTML = `
-                    ${amb.isCustom ? `<button class="delete-custom-ambient absolute top-3 right-10 text-zinc-600 hover:text-red-500 p-1 text-sm cursor-pointer" onclick="deleteCustomAmbient('${amb.id}')" title="Remover som personalizado"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${amb.isCustom ? `
+                    <div class="absolute top-3 right-10 flex items-center gap-1 bg-zinc-900/80 rounded px-1 z-10">
+                        <button class="text-zinc-500 hover:text-blue-400 p-1 text-sm cursor-pointer transition-colors" onclick="editCustomAmbient('${amb.id}')" title="Editar som personalizado">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="text-zinc-500 hover:text-red-500 p-1 text-sm cursor-pointer transition-colors" onclick="deleteCustomAmbient('${amb.id}')" title="Remover som personalizado">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>` : ''}
                     <button class="fav-ambient-star absolute top-3 right-3 text-zinc-600 hover:text-amber-400 p-1 text-sm cursor-pointer ${isFavAmbient ? 'text-amber-400' : ''}" title="${isFavAmbient ? 'Desfavoritar' : 'Favoritar (Fixar no topo)'}">
                         <i class="fa-${isFavAmbient ? 'solid' : 'regular'} fa-star"></i>
                     </button>
@@ -2865,23 +2905,31 @@
                     showToast('Link do YouTube inválido.', 'error');
                     return;
                 }
-                
-                const newAmbient = {
-                    id: `custom_${Date.now()}`,
-                    name: name,
-                    category: category,
-                    icon: 'fa-music',
-                    desc: 'Personalizado',
-                    ytId: ytId,
-                    isCustom: true
-                };
-                
-                customAmbients.push(newAmbient);
+                if (editingCustomAmbientId) {
+                    const idx = customAmbients.findIndex(a => a.id === editingCustomAmbientId);
+                    if (idx !== -1) {
+                        customAmbients[idx].name = name;
+                        customAmbients[idx].ytId = ytId;
+                    }
+                    showToast(`Som "${name}" atualizado!`, 'success');
+                    cancelEditCustomAmbient();
+                } else {
+                    const newAmbient = {
+                        id: `custom_${Date.now()}`,
+                        name: name,
+                        category: category,
+                        icon: 'fa-music',
+                        desc: 'Personalizado',
+                        ytId: ytId,
+                        isCustom: true
+                    };
+                    customAmbients.push(newAmbient);
+                    showToast(`Som "${name}" adicionado!`, 'success');
+                    customAmbientForm.reset();
+                }
+
                 localStorage.setItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`, JSON.stringify(customAmbients));
-                
                 syncCustomAmbientsToCloud();
-                showToast(`Som "${name}" adicionado!`, 'success');
-                customAmbientForm.reset();
                 renderAmbients();
             });
         }
