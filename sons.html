@@ -544,21 +544,13 @@
                     </div>
                     <div class="md:w-2/3 bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 shadow-inner">
                         <form id="custom-ambient-form" class="flex flex-col sm:flex-row gap-4 items-end">
-                            <div class="w-full sm:w-5/12">
+                            <div class="w-full sm:w-6/12">
                                 <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Link do YouTube</label>
                                 <input type="url" id="custom-ambient-url" required placeholder="https://youtube.com/watch?v=..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
                             </div>
-                            <div class="w-full sm:w-4/12">
+                            <div class="w-full sm:w-6/12">
                                 <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome do Som</label>
                                 <input type="text" id="custom-ambient-name" required placeholder="Ex: Tema Épico" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
-                            </div>
-                            <div class="w-full sm:w-3/12">
-                                <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Categoria</label>
-                                <select id="custom-ambient-category" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
-                                    <option value="ambiente">Ambiente</option>
-                                    <option value="combate">Combate</option>
-                                    <option value="taverna">Taverna</option>
-                                </select>
                             </div>
                             <div class="w-full sm:w-auto">
                                 <button type="submit" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
@@ -2862,7 +2854,7 @@
                 e.preventDefault();
                 const url = document.getElementById('custom-ambient-url').value;
                 const name = document.getElementById('custom-ambient-name').value.trim();
-                const category = document.getElementById('custom-ambient-category').value;
+                const category = 'ambiente';
                 
                 // Extract YT ID
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
