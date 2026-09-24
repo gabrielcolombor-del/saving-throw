@@ -263,6 +263,29 @@
                     </div>
                 </div>
 
+                <!-- Gerenciador de Spell Slots -->
+                <div id="spell-slots-manager" class="hidden bg-zinc-900/50 border border-zinc-850 p-6 rounded-xl mb-8 shadow-2xl backdrop-blur-sm transition-all duration-300">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-zinc-800">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-xl"></i>
+                            <h2 class="text-lg font-title text-amber-500 uppercase tracking-wide">Espaços de Magia</h2>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <label for="character-level" class="text-xs font-bold uppercase tracking-wider text-zinc-400">Nível:</label>
+                                <input type="number" id="character-level" min="1" max="20" value="1" class="w-16 bg-zinc-950 border border-zinc-800 text-white rounded px-2 py-1.5 outline-none focus:border-amber-600 transition-all text-sm font-medium text-center">
+                            </div>
+                            <button id="long-rest-btn" class="bg-black hover:bg-zinc-800 text-amber-500 border border-zinc-800 hover:border-amber-600/50 transition-all px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-bed"></i> Descanso Longo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="slots-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Gerado dinamicamente via JS -->
+                    </div>
+                </div>
+
                 <!-- Info Geral / Contador -->
                 <div class="flex justify-between items-center mb-6 px-1">
                     <span id="results-count" class="text-xs font-bold uppercase tracking-widest text-[#EBE3CB]/60">
@@ -581,8 +604,113 @@
             emptyStateDiv.querySelector('p').innerText = 'Houve uma falha ao abrir a base de dados de magias. Verifique a conexão do servidor.';
         }
 
+        // --- GERENCIADOR DE SPELL SLOTS ---
+        const spellSlotsManager = document.getElementById('spell-slots-manager');
+        const characterLevelInput = document.getElementById('character-level');
+        const longRestBtn = document.getElementById('long-rest-btn');
+        const slotsContainer = document.getElementById('slots-container');
+
+        let characterLevel = 1;
+        let spentSlots = {}; 
+        
+        const fullCasters = ["Mago", "Clérigo", "Druida", "Bardo", "Feiticeiro"];
+
+        const spellSlotProgression = {
+            1: [2, 0, 0, 0, 0, 0, 0, 0, 0],
+            2: [3, 0, 0, 0, 0, 0, 0, 0, 0],
+            3: [4, 2, 0, 0, 0, 0, 0, 0, 0],
+            4: [4, 3, 0, 0, 0, 0, 0, 0, 0],
+            5: [4, 3, 2, 0, 0, 0, 0, 0, 0],
+            6: [4, 3, 3, 0, 0, 0, 0, 0, 0],
+            7: [4, 3, 3, 1, 0, 0, 0, 0, 0],
+            8: [4, 3, 3, 2, 0, 0, 0, 0, 0],
+            9: [4, 3, 3, 3, 1, 0, 0, 0, 0],
+            10: [4, 3, 3, 3, 2, 0, 0, 0, 0],
+            11: [4, 3, 3, 3, 2, 1, 0, 0, 0],
+            12: [4, 3, 3, 3, 2, 1, 0, 0, 0],
+            13: [4, 3, 3, 3, 2, 1, 1, 0, 0],
+            14: [4, 3, 3, 3, 2, 1, 1, 0, 0],
+            15: [4, 3, 3, 3, 2, 1, 1, 1, 0],
+            16: [4, 3, 3, 3, 2, 1, 1, 1, 0],
+            17: [4, 3, 3, 3, 2, 1, 1, 1, 1],
+            18: [4, 3, 3, 3, 3, 1, 1, 1, 1],
+            19: [4, 3, 3, 3, 3, 2, 1, 1, 1],
+            20: [4, 3, 3, 3, 3, 2, 2, 1, 1]
+        };
+
+        function updateSpellSlotsVisibility() {
+            const currentClass = classSelect.value;
+            if (fullCasters.includes(currentClass)) {
+                spellSlotsManager.classList.remove('hidden');
+                renderSpellSlots();
+            } else {
+                spellSlotsManager.classList.add('hidden');
+            }
+        }
+
+        window.toggleSlot = function(level, index) {
+            if (!spentSlots[level]) {
+                spentSlots[level] = {};
+            }
+            spentSlots[level][index] = !spentSlots[level][index];
+            renderSpellSlots(); 
+        };
+
+        function renderSpellSlots() {
+            const availableSlots = spellSlotProgression[characterLevel];
+            let html = '';
+            
+            for (let i = 0; i < availableSlots.length; i++) {
+                const maxSlots = availableSlots[i];
+                if (maxSlots > 0) {
+                    const spellLevel = i + 1;
+                    
+                    let slotsHtml = '';
+                    for (let s = 0; s < maxSlots; s++) {
+                        const isSpent = spentSlots[spellLevel] && spentSlots[spellLevel][s];
+                        const iconClass = isSpent ? "fa-regular fa-circle text-zinc-600" : "fa-solid fa-circle text-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]";
+                        const buttonClass = "w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer " + (isSpent ? "bg-zinc-950 border-zinc-800 hover:border-zinc-700" : "bg-zinc-900 border-amber-600/30 hover:bg-zinc-800 hover:scale-105");
+                        
+                        slotsHtml += `
+                            <button onclick="toggleSlot(${spellLevel}, ${s})" class="${buttonClass}" title="${isSpent ? 'Restaurar Slot' : 'Gastar Slot'}">
+                                <i class="${iconClass} text-sm transition-all duration-300"></i>
+                            </button>
+                        `;
+                    }
+                    
+                    html += `
+                        <div class="flex flex-col bg-zinc-950/50 p-4 rounded-lg border border-zinc-850 shadow-inner">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-3">${spellLevel}º Ciclo</span>
+                            <div class="flex gap-2 flex-wrap">
+                                ${slotsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            slotsContainer.innerHTML = html;
+        }
+
+        characterLevelInput.addEventListener('change', (e) => {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 20) val = 20;
+            e.target.value = val;
+            characterLevel = val;
+            renderSpellSlots();
+        });
+
+        longRestBtn.addEventListener('click', () => {
+            spentSlots = {};
+            renderSpellSlots();
+        });
+
         // Listeners de Eventos
-        classSelect.addEventListener('change', fetchSpells);
+        classSelect.addEventListener('change', () => {
+            fetchSpells();
+            updateSpellSlotsVisibility();
+        });
         cycleSelect.addEventListener('change', fetchSpells);
         schoolSelect.addEventListener('change', renderSpellsList);
         searchInput.addEventListener('input', renderSpellsList);
@@ -601,6 +729,7 @@
 
         // Inicializar
         fetchSpells();
+        updateSpellSlotsVisibility();
     </script>
 </body>
 </html>
