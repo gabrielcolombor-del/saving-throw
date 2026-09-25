@@ -2688,7 +2688,147 @@ export function Sons() {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="custom-ambient-grid"></div>
             </div>
-        </section>
+        </section>\n<!-- MODAL DE LOGIN / CADASTRO -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-amber-600/40 rounded-2xl p-6 max-w-md w-full relative shadow-2xl">
+            <button id="close-auth-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 mx-auto flex items-center justify-center text-xl mb-3 shadow-inner">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-2xl font-title text-amber-400 uppercase">Conta de Mestre</h3>
+                <p class="text-xs text-zinc-400 mt-1">Fa├ºa login para salvar seus atalhos, favoritos e gerenciar perfis de mesas.</p>
+            </div>
+
+            <div class="flex border-b border-zinc-800 mb-5">
+                <button id="tab-login" type="button" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-amber-500 border-b-2 border-amber-500 cursor-pointer transition-all">
+                    Entrar
+                </button>
+                <button id="tab-register" type="button" class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 cursor-pointer transition-all">
+                    Criar Conta
+                </button>
+            </div>
+
+            <!-- GOOGLE LOGIN SECTION -->
+            <!-- GOOGLE LOGIN SECTION -->
+            <div class="mb-4 flex flex-col items-center justify-center w-full min-h-[44px]" id="google-btn-container">
+                <div id="g_id_onload"
+                     data-client_id="22187490404-7u85b4bssb2nn6jfntvhopbloco5vbak.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLoginResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="continue_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+
+            <div class="relative flex py-2 items-center mb-4">
+                <div class="flex-grow border-t border-zinc-800"></div>
+                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">ou com E-mail</span>
+                <div class="flex-grow border-t border-zinc-800"></div>
+            </div>
+
+            <form id="auth-form" class="space-y-3">
+                <div id="name-field-group" class="hidden">
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Seu Nome / Apelido de Mestre</label>
+                    <input type="text" id="auth-name" placeholder="Ex: Mestre da Masmorra" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">E-mail</label>
+                    <input type="email" id="auth-email" required placeholder="seu@email.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Senha</label>
+                    <input type="password" id="auth-password" required placeholder="ÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇó" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-2 font-semibold bg-red-950/40 border border-red-900/40 rounded-lg"></div>
+                <div id="auth-success-msg" class="text-xs text-emerald-400 hidden text-center py-2 font-semibold bg-emerald-950/40 border border-emerald-900/40 rounded-lg"></div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer shadow-lg flex items-center justify-center gap-2">
+                    <span id="auth-submit-text">Entrar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Container Global de Notifica├º├Áes Toast -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- MODAL DE CRIAR / SALVAR NOVA CENA -->
+    <!-- Modal de Salvar Cena -->
+    <div id="save-scene-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-amber-600/40 rounded-2xl p-5 sm:p-6 max-w-md w-full relative shadow-2xl">
+            <button id="close-scene-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 mx-auto flex items-center justify-center text-xl mb-2">
+                    <i class="fa-solid fa-masks-theater"></i>
+                </div>
+                <h3 class="text-2xl font-title text-amber-400 uppercase">Salvar Cena Sonora</h3>
+                <p class="text-xs text-zinc-400 mt-1">Crie um preset com os sons e volumes atualmente ativos nesta aventura.</p>
+            </div>
+
+            <form id="save-scene-form" class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome da Cena</label>
+                    <input type="text" id="scene-name-input" placeholder="Ex: Taverna Festiva, Combate na Chuva..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">├ìcone da Cena</label>
+                    <div class="grid grid-cols-6 sm:grid-cols-8 gap-2" id="scene-icon-selector">
+                        <button type="button" data-icon="fa-masks-theater" class="scene-icon-opt active p-2 rounded-lg bg-amber-600 text-black flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-masks-theater"></i></button>
+                        <button type="button" data-icon="fa-beer-mug-empty" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-beer-mug-empty"></i></button>
+                        <button type="button" data-icon="fa-shield-halved" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-shield-halved"></i></button>
+                        <button type="button" data-icon="fa-cloud-showers-heavy" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-cloud-showers-heavy"></i></button>
+                        <button type="button" data-icon="fa-skull" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-skull"></i></button>
+                        <button type="button" data-icon="fa-fire" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-fire"></i></button>
+                        <button type="button" data-icon="fa-dungeon" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-dungeon"></i></button>
+                        <button type="button" data-icon="fa-dragon" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-dragon"></i></button>
+                        <button type="button" data-icon="fa-tree" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-tree"></i></button>
+                        <button type="button" data-icon="fa-water" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-water"></i></button>
+                        <button type="button" data-icon="fa-wind" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-wind"></i></button>
+                        <button type="button" data-icon="fa-ghost" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-ghost"></i></button>
+                        <button type="button" data-icon="fa-compass" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-compass"></i></button>
+                        <button type="button" data-icon="fa-music" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-music"></i></button>
+                        <button type="button" data-icon="fa-hat-wizard" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-hat-wizard"></i></button>
+                        <button type="button" data-icon="fa-book-journal-whills" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-book-journal-whills"></i></button>
+                    </div>
+                </div>
+
+                <!-- Resumo dos sons que ser├úo salvos -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Sons Ativos Inclu├¡dos no Preset</label>
+                    <div id="modal-sounds-preview" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 max-h-28 overflow-y-auto no-scrollbar space-y-1.5 text-xs">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider py-3 rounded-xl transition-all cursor-pointer shadow-lg">
+                    Salvar Cena na Aventura
+                </button>
+            </form>
+        </div>
+    </div>
+
+    \n
     ` }} />
   );
 }
