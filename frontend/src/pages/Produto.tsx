@@ -62,7 +62,7 @@ export function Produto() {
         var currentImageIndex = 0;
 
         // Menu Hamburguer
-        document.getElementById('menu-btn').addEventListener('click', function() {
+        document.getElementById('menu-btn')?.addEventListener('click', function() {
             var navContent = document.getElementById('nav-content');
             var menuIcon = this.querySelector('i');
             navContent.classList.toggle('hidden');

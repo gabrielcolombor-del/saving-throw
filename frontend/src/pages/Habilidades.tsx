@@ -464,7 +464,7 @@ export function Habilidades() {
         searchInput.addEventListener('input', renderSpellsList);
 
         // Menu Hamburguer Responsivo
-        document.getElementById('menu-btn').addEventListener('click', function() {
+        document.getElementById('menu-btn')?.addEventListener('click', function() {
             const navContent = document.getElementById('nav-content');
             const menuIcon = this.querySelector('i');
             navContent.classList.toggle('hidden');
