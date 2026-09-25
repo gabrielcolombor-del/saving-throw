@@ -11,11 +11,8 @@ export function Footer() {
         </div>
         
         <div className="flex gap-6">
-          <a href="#" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+          <a href="https://instagram.com/savingthrow.br" target="_blank" rel="noreferrer" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
             <i className="fa-brands fa-instagram text-lg"></i>
-          </a>
-          <a href="#" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
-            <i className="fa-brands fa-tiktok text-lg"></i>
           </a>
           <a href="https://wa.me/5527997947604" target="_blank" rel="noreferrer" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
             <i className="fa-brands fa-whatsapp text-lg"></i>
