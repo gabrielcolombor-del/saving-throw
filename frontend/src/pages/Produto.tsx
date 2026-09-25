@@ -691,7 +691,7 @@ export function Produto() {
         }
 
         // Iniciar
-        document.addEventListener('DOMContentLoaded', loadProduct);
+        setTimeout(loadProduct, 0);
     
 
       (window as any).loadProduct = loadProduct;

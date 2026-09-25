@@ -2313,7 +2313,7 @@ export function Sons() {
         }
 
         // INICIALIZAÇÃO DA PÁGINA
-        document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
             updateAuthUI();
             renderTableProfilesUI();
             renderQuickSlots();

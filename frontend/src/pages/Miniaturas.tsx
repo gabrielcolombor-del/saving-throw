@@ -205,7 +205,7 @@ export function Miniaturas() {
         }
 
         // Iniciar busca
-        document.addEventListener('DOMContentLoaded', fetchProducts);
+        setTimeout(fetchProducts, 0);
 
     
 
