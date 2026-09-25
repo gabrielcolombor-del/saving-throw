@@ -70,7 +70,7 @@ export function Sons() {
 
         var defaultAmbientData = [
             { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
-            { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'O4irXQhgMqg' },
+            { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'l3UIq-swjco' },
             { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambiente', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
             { id: 'investigacao-suspense', name: 'Investigação Suspense', category: 'ambiente', icon: 'fa-magnifying-glass', desc: 'Investigação & Tensão', ytId: 'l-vpJVMWUvk' },
             { id: 'combate-1', name: 'Combate 1', category: 'combate', icon: 'fa-shield-halved', desc: 'Batalha Épica 1', ytId: 't3B802PIuB0' },
