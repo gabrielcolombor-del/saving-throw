@@ -223,7 +223,7 @@ export function Miniaturas() {
 
   return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/minis.png'); background-position: center;">
+        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/minis.png'); background-position: center;">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas & Bestiário</h1>
@@ -241,10 +241,10 @@ export function Miniaturas() {
                     <!-- Container para o Slider de Imagens -->
                     <div class="w-full lg:w-1/2 relative overflow-hidden flex justify-center bg-zinc-900">
                         <!-- Imagem 1 (Base/Relativa para manter o fluxo de layout) -->
-                        <img id="slider-img-1" src="./assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" class="relative w-full h-auto object-cover transition-opacity duration-1000 ease-in-out opacity-100 z-0 block">
+                        <img id="slider-img-1" src="/assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" class="relative w-full h-auto object-cover transition-opacity duration-1000 ease-in-out opacity-100 z-0 block">
                         
                         <!-- Imagem 2 (Absoluta para sobreposição e transição suave) -->
-                        <img id="slider-img-2" src="./assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none z-0">
+                        <img id="slider-img-2" src="/assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none z-0">
                     </div>
                     <div class="p-8 flex flex-col justify-between lg:w-1/2">
                         <div>

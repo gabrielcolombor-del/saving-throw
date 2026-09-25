@@ -57,7 +57,7 @@ export function Oneshots() {
 
   return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/one shots.jpg'); background-position: center 70%;">
+        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/one shots.jpg'); background-position: center 70%;">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Kits de Aventura</h1>
@@ -71,7 +71,7 @@ export function Oneshots() {
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="flex flex-col md:flex-row gap-12 items-center">
                     <div class="w-full md:w-1/2">
-                        <img src="./assets/imagens/preco_herdeiro.png" class="w-full rounded-xl shadow-xl border border-zinc-200" alt="Capa da Aventura O Preço do Herdeiro">
+                        <img src="/assets/imagens/preco_herdeiro.png" class="w-full rounded-xl shadow-xl border border-zinc-200" alt="Capa da Aventura O Preço do Herdeiro">
                     </div>
                     <div class="w-full md:w-1/2 flex flex-col justify-center">
                         <span class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-2">Aventura Completa</span>

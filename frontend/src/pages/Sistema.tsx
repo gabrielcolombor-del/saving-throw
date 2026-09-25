@@ -117,7 +117,7 @@ export function Sistema() {
 
   return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/banner_st.png');">
+        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/banner_st.png');">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>
@@ -158,7 +158,7 @@ export function Sistema() {
                 </div>
                 
                 <div class="mt-20 text-center flex flex-wrap justify-center gap-6">
-                    <a href="./assets/ST%20-%20Manual%20Simplificado%202.0.pdf" download class="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg inline-flex items-center gap-3">
+                    <a href="/assets/ST%20-%20Manual%20Simplificado%202.0.pdf" download class="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg inline-flex items-center gap-3">
                         <i class="fa-solid fa-download text-lg"></i> Baixar Manual Simplificado
                     </a>
                     <a href="habilidades" class="bg-zinc-800 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg inline-flex items-center gap-3">

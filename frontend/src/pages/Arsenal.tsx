@@ -166,7 +166,7 @@ export function Arsenal() {
 
   return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/arsenal_wallpaper.jpg');">
+        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/arsenal_wallpaper.jpg');">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Arsenal de RPG</h1>
@@ -186,8 +186,8 @@ export function Arsenal() {
                         <div class="relative w-full h-80 group overflow-hidden bg-zinc-100">
                             <!-- Wrapper das Imagens -->
                             <div id="slider-wrapper" class="flex w-full h-full transition-transform duration-500 ease-out">
-                                <img src="./assets/imagens/escudo_mestre.png" alt="Escudo do Mestre Personalizado - Foto 1" class="w-full h-full object-cover flex-shrink-0">
-                                <img src="./assets/imagens/escudo_mestre2.png" alt="Escudo do Mestre Personalizado - Foto 2" class="w-full h-full object-cover flex-shrink-0">
+                                <img src="/assets/imagens/escudo_mestre.png" alt="Escudo do Mestre Personalizado - Foto 1" class="w-full h-full object-cover flex-shrink-0">
+                                <img src="/assets/imagens/escudo_mestre2.png" alt="Escudo do Mestre Personalizado - Foto 2" class="w-full h-full object-cover flex-shrink-0">
                             </div>
                             
                             <!-- Setas de Navegação (Suaves, aparecem no hover) -->
