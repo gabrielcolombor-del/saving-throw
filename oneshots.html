@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <meta name="samsung-dark-mode" content="false">
+    <meta name="theme-color" content="#EBE3CB">
+    <title>One Shots | Saving Throw</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/imagens/favicon.png">
+    <style>
+        :root, html, body, header, main, footer, section, div, article, nav, aside {
+            color-scheme: light !important;
+            supported-color-schemes: light !important;
+            forced-color-adjust: none !important;
+            -webkit-forced-color-adjust: none !important;
+        }
+
+        @font-face {
+            font-family: 'Shindler';
+            src: url('./assets/ShindlerFont.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Alsina';
+            src: url('./assets/Alsina.TTF') format('truetype');
+        }
+        
+        body {
+            font-family: 'Alsina', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        h1, h2, h3, .font-title {
+            font-family: 'Shindler', serif !important;
+            font-weight: normal;
+        }
+
+        /* Desativa forçamento de Dark Mode no Samsung Internet, Chrome Mobile e MIUI usando gradiente sólido */
+        .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .bg-parchment a:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+        .bg-parchment button:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+        .bg-parchment nav a:not(.bg-black) {
+            color: #000000 !important;
+        }
+        .bg-parchment .bg-black,
+        .bg-parchment a.bg-black,
+        .bg-parchment button.bg-black {
+            color: #EBE3CB !important;
+        }
+        .bg-parchment .bg-black i,
+        .bg-parchment a.bg-black i,
+        .bg-parchment button.bg-black i {
+            color: inherit !important;
+        }
+        .text-parchment-dark { color: #4A4435 !important; }
+        .transition-all { transition: all 0.3s ease; }
+
+        .bg-\[\#EBE3CB\] {
+            background-color: #EBE3CB !important;
+            background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+            color: #000000 !important;
+        }
+        .text-\[\#EBE3CB\] {
+            color: #EBE3CB !important;
+        }
+        .bg-white {
+            background-color: #ffffff !important;
+            background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
+            color: #000000 !important;
+        }
+        .bg-zinc-50 {
+            background-color: #f4f4f5 !important;
+            background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
+            color: #000000 !important;
+        }
+
+        /* Garantia extra sob prefers-color-scheme: dark */
+        @media (prefers-color-scheme: dark) {
+            :root, html, body, header, main, footer, section, div, article, nav, aside {
+                color-scheme: light !important;
+                supported-color-schemes: light !important;
+                forced-color-adjust: none !important;
+                -webkit-forced-color-adjust: none !important;
+            }
+            *, ::before, ::after {
+                forced-color-adjust: none !important;
+                -webkit-forced-color-adjust: none !important;
+                filter: none !important;
+                -webkit-filter: none !important;
+            }
+            .bg-parchment, header.bg-parchment, footer.bg-parchment, section.bg-parchment {
+                background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+                color: #000000 !important;
+            }
+            .bg-parchment a:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+            .bg-parchment button:not(.bg-black):not([class*="bg-zinc"]):not([class*="bg-amber"]),
+            .bg-parchment nav a:not(.bg-black) {
+                color: #000000 !important;
+            }
+            .bg-parchment .bg-black,
+            .bg-parchment a.bg-black,
+            .bg-parchment button.bg-black {
+                color: #EBE3CB !important;
+            }
+            .bg-parchment .bg-black i,
+            .bg-parchment a.bg-black i,
+            .bg-parchment button.bg-black i {
+                color: inherit !important;
+            }
+            .text-parchment-dark {
+                color: #4A4435 !important;
+            }
+            .bg-\[\#EBE3CB\] {
+                background-color: #EBE3CB !important;
+                background-image: linear-gradient(0deg, #EBE3CB, #EBE3CB) !important;
+                color: #000000 !important;
+            }
+            .text-\[\#EBE3CB\] {
+                color: #EBE3CB !important;
+            }
+            .bg-white {
+                background-color: #ffffff !important;
+                background-image: linear-gradient(0deg, #ffffff, #ffffff) !important;
+                color: #000000 !important;
+            }
+            .bg-zinc-50 {
+                background-color: #f4f4f5 !important;
+                background-image: linear-gradient(0deg, #f4f4f5, #f4f4f5) !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-black text-white selection:bg-[#EBE3CB] selection:text-black">
+
+    <header class="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex justify-between items-center w-full md:w-auto">
+                <a href="/" class="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
+                    Saving Throw
+                </a>
+                <button id="menu-btn" class="md:hidden text-black focus:outline-none text-2xl cursor-pointer">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="nav-content" class="hidden md:flex flex-col md:flex-row items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+                <nav class="flex flex-col md:flex-row items-center gap-4 font-semibold text-xs md:text-sm uppercase tracking-wide w-full md:w-auto text-center">
+                    <a href="oneshots" class="hover:opacity-70 transition-all text-amber-600 border-b-2 border-black pb-1 w-full py-2 md:py-0 md:whitespace-nowrap">One Shots</a>
+                    <a href="miniaturas" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Miniaturas</a>
+                    <a href="arsenal" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Arsenal de RPG</a>
+                    <a href="sistema" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Sistema ST</a>
+                    <a href="habilidades" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Habilidades & Feitiços</a>
+                    <a href="sons" class="hover:opacity-70 transition-all w-full py-2 md:py-0 md:whitespace-nowrap">Efeitos Sonoros</a>
+                </nav>
+
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-full md:w-auto bg-black text-[#EBE3CB] hover:bg-zinc-800 hover:text-white transition-all px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm shrink-0">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/one shots.jpg'); background-position: center 70%;">
+            <div class="absolute inset-0 bg-black/60"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Kits de Aventura</h1>
+                <p class="text-[#EBE3CB]/80 text-lg mb-4 max-w-2xl mx-auto leading-relaxed">
+                    Módulos "One Shot" prontos para jogar. Incluem a história impressa, mapas e todas as miniaturas necessárias.
+                </p>
+            </div>
+        </section>
+
+        <section class="py-20 bg-white text-black">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex flex-col md:flex-row gap-12 items-center">
+                    <div class="w-full md:w-1/2">
+                        <img src="./assets/imagens/preco_herdeiro.png" class="w-full rounded-xl shadow-xl border border-zinc-200" alt="Capa da Aventura O Preço do Herdeiro">
+                    </div>
+                    <div class="w-full md:w-1/2 flex flex-col justify-center">
+                        <span class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-2">Aventura Completa</span>
+                        <h2 class="font-title text-4xl md:text-5xl mb-6">O Preço do Herdeiro</h2>
+                        <p class="text-zinc-600 mb-6">Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.</p>
+                        
+                        <div class="bg-zinc-50 p-6 rounded-xl border border-zinc-200 mb-8 shadow-sm">
+                            <h3 class="font-bold uppercase tracking-wide mb-4 text-sm text-zinc-500">Conteúdo do Combo:</h3>
+                            <ul class="space-y-2 mb-6 text-zinc-700">
+                                <li>✔️ 1x Livreto Físico da Aventura (Impresso)</li>
+                                <li>✔️ 4x Miniaturas de Monstros & NPCs da Aventura (3x Cultistas + 1x Boss)</li>
+                                <li>✔️ 4x Miniaturas de Heróis (Padrão ou Customizados, conforme o Kit)</li>
+                            </ul>
+                            
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Escolha seu Kit:</label>
+                            <select id="select-kit" onchange="atualizarPrecoKit()" class="w-full p-3 bg-white border border-zinc-300 rounded text-sm font-semibold focus:outline-none focus:border-black transition-colors cursor-pointer mb-6">
+                                <option value="kit-classico" data-preco="169,90">Kit Clássico (4 Heróis Padrão + Monstros/NPCs - Tudo Sem Pintura)</option>
+                                <option value="kit-lendario" data-preco="349,90">⚔️ Kit Lendário (4 Heróis Personalizados + Monstros/NPCs Pintados)</option>
+                            </select>
+                            
+                            <div class="flex justify-between items-baseline mb-4">
+                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
+                                <span id="preco-kit" class="text-3xl font-black">R$ 169,90</span>
+                            </div>
+                            <button disabled class="w-full bg-zinc-600 text-zinc-300 font-bold uppercase text-sm py-4 px-4 rounded flex items-center justify-center gap-2 cursor-not-allowed shadow-none">
+                                <i class="fa-solid fa-ban text-lg"></i> Indisponível
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-parchment text-black py-12 border-t border-black/10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center">
+                <img src="./assets/imagens/logo%20retangular.png" alt="Saving Throw Logo" class="h-16 md:h-24 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-tiktok text-lg"></i>
+                </a>
+                <a href="https://wa.me/5527997947604" target="_blank" class="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-black/10 text-center flex flex-col md:flex-row justify-between text-xs font-bold uppercase tracking-wider text-parchment-dark/70">
+            <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
+            <p class="mt-2 md:mt-0">Forjado de RPGista para RPGista.</p>
+        </div>
+    </footer>
+
+    <script>
+        function atualizarPrecoKit() {
+            const select = document.getElementById('select-kit');
+            const precoExibicao = document.getElementById('preco-kit');
+            const opcaoSelecionada = select.options[select.selectedIndex];
+            
+            if(opcaoSelecionada && opcaoSelecionada.dataset.preco) {
+                precoExibicao.innerText = 'R$ ' + opcaoSelecionada.dataset.preco;
+                precoExibicao.classList.add('text-amber-600', 'scale-110');
+                setTimeout(() => {
+                    precoExibicao.classList.remove('text-amber-600', 'scale-110');
+                }, 300);
+            }
+        }
+
+        function enviarPedidoKit() {
+            const numeroWhatsApp = "5527997947604";
+            const select = document.getElementById('select-kit');
+            const opcaoSelecionada = select.options[select.selectedIndex];
+            const textoOpcao = opcaoSelecionada.text;
+            const preco = opcaoSelecionada.dataset.preco;
+            
+            const textoOpcaoLimpo = textoOpcao.split('(')[0].trim();
+            
+            const mensagem = `Olá Saving Throw! 🎲\n\nGostaria de encomendar o *Kit de Aventura Completo: O Preço do Herdeiro*.\n\n*Opção Selecionada:* ${textoOpcaoLimpo}\n*Preço:* R$ ${preco}\n\nComo procedemos com o pagamento e envio?`;
+            const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        // Menu Hamburguer Responsivo
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            const navContent = document.getElementById('nav-content');
+            const menuIcon = this.querySelector('i');
+            navContent.classList.toggle('hidden');
+            if (navContent.classList.contains('hidden')) {
+                menuIcon.classList.replace('fa-xmark', 'fa-bars');
+            } else {
+                menuIcon.classList.replace('fa-bars', 'fa-xmark');
+            }
+        });
+    </script>
+</body>
+</html>

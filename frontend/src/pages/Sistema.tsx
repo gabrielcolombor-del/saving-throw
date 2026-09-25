@@ -3,20 +3,20 @@ import React, { useEffect } from 'react';
 
 export function Sistema() {
   useEffect(() => {
-    
-
-        const videos = [
+    try {
+      
+        var videos = [
             { id: 'KBpAt6h4J2E', title: 'Como Jogar Saving Throw' },
             { id: 'I1vuYvtpR5E', title: 'Criação de Personagens' },
             { id: 'l8KDHynT7Hg', title: 'Combate e Ações' },
             { id: 'w6doLh4ioPQ', title: 'Magia e Exploração' }
         ];
         
-        let currentIndex = 0;
-        let player;
+        var currentIndex = 0;
+        var player;
 
         function renderThumbnails() {
-            const container = document.getElementById('video-thumbnails');
+            var container = document.getElementById('video-thumbnails');
             container.innerHTML = videos.map((vid, index) => `
                 <div onclick="playVideo(${index})" class="group cursor-pointer flex flex-col gap-2">
                     <div class="aspect-video w-full rounded-lg border-2 ${index === currentIndex ? 'border-amber-500' : 'border-zinc-800'} overflow-hidden relative shadow-lg transition-all">
@@ -35,9 +35,9 @@ export function Sistema() {
             document.getElementById('video-title').innerText = videos[currentIndex].title;
         }
 
-        const tag = document.createElement('script');
+        var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
+        var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         function onYouTubeIframeAPIReady() {
@@ -91,8 +91,8 @@ export function Sistema() {
 
         // Menu Hamburguer Responsivo
         document.getElementById('menu-btn').addEventListener('click', function() {
-            const navContent = document.getElementById('nav-content');
-            const menuIcon = this.querySelector('i');
+            var navContent = document.getElementById('nav-content');
+            var menuIcon = this.querySelector('i');
             navContent.classList.toggle('hidden');
             if (navContent.classList.contains('hidden')) {
                 menuIcon.classList.replace('fa-xmark', 'fa-bars');
@@ -102,71 +102,70 @@ export function Sistema() {
         });
     
 
-    
-// Expose to window for inline React handlers
-(window as any).renderThumbnails = renderThumbnails;
+      (window as any).renderThumbnails = renderThumbnails;
 (window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 (window as any).onPlayerStateChange = onPlayerStateChange;
 (window as any).playVideo = playVideo;
 (window as any).nextVideo = nextVideo;
 (window as any).prevVideo = prevVideo;
 
+    } catch(e) {
+      console.error("Error in legacy script for Sistema:", e);
+    }
   }, []);
 
   return (
-    <div className="font-sans">
-      
-        <section className="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{backgroundImage: 'url(\'./assets/imagens/banner_st.png\')'}}>
-            <div className="absolute inset-0 bg-black/60"></div>
-            <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
-                <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>
-                <p className="text-[#EBE3CB]/80 text-lg mb-4 max-w-2xl mx-auto leading-relaxed">
+    <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('./assets/imagens/banner_st.png');">
+            <div class="absolute inset-0 bg-black/60"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>
+                <p class="text-[#EBE3CB]/80 text-lg mb-4 max-w-2xl mx-auto leading-relaxed">
                     Assista aos nossos vídeos tutoriais e entenda por que o Sistema Saving Throw é a melhor escolha para mesas dinâmicas, focadas em narrativa e combate tático.
                 </p>
             </div>
         </section>
 
-        <section className="py-20 bg-black">
-            <div className="container mx-auto px-4 max-w-5xl text-center">
-                {/*  Módulo Básico Badge  */}
-                <div className="inline-flex bg-zinc-800/80 border border-zinc-700 rounded-lg p-2 gap-2 mb-12">
-                    <span className="px-4 py-2 bg-zinc-900 rounded text-sm font-bold uppercase tracking-wider text-amber-500">Módulo Básico</span>
+        <section class="py-20 bg-black">
+            <div class="container mx-auto px-4 max-w-5xl text-center">
+                <!-- Módulo Básico Badge -->
+                <div class="inline-flex bg-zinc-800/80 border border-zinc-700 rounded-lg p-2 gap-2 mb-12">
+                    <span class="px-4 py-2 bg-zinc-900 rounded text-sm font-bold uppercase tracking-wider text-amber-500">Módulo Básico</span>
                 </div>
-                {/*  Vídeo em destaque  */}
-                <div className="mb-12 relative group/main">
-                    <div className="aspect-video w-full rounded-xl border border-zinc-800 shadow-2xl overflow-hidden relative bg-zinc-900">
-                        <div id="youtube-player" className="absolute inset-0 w-full h-full"></div>
+                <!-- Vídeo em destaque -->
+                <div class="mb-12 relative group/main">
+                    <div class="aspect-video w-full rounded-xl border border-zinc-800 shadow-2xl overflow-hidden relative bg-zinc-900">
+                        <div id="youtube-player" class="absolute inset-0 w-full h-full"></div>
                     </div>
-                    {/*  Setas  */}
-                    <button onClick={(event) => { window.event = event; new Function('prevVideo()')(); }} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
-                        <i className="fa-solid fa-chevron-left text-lg"></i>
+                    <!-- Setas -->
+                    <button onclick="prevVideo()" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
+                        <i class="fa-solid fa-chevron-left text-lg"></i>
                     </button>
-                    <button onClick={(event) => { window.event = event; new Function('nextVideo()')(); }} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
-                        <i className="fa-solid fa-chevron-right text-lg"></i>
+                    <button onclick="nextVideo()" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-6 w-10 h-10 md:w-14 md:h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center opacity-0 group-hover/main:opacity-100 transition-all hover:bg-amber-600 shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-zinc-700 z-10 hover:scale-110">
+                        <i class="fa-solid fa-chevron-right text-lg"></i>
                     </button>
                     
-                    <div className="mt-4 flex flex-col md:flex-row justify-between items-center text-zinc-400 text-sm font-semibold uppercase tracking-wider bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
-                        <span id="video-counter" className="mb-2 md:mb-0">Vídeo 1 de 4</span>
-                        <span className="text-amber-500 font-title text-xl" id="video-title">Carregando...</span>
+                    <div class="mt-4 flex flex-col md:flex-row justify-between items-center text-zinc-400 text-sm font-semibold uppercase tracking-wider bg-zinc-900/50 p-4 rounded-lg border border-zinc-800">
+                        <span id="video-counter" class="mb-2 md:mb-0">Vídeo 1 de 4</span>
+                        <span class="text-amber-500 font-title text-xl" id="video-title">Carregando...</span>
                     </div>
                 </div>
 
-                {/*  Grid de outros vídeos (Playlist)  */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="video-thumbnails">
-                    {/*  Gerados via JavaScript  */}
+                <!-- Grid de outros vídeos (Playlist) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="video-thumbnails">
+                    <!-- Gerados via JavaScript -->
                 </div>
                 
-                <div className="mt-20 text-center flex flex-wrap justify-center gap-6">
-                    <a href="./assets/ST%20-%20Manual%20Simplificado%202.0.pdf" download className="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg inline-flex items-center gap-3">
-                        <i className="fa-solid fa-download text-lg"></i> Baixar Manual Simplificado
+                <div class="mt-20 text-center flex flex-wrap justify-center gap-6">
+                    <a href="./assets/ST%20-%20Manual%20Simplificado%202.0.pdf" download class="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg inline-flex items-center gap-3">
+                        <i class="fa-solid fa-download text-lg"></i> Baixar Manual Simplificado
                     </a>
-                    <a href="habilidades" className="bg-zinc-800 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg inline-flex items-center gap-3">
-                        <i className="fa-solid fa-book-open text-lg text-amber-500"></i> Compêndio de Magias
+                    <a href="habilidades" class="bg-zinc-800 text-white font-bold uppercase text-sm tracking-wider px-8 py-4 rounded border border-zinc-700 hover:bg-zinc-700 transition-all shadow-lg inline-flex items-center gap-3">
+                        <i class="fa-solid fa-book-open text-lg text-amber-500"></i> Compêndio de Magias
                     </a>
                 </div>
             </div>
         </section>
-    
-    </div>
+    ` }} />
   );
 }

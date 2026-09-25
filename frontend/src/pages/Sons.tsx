@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 
 export function Sons() {
   useEffect(() => {
-    
-
+    try {
+      
         // Menu Mobile Toggle
-        const menuBtn = document.getElementById('menu-btn');
-        const navContent = document.getElementById('nav-content');
+        var menuBtn = document.getElementById('menu-btn');
+        var navContent = document.getElementById('nav-content');
         if (menuBtn && navContent) {
             menuBtn.addEventListener('click', function() {
-                const menuIcon = this.querySelector('i');
+                var menuIcon = this.querySelector('i');
                 navContent.classList.toggle('hidden');
                 if (navContent.classList.contains('hidden')) {
                     menuIcon.classList.replace('fa-xmark', 'fa-bars');
@@ -24,7 +24,7 @@ export function Sons() {
         // BASE DE DADOS DOS EFEITOS SONOROS REALISTAS
         // ==========================================
 
-        const sfxData = [
+        var sfxData = [
             { id: 'amb-combate-gritando-dor', name: 'Homem Gritando Dor', categories: ['ambiente', 'combate'], file: './assets/sounds/Ambiente%20-%20combate%20-%20homem%20gritando%20dor.mp3', icon: 'fa-user-slash' },
             { id: 'amb-batendo-porta', name: 'Batendo na Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Batendo%20na%20porta.mp3', icon: 'fa-hand-fist' },
             { id: 'amb-fechando-porta', name: 'Fechando Porta', categories: ['ambiente'], file: './assets/sounds/ambiente%20-%20Fechando%20Porta.mp3', icon: 'fa-door-closed' },
@@ -67,7 +67,7 @@ export function Sons() {
             { id: 'monstro-mordida', name: 'Mordida de Monstro', categories: ['monstro'], file: './assets/sounds/monstro%20-%20mordida%20monstro.mp3', icon: 'fa-skull' }
         ];
 
-        const defaultAmbientData = [
+        var defaultAmbientData = [
             { id: 'long-rest', name: 'Long Rest', category: 'taverna', icon: 'fa-bed', desc: 'Música & Descanso', ytId: 'PsG-pKC60fU' },
             { id: 'dark-suspense', name: 'Dark Suspense', category: 'ambiente', icon: 'fa-skull', desc: 'Tensão & Sombra', ytId: 'O4irXQhgMqg' },
             { id: 'exploracao-suspense', name: 'Exploração Suspense', category: 'ambiente', icon: 'fa-compass', desc: 'Mistério & Exploração', ytId: 'EApZmmYg_oQ' },
@@ -87,11 +87,11 @@ export function Sons() {
         // SISTEMA DE USUÁRIO E GERENCIADOR DE MESAS (PROFILES) & CENAS
         // ==========================================
 
-        const defaultPresetScenes = [];
+        var defaultPresetScenes = [];
 
-        let currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
-        let customAmbients = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`)) || [];
-        let editingCustomAmbientId = null;
+        var currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
+        var customAmbients = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`)) || [];
+        var editingCustomAmbientId = null;
 
         function getAmbientData() {
             return [...defaultAmbientData, ...customAmbients];
@@ -99,7 +99,7 @@ export function Sons() {
 
 
         function editCustomAmbient(ambId) {
-            const amb = customAmbients.find(a => a.id === ambId);
+            var amb = customAmbients.find(a => a.id === ambId);
             if (!amb) return;
             
             editingCustomAmbientId = amb.id;
@@ -107,10 +107,10 @@ export function Sons() {
             document.getElementById('custom-ambient-url').value = `https://youtube.com/watch?v=${amb.ytId}`;
             document.getElementById('custom-ambient-name').value = amb.name;
             
-            const btn = document.getElementById('custom-ambient-submit-btn');
+            var btn = document.getElementById('custom-ambient-submit-btn');
             if (btn) btn.innerHTML = 'Salvar';
             
-            const cancelBtn = document.getElementById('custom-ambient-cancel-btn');
+            var cancelBtn = document.getElementById('custom-ambient-cancel-btn');
             if (cancelBtn) cancelBtn.classList.remove('hidden');
 
             document.getElementById('custom-ambient-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -119,10 +119,10 @@ export function Sons() {
         function cancelEditCustomAmbient() {
             editingCustomAmbientId = null;
             document.getElementById('custom-ambient-form').reset();
-            const btn = document.getElementById('custom-ambient-submit-btn');
+            var btn = document.getElementById('custom-ambient-submit-btn');
             if (btn) btn.innerHTML = 'Adicionar';
             
-            const cancelBtn = document.getElementById('custom-ambient-cancel-btn');
+            var cancelBtn = document.getElementById('custom-ambient-cancel-btn');
             if (cancelBtn) cancelBtn.classList.add('hidden');
         }
 
@@ -155,7 +155,7 @@ export function Sons() {
             }
         }
         
-        const defaultSingleTable = [
+        var defaultSingleTable = [
             {
                 id: 'default_mesa',
                 name: 'Mesa 1: Aventura Principal',
@@ -166,17 +166,17 @@ export function Sons() {
             }
         ];
 
-        let tableProfiles = defaultSingleTable;
-        let activeProfileId = 'default_mesa';
+        var tableProfiles = defaultSingleTable;
+        var activeProfileId = 'default_mesa';
 
         if (currentUser) {
-            const saved = localStorage.getItem('st_table_profiles');
+            var saved = localStorage.getItem('st_table_profiles');
             if (saved) {
                 try { tableProfiles = JSON.parse(saved); } catch(e) {}
             }
             activeProfileId = localStorage.getItem('st_active_profile') || tableProfiles[0]?.id || 'default_mesa';
         } else {
-            const saved = localStorage.getItem('st_table_profiles');
+            var saved = localStorage.getItem('st_table_profiles');
             if (saved) {
                 try { tableProfiles = JSON.parse(saved); } catch(e) {}
             }
@@ -184,7 +184,7 @@ export function Sons() {
         }
 
         function getActiveProfile() {
-            let p = tableProfiles.find(item => item.id === activeProfileId);
+            var p = tableProfiles.find(item => item.id === activeProfileId);
             if (!p && tableProfiles.length > 0) {
                 p = tableProfiles[0];
                 activeProfileId = p.id;
@@ -195,15 +195,15 @@ export function Sons() {
             return p || { id: 'default_mesa', name: 'Mesa Principal', favorites: [], favoriteAmbients: [], quick_slots: {}, scenes: JSON.parse(JSON.stringify(defaultPresetScenes)) };
         }
 
-        let favoriteSounds = getActiveProfile().favorites || [];
-        let favoriteAmbients = getActiveProfile().favoriteAmbients || getActiveProfile().favorite_ambients || [];
-        let quickSlots = getActiveProfile().quick_slots || {};
-        let tableScenes = getActiveProfile().scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
-        let activeSceneId = null;
-        let crossfadeIntervalId = null;
-        let isCrossfading = false;
-        let crossfadeTargetScene = null;
-        let selectedModalIcon = 'fa-masks-theater';
+        var favoriteSounds = getActiveProfile().favorites || [];
+        var favoriteAmbients = getActiveProfile().favoriteAmbients || getActiveProfile().favorite_ambients || [];
+        var quickSlots = getActiveProfile().quick_slots || {};
+        var tableScenes = getActiveProfile().scenes || JSON.parse(JSON.stringify(defaultPresetScenes));
+        var activeSceneId = null;
+        var crossfadeIntervalId = null;
+        var isCrossfading = false;
+        var crossfadeTargetScene = null;
+        var selectedModalIcon = 'fa-masks-theater';
 
         function restoreActiveState(state) {
             if (!state) return;
@@ -218,7 +218,7 @@ export function Sons() {
 
             if (state.activeTracks) {
                 Object.keys(state.activeTracks).forEach(ambId => {
-                    const ambDef = getAmbientData().find(a => a.id === ambId);
+                    var ambDef = getAmbientData().find(a => a.id === ambId);
                     if (ambDef) {
                         startAmbientTrack(ambDef, state.activeTracks[ambId].vol);
                     }
@@ -226,7 +226,7 @@ export function Sons() {
             }
         }
 
-        let debouncedSyncTimeout = null;
+        var debouncedSyncTimeout = null;
         function debouncedSyncActiveProfileChanges() {
             if (debouncedSyncTimeout) clearTimeout(debouncedSyncTimeout);
             debouncedSyncTimeout = setTimeout(() => {
@@ -235,7 +235,7 @@ export function Sons() {
         }
 
         function syncActiveProfileChanges() {
-            const p = getActiveProfile();
+            var p = getActiveProfile();
             p.favorites = favoriteSounds;
             p.favoriteAmbients = favoriteAmbients;
             p.favorite_ambients = favoriteAmbients;
@@ -243,8 +243,8 @@ export function Sons() {
             p.scenes = tableScenes;
             
             // Gravar Estado ao Vivo (Quais sons estão tocando e volumes)
-            const activeKeys = Object.keys(activeTracks);
-            let stateTracks = {};
+            var activeKeys = Object.keys(activeTracks);
+            var stateTracks = {};
             activeKeys.forEach(k => {
                 stateTracks[k] = { vol: activeTracks[k].vol };
             });
@@ -278,12 +278,12 @@ export function Sons() {
         }
 
         function renderTableProfilesUI() {
-            const select = document.getElementById('table-profile-select');
+            var select = document.getElementById('table-profile-select');
             if (!select) return;
 
             select.innerHTML = '';
             tableProfiles.forEach(p => {
-                const opt = document.createElement('option');
+                var opt = document.createElement('option');
                 opt.value = p.id;
                 opt.textContent = p.name;
                 if (p.id === activeProfileId) opt.selected = true;
@@ -291,15 +291,15 @@ export function Sons() {
             });
         }
 
-        const profileSelect = document.getElementById('table-profile-select');
-        const addTableBtn = document.getElementById('add-table-btn');
-        const renameTableBtn = document.getElementById('rename-table-btn');
-        const deleteTableBtn = document.getElementById('delete-table-btn');
+        var profileSelect = document.getElementById('table-profile-select');
+        var addTableBtn = document.getElementById('add-table-btn');
+        var renameTableBtn = document.getElementById('rename-table-btn');
+        var deleteTableBtn = document.getElementById('delete-table-btn');
 
         if (profileSelect) {
             profileSelect.addEventListener('change', (e) => {
                 activeProfileId = e.target.value;
-                const p = getActiveProfile();
+                var p = getActiveProfile();
                 favoriteSounds = p.favorites || [];
                 favoriteAmbients = p.favoriteAmbients || p.favorite_ambients || [];
                 quickSlots = p.quick_slots || {};
@@ -328,10 +328,10 @@ export function Sons() {
                     return;
                 }
 
-                const name = prompt('Digite o nome da nova Mesa de RPG (ex: Mesa 2: A Caverna do Dragão):');
+                var name = prompt('Digite o nome da nova Mesa de RPG (ex: Mesa 2: A Caverna do Dragão):');
                 if (name && name.trim()) {
-                    const newId = `mesa_${Date.now()}`;
-                    const newProfile = {
+                    var newId = `mesa_${Date.now()}`;
+                    var newProfile = {
                         id: newId,
                         name: name.trim(),
                         favorites: [],
@@ -369,8 +369,8 @@ export function Sons() {
                     return;
                 }
 
-                const p = getActiveProfile();
-                const newName = prompt('Digite o novo nome para esta Mesa:', p.name);
+                var p = getActiveProfile();
+                var newName = prompt('Digite o novo nome para esta Mesa:', p.name);
                 if (newName && newName.trim()) {
                     p.name = newName.trim();
                     syncActiveProfileChanges();
@@ -394,11 +394,11 @@ export function Sons() {
                     alert('Você deve manter pelo menos uma mesa cadastrada!');
                     return;
                 }
-                const p = getActiveProfile();
+                var p = getActiveProfile();
                 if (confirm(`Tem certeza que deseja excluir o perfil da mesa "${p.name}"?`)) {
                     tableProfiles = tableProfiles.filter(item => item.id !== p.id);
                     activeProfileId = tableProfiles[0].id;
-                    const nextP = getActiveProfile();
+                    var nextP = getActiveProfile();
                     favoriteSounds = nextP.favorites || [];
                     favoriteAmbients = nextP.favoriteAmbients || nextP.favorite_ambients || [];
                     quickSlots = nextP.quick_slots || {};
@@ -426,12 +426,12 @@ export function Sons() {
         // UI DE LOGIN, ANÚNCIO E AUTENTICAÇÃO RESILIENTE
         // ==========================================
 
-        const banner = document.getElementById('top-login-banner') || document.getElementById('login-announcement-banner');
-        const userHeaderArea = document.getElementById('user-header-area');
-        const authModal = document.getElementById('auth-modal');
-        const closeAuthModalBtn = document.getElementById('close-auth-modal');
-        const bannerLoginBtn = document.getElementById('banner-login-btn');
-        const navLoginBtn = document.getElementById('nav-login-btn');
+        var banner = document.getElementById('top-login-banner') || document.getElementById('login-announcement-banner');
+        var userHeaderArea = document.getElementById('user-header-area');
+        var authModal = document.getElementById('auth-modal');
+        var closeAuthModalBtn = document.getElementById('close-auth-modal');
+        var bannerLoginBtn = document.getElementById('banner-login-btn');
+        var navLoginBtn = document.getElementById('nav-login-btn');
 
         // Helpers de Usuários e Armazenamento Local
         function getRegisteredUsers() {
@@ -443,10 +443,10 @@ export function Sons() {
         }
 
         function saveRegisteredUser(userObj, password = null) {
-            const users = getRegisteredUsers();
-            const normalizedEmail = (userObj.email || '').toLowerCase().trim();
-            const idx = users.findIndex(u => u.email.toLowerCase() === normalizedEmail);
-            const record = {
+            var users = getRegisteredUsers();
+            var normalizedEmail = (userObj.email || '').toLowerCase().trim();
+            var idx = users.findIndex(u => u.email.toLowerCase() === normalizedEmail);
+            var record = {
                 id: userObj.id,
                 email: normalizedEmail,
                 name: userObj.name || 'Mestre de RPG',
@@ -465,11 +465,11 @@ export function Sons() {
 
         // Sistema de Toast Notifications
         function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
+            var container = document.getElementById('toast-container');
             if (!container) return;
-            const toast = document.createElement('div');
-            let bg = 'bg-zinc-900 border-zinc-700 text-white';
-            let icon = '<i class="fa-solid fa-circle-info text-amber-400 text-sm"></i>';
+            var toast = document.createElement('div');
+            var bg = 'bg-zinc-900 border-zinc-700 text-white';
+            var icon = '<i class="fa-solid fa-circle-info text-amber-400 text-sm"></i>';
             if (type === 'success') {
                 bg = 'bg-zinc-900 border-emerald-500 text-emerald-300';
                 icon = '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>';
@@ -502,7 +502,7 @@ export function Sons() {
                 customAmbients = user.customAmbients;
                 localStorage.setItem(`st_custom_ambients_${currentUser.id}`, JSON.stringify(customAmbients));
             } else {
-                const localCA = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser.id}`)) || [];
+                var localCA = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser.id}`)) || [];
                 if (localCA.length > 0) {
                     customAmbients = localCA;
                     syncCustomAmbientsToCloud();
@@ -519,7 +519,7 @@ export function Sons() {
                     return p;
                 });
             } else {
-                const saved = localStorage.getItem(`st_profiles_${user.id}`);
+                var saved = localStorage.getItem(`st_profiles_${user.id}`);
                 if (saved) {
                     try { tableProfiles = JSON.parse(saved); } catch(e) {}
                 }
@@ -551,7 +551,7 @@ export function Sons() {
             if (currentUser) {
                 if (banner) banner.classList.add('hidden');
                 if (userHeaderArea) {
-                    const avatarImg = currentUser.avatarUrl ? `<img src="${currentUser.avatarUrl}" class="w-5 h-5 rounded-full object-cover">` : `<i class="${currentUser.isGoogle ? 'fa-brands fa-google text-red-400' : 'fa-solid fa-user-shield text-amber-400'} text-sm"></i>`;
+                    var avatarImg = currentUser.avatarUrl ? `<img src="${currentUser.avatarUrl}" class="w-5 h-5 rounded-full object-cover">` : `<i class="${currentUser.isGoogle ? 'fa-brands fa-google text-red-400' : 'fa-solid fa-user-shield text-amber-400'} text-sm"></i>`;
                     userHeaderArea.innerHTML = `
                         <div class="relative">
                             <button id="user-menu-btn" class="flex items-center gap-2 bg-black text-[#EBE3CB] hover:bg-zinc-900 px-3 py-1.5 rounded-lg border border-amber-600/40 text-xs shadow-md cursor-pointer transition-all">
@@ -593,8 +593,8 @@ export function Sons() {
         function openAuthModal() {
             if (authModal) {
                 authModal.classList.remove('hidden');
-                const authErrorMsg = document.getElementById('auth-error-msg');
-                const authSuccessMsg = document.getElementById('auth-success-msg');
+                var authErrorMsg = document.getElementById('auth-error-msg');
+                var authSuccessMsg = document.getElementById('auth-success-msg');
                 if (authErrorMsg) authErrorMsg.classList.add('hidden');
                 if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
             }
@@ -605,7 +605,7 @@ export function Sons() {
         }
 
         function handleLogout() {
-            const oldName = currentUser?.name || 'Mestre';
+            var oldName = currentUser?.name || 'Mestre';
             currentUser = null;
             localStorage.removeItem('st_user');
             localStorage.removeItem('st_table_profiles');
@@ -646,15 +646,15 @@ export function Sons() {
         if (closeAuthModalBtn) closeAuthModalBtn.addEventListener('click', closeAuthModal);
 
         // ABAS DE LOGIN / CADASTRO
-        let authMode = 'login';
-        const tabLogin = document.getElementById('tab-login');
-        const tabRegister = document.getElementById('tab-register');
-        const nameFieldGroup = document.getElementById('name-field-group');
-        const authSubmitBtn = document.getElementById('auth-submit-btn');
-        const authSubmitText = document.getElementById('auth-submit-text');
-        const authForm = document.getElementById('auth-form');
-        const authErrorMsg = document.getElementById('auth-error-msg');
-        const authSuccessMsg = document.getElementById('auth-success-msg');
+        var authMode = 'login';
+        var tabLogin = document.getElementById('tab-login');
+        var tabRegister = document.getElementById('tab-register');
+        var nameFieldGroup = document.getElementById('name-field-group');
+        var authSubmitBtn = document.getElementById('auth-submit-btn');
+        var authSubmitText = document.getElementById('auth-submit-text');
+        var authForm = document.getElementById('auth-form');
+        var authErrorMsg = document.getElementById('auth-error-msg');
+        var authSuccessMsg = document.getElementById('auth-success-msg');
 
         if (tabLogin && tabRegister) {
             tabLogin.addEventListener('click', () => {
@@ -681,13 +681,13 @@ export function Sons() {
         if (authForm) {
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const emailInput = document.getElementById('auth-email');
-                const passwordInput = document.getElementById('auth-password');
-                const nameInput = document.getElementById('auth-name');
+                var emailInput = document.getElementById('auth-email');
+                var passwordInput = document.getElementById('auth-password');
+                var nameInput = document.getElementById('auth-name');
 
-                const email = emailInput?.value.trim() || '';
-                const password = passwordInput?.value || '';
-                const name = nameInput?.value.trim() || '';
+                var email = emailInput?.value.trim() || '';
+                var password = passwordInput?.value || '';
+                var name = nameInput?.value.trim() || '';
 
                 if (authErrorMsg) authErrorMsg.classList.add('hidden');
                 if (authSuccessMsg) authSuccessMsg.classList.add('hidden');
@@ -700,25 +700,25 @@ export function Sons() {
                     return;
                 }
 
-                const originalBtnHtml = authSubmitBtn ? authSubmitBtn.innerHTML : 'Entrar';
+                var originalBtnHtml = authSubmitBtn ? authSubmitBtn.innerHTML : 'Entrar';
                 if (authSubmitBtn) {
                     authSubmitBtn.disabled = true;
                     authSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
                 }
 
                 try {
-                    const endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
+                    var endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
 
-                    let apiResult = null;
-                    let apiSucceeded = false;
+                    var apiResult = null;
+                    var apiSucceeded = false;
 
                     try {
-                        const resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
+                        var resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ email, password, name })
                         });
-                        const data = await resp.json();
+                        var data = await resp.json();
                         if (resp.ok && data.success) {
                             apiResult = data;
                             apiSucceeded = true;
@@ -737,8 +737,8 @@ export function Sons() {
                         console.log('Modo local ativo:', netErr);
                     }
 
-                    const localUsers = getRegisteredUsers();
-                    const existingUser = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+                    var localUsers = getRegisteredUsers();
+                    var existingUser = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
                     if (authMode === 'register') {
                         if (existingUser && !apiSucceeded) {
@@ -753,7 +753,7 @@ export function Sons() {
                             return;
                         }
 
-                        const newUser = apiResult?.user || {
+                        var newUser = apiResult?.user || {
                             id: `usr_${Date.now()}_${Math.floor(Math.random()*1000)}`,
                             email: email.toLowerCase(),
                             name: name || 'Mestre de RPG',
@@ -821,10 +821,10 @@ export function Sons() {
 
         window.handleGoogleLoginResponse = async function(response) {
             try {
-                let googleUser = null;
+                var googleUser = null;
                 if (response && response.credential) {
-                    const token = response.credential;
-                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    var token = response.credential;
+                    var payload = JSON.parse(atob(token.split('.')[1]));
                     googleUser = {
                         id: payload.sub,
                         email: payload.email,
@@ -838,9 +838,9 @@ export function Sons() {
 
                 saveRegisteredUser(googleUser);
 
-                let serverData = null;
+                var serverData = null;
                 try {
-                    const resp = await fetch('/api/gm-profiles?action=google_login', {
+                    var resp = await fetch('/api/gm-profiles?action=google_login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -857,8 +857,8 @@ export function Sons() {
                     console.log('Google API sync warning:', err);
                 }
 
-                const finalUser = serverData?.user || googleUser;
-                const finalProfiles = serverData?.profiles || null;
+                var finalUser = serverData?.user || googleUser;
+                var finalProfiles = serverData?.profiles || null;
                 applyUserData(finalUser, finalProfiles);
                 showToast(`✨ Conectado com o Google como <strong>${finalUser.name}</strong>!`, 'success');
 
@@ -874,30 +874,30 @@ export function Sons() {
         // CONTROLES DE ÁUDIO REAL (.MP3)
         // ==========================================
 
-        const ITEMS_PER_PAGE = 12;
-        let currentPage = 1;
-        let masterVolumeValue = 0.8;
-        let isMasterMuted = false;
+        var ITEMS_PER_PAGE = 12;
+        var currentPage = 1;
+        var masterVolumeValue = 0.8;
+        var isMasterMuted = false;
 
         function playSFX(sfxId) {
-            const sfx = sfxData.find(s => s.id === sfxId);
+            var sfx = sfxData.find(s => s.id === sfxId);
             if (!sfx) return;
 
-            const audio = new Audio(sfx.file);
+            var audio = new Audio(sfx.file);
             audio.volume = isMasterMuted ? 0 : masterVolumeValue;
             audio.play().catch(err => console.log('Autoplay audio err:', err));
         }
 
         function renderQuickSlots() {
-            const container = document.getElementById('quick-slots-container');
+            var container = document.getElementById('quick-slots-container');
             if (!container) return;
             container.innerHTML = '';
 
-            for (let i = 1; i <= 9; i++) {
-                const sfxId = quickSlots[i];
-                const sfx = sfxData.find(s => s.id === sfxId);
+            for (var i = 1; i <= 9; i++) {
+                var sfxId = quickSlots[i];
+                var sfx = sfxData.find(s => s.id === sfxId);
 
-                const slot = document.createElement('div');
+                var slot = document.createElement('div');
                 slot.className = 'quick-slot bg-zinc-900 border-2 border-dashed border-zinc-800 hover:border-amber-500 rounded-xl p-2.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[80px] select-none group';
                 slot.setAttribute('data-slot', i);
 
@@ -944,7 +944,7 @@ export function Sons() {
                 slot.addEventListener('drop', (e) => {
                     e.preventDefault();
                     slot.classList.remove('drop-target-active');
-                    const droppedSfxId = e.dataTransfer.getData('text/plain');
+                    var droppedSfxId = e.dataTransfer.getData('text/plain');
                     if (droppedSfxId) {
                         quickSlots[i] = droppedSfxId;
                         syncActiveProfileChanges();
@@ -957,8 +957,8 @@ export function Sons() {
         }
 
         function renderFavorites() {
-            const box = document.getElementById('favorites-box');
-            const emptyMsg = document.getElementById('fav-empty-msg');
+            var box = document.getElementById('favorites-box');
+            var emptyMsg = document.getElementById('fav-empty-msg');
             if (!box) return;
 
             box.querySelectorAll('.fav-item').forEach(el => el.remove());
@@ -971,10 +971,10 @@ export function Sons() {
             }
 
             favoriteSounds.forEach(id => {
-                const sfx = sfxData.find(s => s.id === id);
+                var sfx = sfxData.find(s => s.id === id);
                 if (!sfx) return;
 
-                const item = document.createElement('div');
+                var item = document.createElement('div');
                 item.className = 'fav-item bg-zinc-900 border border-zinc-800 hover:border-amber-500/70 rounded-xl p-2.5 flex flex-col items-center justify-center text-center transition-all cursor-pointer relative min-h-[80px] select-none group';
                 item.innerHTML = `
                     <button class="remove-fav absolute top-1 right-1 text-zinc-500 hover:text-red-400 p-1 text-[10px] cursor-pointer" title="Remover dos Favoritos">
@@ -1005,7 +1005,7 @@ export function Sons() {
             box.addEventListener('dragover', (e) => e.preventDefault());
             box.addEventListener('drop', (e) => {
                 e.preventDefault();
-                const droppedSfxId = e.dataTransfer.getData('text/plain');
+                var droppedSfxId = e.dataTransfer.getData('text/plain');
                 if (droppedSfxId && !favoriteSounds.includes(droppedSfxId)) {
                     favoriteSounds.push(droppedSfxId);
                     syncActiveProfileChanges();
@@ -1015,38 +1015,38 @@ export function Sons() {
             });
         }
 
-        let currentCat = 'all';
-        let currentSearch = '';
+        var currentCat = 'all';
+        var currentSearch = '';
 
         function getFilteredSFX() {
             return sfxData.filter(sfx => {
-                const matchCat = (currentCat === 'all' || sfx.categories.includes(currentCat));
-                const matchSearch = (currentSearch === '' || sfx.name.toLowerCase().includes(currentSearch));
+                var matchCat = (currentCat === 'all' || sfx.categories.includes(currentCat));
+                var matchSearch = (currentSearch === '' || sfx.name.toLowerCase().includes(currentSearch));
                 return matchCat && matchSearch;
             });
         }
 
         function renderSFXCatalog() {
-            const grid = document.getElementById('sfx-catalog-grid');
-            const countLabel = document.getElementById('sfx-count-label');
+            var grid = document.getElementById('sfx-catalog-grid');
+            var countLabel = document.getElementById('sfx-count-label');
             if (!grid) return;
             grid.innerHTML = '';
 
-            const filtered = getFilteredSFX();
-            const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+            var filtered = getFilteredSFX();
+            var totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
             if (currentPage > totalPages) currentPage = totalPages;
 
             if (countLabel) countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'efeito encontrado' : 'efeitos encontrados'}`;
 
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-            const pageItems = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+            var startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            var pageItems = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
             if (pageItems.length === 0) {
                 grid.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500 italic text-xs sm:text-sm">Nenhum efeito sonoro encontrado nesta categoria.</div>`;
             } else {
                 pageItems.forEach(sfx => {
-                    const isFav = favoriteSounds.includes(sfx.id);
-                    const card = document.createElement('div');
+                    var isFav = favoriteSounds.includes(sfx.id);
+                    var card = document.createElement('div');
                     card.className = 'sfx-card bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-3 sm:p-4 flex flex-col items-center text-center transition-all cursor-pointer group relative select-none';
                     card.setAttribute('draggable', 'true');
                     card.setAttribute('data-id', sfx.id);
@@ -1073,7 +1073,7 @@ export function Sons() {
                         setTimeout(() => card.classList.remove('sfx-active'), 200);
                     });
 
-                    const starBtn = card.querySelector('.fav-star');
+                    var starBtn = card.querySelector('.fav-star');
                     starBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         if (favoriteSounds.includes(sfx.id)) {
@@ -1086,12 +1086,12 @@ export function Sons() {
                         renderSFXCatalog();
                     });
 
-                    const hotkeyBtn = card.querySelector('.hotkey-btn');
+                    var hotkeyBtn = card.querySelector('.hotkey-btn');
                     hotkeyBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        const slotNum = prompt(`Digite o número do atalho para "${sfx.name}" (1 a 9):`);
+                        var slotNum = prompt(`Digite o número do atalho para "${sfx.name}" (1 a 9):`);
                         if (slotNum !== null) {
-                            const parsedNum = parseInt(slotNum);
+                            var parsedNum = parseInt(slotNum);
                             if (!isNaN(parsedNum) && parsedNum >= 1 && parsedNum <= 9) {
                                 quickSlots[parsedNum] = sfx.id;
                                 syncActiveProfileChanges();
@@ -1115,17 +1115,17 @@ export function Sons() {
         }
 
         function renderPagination(totalPages) {
-            const prevBtn = document.getElementById('prev-page-btn');
-            const nextBtn = document.getElementById('next-page-btn');
-            const numbersContainer = document.getElementById('page-numbers-container');
+            var prevBtn = document.getElementById('prev-page-btn');
+            var nextBtn = document.getElementById('next-page-btn');
+            var numbersContainer = document.getElementById('page-numbers-container');
 
             if (prevBtn) prevBtn.disabled = (currentPage === 1);
             if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
 
             if (numbersContainer) {
                 numbersContainer.innerHTML = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    const numBtn = document.createElement('button');
+                for (var i = 1; i <= totalPages; i++) {
+                    var numBtn = document.createElement('button');
                     numBtn.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${i === currentPage ? 'bg-amber-600 text-black shadow-md' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'}`;
                     numBtn.textContent = i;
                     numBtn.addEventListener('click', () => {
@@ -1138,8 +1138,8 @@ export function Sons() {
             }
         }
 
-        const prevPageBtn = document.getElementById('prev-page-btn');
-        const nextPageBtn = document.getElementById('next-page-btn');
+        var prevPageBtn = document.getElementById('prev-page-btn');
+        var nextPageBtn = document.getElementById('next-page-btn');
         if (prevPageBtn) {
             prevPageBtn.addEventListener('click', () => {
                 if (currentPage > 1) {
@@ -1150,8 +1150,8 @@ export function Sons() {
         }
         if (nextPageBtn) {
             nextPageBtn.addEventListener('click', () => {
-                const filtered = getFilteredSFX();
-                const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+                var filtered = getFilteredSFX();
+                var totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                 if (currentPage < totalPages) {
                     currentPage++;
                     renderSFXCatalog();
@@ -1163,22 +1163,22 @@ export function Sons() {
         // MOTOR MULTICANAL DE MÚSICAS AMBIENTES (SIMULTÂNEAS)
         // ==========================================
 
-        const activeTracks = {};
-        let isYTApiReady = false;
+        var activeTracks = {};
+        var isYTApiReady = false;
 
         function onYouTubeIframeAPIReady() {
             isYTApiReady = true;
         }
 
         function renderActiveTracksHeaderPanel() {
-            const container = document.getElementById('active-tracks-container');
-            const noMsg = document.getElementById('no-active-tracks-msg');
-            const countLabel = document.getElementById('active-tracks-count');
-            const saveSceneBadge = document.getElementById('save-scene-badge');
+            var container = document.getElementById('active-tracks-container');
+            var noMsg = document.getElementById('no-active-tracks-msg');
+            var countLabel = document.getElementById('active-tracks-count');
+            var saveSceneBadge = document.getElementById('save-scene-badge');
             if (!container) return;
 
             container.querySelectorAll('.active-track-bar').forEach(el => el.remove());
-            const keys = Object.keys(activeTracks);
+            var keys = Object.keys(activeTracks);
 
             if (countLabel) countLabel.textContent = `${keys.length} ${keys.length === 1 ? 'faixa tocando' : 'faixas tocando'}`;
             if (saveSceneBadge) saveSceneBadge.textContent = `${keys.length} ${keys.length === 1 ? 'som' : 'sons'}`;
@@ -1191,10 +1191,10 @@ export function Sons() {
             }
 
             keys.forEach(ambId => {
-                const track = activeTracks[ambId];
-                const amb = track.ambObj;
+                var track = activeTracks[ambId];
+                var amb = track.ambObj;
 
-                const bar = document.createElement('div');
+                var bar = document.createElement('div');
                 bar.className = 'active-track-bar bg-zinc-900 border border-zinc-800 rounded-lg p-2 flex flex-row items-center justify-between gap-2 text-xs';
                 
                 bar.innerHTML = `
@@ -1225,29 +1225,29 @@ export function Sons() {
                     </div>
                 `;
 
-                const volInput = bar.querySelector('.active-track-vol');
+                var volInput = bar.querySelector('.active-track-vol');
                 volInput.addEventListener('input', (e) => {
-                    const val = parseInt(e.target.value);
+                    var val = parseInt(e.target.value);
                     track.vol = val;
-                    const valLabel = bar.querySelector('span.w-6');
+                    var valLabel = bar.querySelector('span.w-6');
                     if (valLabel) valLabel.textContent = `${val}%`;
                     updateTrackVolume(ambId);
 
-                    const card = document.querySelector(`.ambient-card[data-ambient="${ambId}"]`);
+                    var card = document.querySelector(`.ambient-card[data-ambient="${ambId}"]`);
                     if (card) {
-                        const cardSlider = card.querySelector('.ambient-vol');
+                        var cardSlider = card.querySelector('.ambient-vol');
                         if (cardSlider) cardSlider.value = val;
-                        const cardValLabel = card.querySelector('.ambient-vol-val');
+                        var cardValLabel = card.querySelector('.ambient-vol-val');
                         if (cardValLabel) cardValLabel.textContent = `${val}%`;
                     }
                 });
 
-                const toggleBtn = bar.querySelector('.active-track-toggle');
+                var toggleBtn = bar.querySelector('.active-track-toggle');
                 toggleBtn.addEventListener('click', () => {
                     togglePlayPauseTrack(ambId);
                 });
 
-                const stopBtn = bar.querySelector('.active-track-stop');
+                var stopBtn = bar.querySelector('.active-track-stop');
                 stopBtn.addEventListener('click', () => {
                     stopAmbientTrack(ambId);
                 });
@@ -1255,10 +1255,10 @@ export function Sons() {
                 container.appendChild(bar);
             });
 
-            const globalPauseBtn = document.getElementById('pause-all-btn');
+            var globalPauseBtn = document.getElementById('pause-all-btn');
             if (globalPauseBtn) {
                 if (keys.length > 0) {
-                    const allPaused = keys.every(k => activeTracks[k].isPaused);
+                    var allPaused = keys.every(k => activeTracks[k].isPaused);
                     if (allPaused) {
                         globalPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i> Tocar Todos';
                     } else {
@@ -1271,28 +1271,28 @@ export function Sons() {
         }
 
         function renderAmbients() {
-            const grid = document.getElementById('ambient-grid');
-            const customGrid = document.getElementById('custom-ambient-grid');
+            var grid = document.getElementById('ambient-grid');
+            var customGrid = document.getElementById('custom-ambient-grid');
             if (!grid) return;
             grid.innerHTML = '';
             if (customGrid) customGrid.innerHTML = '';
 
             // ORDENAR PARA QUE AS MÚSICAS AMBIENTES FAVORITADAS FIQUEM NO TOPO DO GRID
-            const sortedData = [...getAmbientData()].sort((a, b) => {
-                const aFav = favoriteAmbients.includes(a.id);
-                const bFav = favoriteAmbients.includes(b.id);
+            var sortedData = [...getAmbientData()].sort((a, b) => {
+                var aFav = favoriteAmbients.includes(a.id);
+                var bFav = favoriteAmbients.includes(b.id);
                 if (aFav && !bFav) return -1;
                 if (!aFav && bFav) return 1;
                 return 0;
             });
 
             sortedData.forEach(amb => {
-                const isPlaying = !!activeTracks[amb.id];
-                const isPaused = isPlaying && activeTracks[amb.id].isPaused;
-                const volVal = isPlaying ? activeTracks[amb.id].vol : 70;
-                const isFavAmbient = favoriteAmbients.includes(amb.id);
+                var isPlaying = !!activeTracks[amb.id];
+                var isPaused = isPlaying && activeTracks[amb.id].isPaused;
+                var volVal = isPlaying ? activeTracks[amb.id].vol : 70;
+                var isFavAmbient = favoriteAmbients.includes(amb.id);
 
-                const card = document.createElement('div');
+                var card = document.createElement('div');
                 card.className = `ambient-card bg-zinc-900/60 border ${isFavAmbient ? 'border-amber-500/70 bg-amber-950/20 shadow-lg' : 'border-zinc-800'} rounded-xl p-4 sm:p-5 transition-all hover:border-amber-600/60 relative overflow-hidden ${isPlaying && !isPaused ? 'ambient-card-active' : ''}`;
                 card.setAttribute('data-ambient', amb.id);
                 card.setAttribute('data-category', amb.category);
@@ -1344,7 +1344,7 @@ export function Sons() {
                     </div>
                 `;
 
-                const starBtn = card.querySelector('.fav-ambient-star');
+                var starBtn = card.querySelector('.fav-ambient-star');
                 starBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (!currentUser) {
@@ -1365,8 +1365,8 @@ export function Sons() {
                     renderAmbients();
                 });
 
-                const playBtn = card.querySelector('.ambient-play-btn');
-                const volSlider = card.querySelector('.ambient-vol');
+                var playBtn = card.querySelector('.ambient-play-btn');
+                var volSlider = card.querySelector('.ambient-vol');
 
                 playBtn.addEventListener('click', () => {
                     if (activeTracks[amb.id]) {
@@ -1377,7 +1377,7 @@ export function Sons() {
                 });
 
                 volSlider.addEventListener('input', (e) => {
-                    const val = parseInt(e.target.value);
+                    var val = parseInt(e.target.value);
                     card.querySelector('.ambient-vol-val').textContent = `${val}%`;
                     if (activeTracks[amb.id]) {
                         activeTracks[amb.id].vol = val;
@@ -1396,17 +1396,17 @@ export function Sons() {
         }
 
         function startAmbientTrack(amb, initialVol) {
-            const playersDiv = document.getElementById('youtube-players-container');
-            const playerId = `yt-player-${amb.id}`;
+            var playersDiv = document.getElementById('youtube-players-container');
+            var playerId = `yt-player-${amb.id}`;
 
-            let playerElem = document.getElementById(playerId);
+            var playerElem = document.getElementById(playerId);
             if (!playerElem) {
                 playerElem = document.createElement('div');
                 playerElem.id = playerId;
                 playersDiv.appendChild(playerElem);
             }
 
-            const playerVars = {
+            var playerVars = {
                 'autoplay': 1,
                 'controls': 0,
                 'loop': 1,
@@ -1416,14 +1416,14 @@ export function Sons() {
                 playerVars.start = amb.start;
             }
 
-            const newPlayer = new YT.Player(playerId, {
+            var newPlayer = new YT.Player(playerId, {
                 height: '0',
                 width: '0',
                 videoId: amb.ytId,
                 playerVars: playerVars,
                 events: {
                     'onReady': (event) => {
-                        const calcVol = Math.round(initialVol * (masterVolumeValue / 1));
+                        var calcVol = Math.round(initialVol * (masterVolumeValue / 1));
                         event.target.setVolume(isMasterMuted ? 0 : calcVol);
                         if (amb.start) {
                             event.target.seekTo(amb.start, true);
@@ -1452,7 +1452,7 @@ export function Sons() {
         }
 
         function togglePlayPauseTrack(ambId) {
-            const track = activeTracks[ambId];
+            var track = activeTracks[ambId];
             if (!track) return;
 
             if (track.isPaused) {
@@ -1472,12 +1472,12 @@ export function Sons() {
         }
 
         function stopAmbientTrack(ambId) {
-            const track = activeTracks[ambId];
+            var track = activeTracks[ambId];
             if (track) {
                 if (track.player && track.player.destroy) {
                     track.player.destroy();
                 }
-                const elem = document.getElementById(`yt-player-${ambId}`);
+                var elem = document.getElementById(`yt-player-${ambId}`);
                 if (elem) elem.remove();
                 delete activeTracks[ambId];
             }
@@ -1487,25 +1487,25 @@ export function Sons() {
         }
 
         function updateTrackVolume(ambId) {
-            const track = activeTracks[ambId];
+            var track = activeTracks[ambId];
             if (track && track.player && track.player.setVolume) {
-                const calcVol = Math.round(track.vol * (masterVolumeValue / 1));
+                var calcVol = Math.round(track.vol * (masterVolumeValue / 1));
                 track.player.setVolume(isMasterMuted ? 0 : calcVol);
             }
         }
 
         // CONTROLES MASTER, PAUSAR TODOS E RESETAR AMBIENTES
-        const masterVolInput = document.getElementById('master-volume');
-        const masterVolLabel = document.getElementById('master-vol-label');
-        const masterMuteBtn = document.getElementById('master-mute-btn');
-        const masterMuteIcon = document.getElementById('master-mute-icon');
-        const pauseAllBtn = document.getElementById('pause-all-btn');
-        const resetAmbientsBtn = document.getElementById('reset-ambients-btn');
-        const clearSlotsBtn = document.getElementById('clear-slots-btn');
+        var masterVolInput = document.getElementById('master-volume');
+        var masterVolLabel = document.getElementById('master-vol-label');
+        var masterMuteBtn = document.getElementById('master-mute-btn');
+        var masterMuteIcon = document.getElementById('master-mute-icon');
+        var pauseAllBtn = document.getElementById('pause-all-btn');
+        var resetAmbientsBtn = document.getElementById('reset-ambients-btn');
+        var clearSlotsBtn = document.getElementById('clear-slots-btn');
 
         if (masterVolInput) {
             masterVolInput.addEventListener('input', (e) => {
-                const val = e.target.value / 100;
+                var val = e.target.value / 100;
                 masterVolumeValue = val;
                 masterVolLabel.textContent = `${e.target.value}%`;
                 Object.keys(activeTracks).forEach(ambId => updateTrackVolume(ambId));
@@ -1538,13 +1538,13 @@ export function Sons() {
 
         if (pauseAllBtn) {
             pauseAllBtn.addEventListener('click', () => {
-                const keys = Object.keys(activeTracks);
+                var keys = Object.keys(activeTracks);
                 if (keys.length === 0) return;
 
-                const allPaused = keys.every(k => activeTracks[k].isPaused);
+                var allPaused = keys.every(k => activeTracks[k].isPaused);
 
                 keys.forEach(ambId => {
-                    const track = activeTracks[ambId];
+                    var track = activeTracks[ambId];
                     if (allPaused) {
                         track.isPaused = false;
                         if (track.player && track.player.playVideo) track.player.playVideo();
@@ -1596,12 +1596,12 @@ export function Sons() {
         }
 
         function renderCentralActiveSceneCard() {
-            const container = document.getElementById('central-active-scene-card');
-            const statusTag = document.getElementById('active-scene-status-tag');
+            var container = document.getElementById('central-active-scene-card');
+            var statusTag = document.getElementById('active-scene-status-tag');
             if (!container) return;
 
-            const activeScene = tableScenes.find(s => s.id === activeSceneId);
-            const activeCount = Object.keys(activeTracks).length;
+            var activeScene = tableScenes.find(s => s.id === activeSceneId);
+            var activeCount = Object.keys(activeTracks).length;
 
             if (isCrossfading && crossfadeTargetScene) {
                 if (statusTag) statusTag.textContent = 'Transicionando (4s)...';
@@ -1640,10 +1640,10 @@ export function Sons() {
                 if (statusTag) statusTag.textContent = 'Cena Ativa';
                 container.className = 'central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/70 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_25px_rgba(245,158,11,0.2)] min-h-[220px]';
 
-                const soundPills = activeScene.tracks.map(t => {
-                    const amb = getAmbientData().find(a => a.id === t.id);
-                    const currentVol = activeTracks[t.id] ? activeTracks[t.id].vol : t.vol;
-                    const isPlaying = !!activeTracks[t.id] && !activeTracks[t.id].isPaused;
+                var soundPills = activeScene.tracks.map(t => {
+                    var amb = getAmbientData().find(a => a.id === t.id);
+                    var currentVol = activeTracks[t.id] ? activeTracks[t.id].vol : t.vol;
+                    var isPlaying = !!activeTracks[t.id] && !activeTracks[t.id].isPaused;
                     return `
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isPlaying ? 'bg-amber-500/15 border-amber-500/40 text-amber-300' : 'bg-zinc-800 border-zinc-700 text-zinc-400'} border text-[11px] font-semibold">
                             <i class="fa-solid ${amb ? amb.icon : 'fa-compact-disc'} text-[10px]"></i>
@@ -1700,11 +1700,11 @@ export function Sons() {
                     </div>
                 `;
 
-                const updateBtn = container.querySelector('#update-current-scene-btn');
+                var updateBtn = container.querySelector('#update-current-scene-btn');
                 if (updateBtn) {
                     updateBtn.addEventListener('click', () => updateSceneWithCurrent(activeScene.id));
                 }
-                const renameBtn = container.querySelector('#rename-current-scene-btn');
+                var renameBtn = container.querySelector('#rename-current-scene-btn');
                 if (renameBtn) {
                     renameBtn.addEventListener('click', () => renameScene(activeScene.id));
                 }
@@ -1742,9 +1742,9 @@ export function Sons() {
             container.ondrop = (e) => {
                 e.preventDefault();
                 container.classList.remove('drag-over');
-                const droppedSceneId = e.dataTransfer.getData('text/plain');
+                var droppedSceneId = e.dataTransfer.getData('text/plain');
                 if (droppedSceneId) {
-                    const scene = tableScenes.find(s => s.id === droppedSceneId);
+                    var scene = tableScenes.find(s => s.id === droppedSceneId);
                     if (scene) {
                         transitionToScene(scene, 4000);
                     }
@@ -1753,8 +1753,8 @@ export function Sons() {
         }
 
         function renderScenesCarousel() {
-            const track = document.getElementById('scenes-carousel-track');
-            const countLabel = document.getElementById('scenes-count-label');
+            var track = document.getElementById('scenes-carousel-track');
+            var countLabel = document.getElementById('scenes-count-label');
             if (!track) return;
 
             track.innerHTML = '';
@@ -1771,14 +1771,14 @@ export function Sons() {
             }
 
             tableScenes.forEach(scene => {
-                const isActive = scene.id === activeSceneId;
-                const card = document.createElement('div');
+                var isActive = scene.id === activeSceneId;
+                var card = document.createElement('div');
                 card.className = `scene-card min-w-[220px] sm:min-w-[235px] max-w-[245px] bg-zinc-900 border ${isActive ? 'is-active-scene border-amber-500 bg-amber-950/20' : 'border-zinc-800 hover:border-zinc-700'} rounded-xl p-3 sm:p-3.5 flex flex-col justify-between select-none relative group shrink-0 shadow-md cursor-grab active:cursor-grabbing`;
                 card.setAttribute('draggable', 'true');
                 card.setAttribute('data-scene-id', scene.id);
 
-                const trackPreview = scene.tracks.slice(0, 3).map(t => {
-                    const amb = getAmbientData().find(a => a.id === t.id);
+                var trackPreview = scene.tracks.slice(0, 3).map(t => {
+                    var amb = getAmbientData().find(a => a.id === t.id);
                     return `
                         <div class="flex items-center justify-between text-[10px] text-zinc-400 py-0.5">
                             <span class="truncate max-w-[130px] flex items-center gap-1">
@@ -1790,7 +1790,7 @@ export function Sons() {
                     `;
                 }).join('');
 
-                const extraCount = scene.tracks.length > 3 ? `<span class="text-[9px] text-zinc-500 font-semibold">+${scene.tracks.length - 3} mais</span>` : '';
+                var extraCount = scene.tracks.length > 3 ? `<span class="text-[9px] text-zinc-500 font-semibold">+${scene.tracks.length - 3} mais</span>` : '';
 
                 card.innerHTML = `
                     <div>
@@ -1869,13 +1869,13 @@ export function Sons() {
                 card.addEventListener('drop', (e) => {
                     e.preventDefault();
                     card.classList.remove('border-amber-500', 'scale-[1.02]');
-                    const draggedSceneId = e.dataTransfer.getData('text/plain');
+                    var draggedSceneId = e.dataTransfer.getData('text/plain');
                     
-                    const draggedIndex = tableScenes.findIndex(s => s.id === draggedSceneId);
-                    const targetIndex = tableScenes.findIndex(s => s.id === scene.id);
+                    var draggedIndex = tableScenes.findIndex(s => s.id === draggedSceneId);
+                    var targetIndex = tableScenes.findIndex(s => s.id === scene.id);
                     
                     if (draggedIndex > -1 && targetIndex > -1 && draggedIndex !== targetIndex) {
-                        const [draggedScene] = tableScenes.splice(draggedIndex, 1);
+                        var [draggedScene] = tableScenes.splice(draggedIndex, 1);
                         tableScenes.splice(targetIndex, 0, draggedScene);
                         syncActiveProfileChanges();
                         renderScenesUI();
@@ -1883,22 +1883,22 @@ export function Sons() {
                 });
 
                 // Botões de Ação
-                const playBtn = card.querySelector('.scene-play-btn');
+                var playBtn = card.querySelector('.scene-play-btn');
                 playBtn.addEventListener('click', () => {
                     transitionToScene(scene, 4000);
                 });
 
-                const updateBtn = card.querySelector('.scene-update-btn');
+                var updateBtn = card.querySelector('.scene-update-btn');
                 updateBtn.addEventListener('click', () => {
                     updateSceneWithCurrent(scene.id);
                 });
 
-                const renameBtn = card.querySelector('.scene-rename-btn');
+                var renameBtn = card.querySelector('.scene-rename-btn');
                 renameBtn.addEventListener('click', () => {
                     renameScene(scene.id);
                 });
 
-                const deleteBtn = card.querySelector('.scene-delete-btn');
+                var deleteBtn = card.querySelector('.scene-delete-btn');
                 deleteBtn.addEventListener('click', () => {
                     deleteScene(scene.id);
                 });
@@ -1918,30 +1918,30 @@ export function Sons() {
 
             isCrossfading = true;
             crossfadeTargetScene = targetScene;
-            const startTime = Date.now();
+            var startTime = Date.now();
 
             // Mapeia volumes alvo
-            const targetMap = {};
+            var targetMap = {};
             targetScene.tracks.forEach(t => {
                 targetMap[t.id] = parseInt(t.vol);
             });
 
             // Conjunto de todos os sons envolvidos
-            const allAmbIds = new Set([
+            var allAmbIds = new Set([
                 ...Object.keys(activeTracks),
                 ...targetScene.tracks.map(t => t.id)
             ]);
 
-            const trackFades = {};
+            var trackFades = {};
 
             allAmbIds.forEach(ambId => {
-                const currentTrack = activeTracks[ambId];
-                const startVol = currentTrack ? currentTrack.vol : 0;
-                const endVol = targetMap[ambId] !== undefined ? targetMap[ambId] : 0;
+                var currentTrack = activeTracks[ambId];
+                var startVol = currentTrack ? currentTrack.vol : 0;
+                var endVol = targetMap[ambId] !== undefined ? targetMap[ambId] : 0;
 
                 // Se não está tocando e deve entrar na cena, inicia com volume 0 imediatamente
                 if (!currentTrack && endVol > 0) {
-                    const ambObj = getAmbientData().find(a => a.id === ambId);
+                    var ambObj = getAmbientData().find(a => a.id === ambId);
                     if (ambObj) {
                         startAmbientTrack(ambObj, 0);
                     }
@@ -1957,15 +1957,15 @@ export function Sons() {
             renderScenesUI();
 
             crossfadeIntervalId = setInterval(() => {
-                const now = Date.now();
-                const elapsed = now - startTime;
-                const progress = Math.min(1, elapsed / durationMs);
-                const remainingSec = Math.max(0, (durationMs - elapsed) / 1000).toFixed(1);
+                var now = Date.now();
+                var elapsed = now - startTime;
+                var progress = Math.min(1, elapsed / durationMs);
+                var remainingSec = Math.max(0, (durationMs - elapsed) / 1000).toFixed(1);
 
                 // Interpolação suave dos volumes de cada faixa
                 Object.keys(trackFades).forEach(ambId => {
-                    const fade = trackFades[ambId];
-                    const currentVol = Math.round(fade.startVol + (fade.endVol - fade.startVol) * progress);
+                    var fade = trackFades[ambId];
+                    var currentVol = Math.round(fade.startVol + (fade.endVol - fade.startVol) * progress);
 
                     if (activeTracks[ambId]) {
                         activeTracks[ambId].vol = currentVol;
@@ -1985,7 +1985,7 @@ export function Sons() {
 
                     // Finaliza: interrompe faixas cujo volume chegou a 0
                     Object.keys(trackFades).forEach(ambId => {
-                        const fade = trackFades[ambId];
+                        var fade = trackFades[ambId];
                         if (fade.endVol === 0) {
                             stopAmbientTrack(ambId);
                         } else if (activeTracks[ambId]) {
@@ -2002,8 +2002,8 @@ export function Sons() {
         }
 
         function updateCrossfadeProgressUI(progress, remainingSec) {
-            const bar = document.getElementById('crossfade-progress-bar');
-            const countdown = document.getElementById('crossfade-countdown');
+            var bar = document.getElementById('crossfade-progress-bar');
+            var countdown = document.getElementById('crossfade-countdown');
             if (bar) {
                 bar.style.width = `${Math.round(progress * 100)}%`;
             }
@@ -2013,10 +2013,10 @@ export function Sons() {
         }
 
         function updateSceneWithCurrent(sceneId) {
-            const scene = tableScenes.find(s => s.id === sceneId);
+            var scene = tableScenes.find(s => s.id === sceneId);
             if (!scene) return;
 
-            const activeKeys = Object.keys(activeTracks);
+            var activeKeys = Object.keys(activeTracks);
             if (activeKeys.length === 0) {
                 alert('Nenhum som ambiente ativo no momento para salvar no preset!');
                 return;
@@ -2032,14 +2032,14 @@ export function Sons() {
             }
         }
 
-        let editingSceneId = null;
+        var editingSceneId = null;
 
         function renameScene(sceneId) {
             openSaveSceneModal(sceneId);
         }
 
         function deleteScene(sceneId) {
-            const scene = tableScenes.find(s => s.id === sceneId);
+            var scene = tableScenes.find(s => s.id === sceneId);
             if (!scene) return;
 
             if (confirm(`Deseja realmente excluir a cena "${scene.name}" desta aventura?`)) {
@@ -2051,23 +2051,23 @@ export function Sons() {
         }
 
         // MODAL DE SALVAR NOVA CENA
-        const saveSceneBtn = document.getElementById('save-scene-btn');
-        const saveSceneModal = document.getElementById('save-scene-modal');
-        const closeSceneModalBtn = document.getElementById('close-scene-modal');
-        const saveSceneForm = document.getElementById('save-scene-form');
-        const sceneNameInput = document.getElementById('scene-name-input');
-        const modalSoundsPreview = document.getElementById('modal-sounds-preview');
-        const suggestionBtns = document.querySelectorAll('.scene-tag-btn');
-        const iconBtns = document.querySelectorAll('.scene-icon-opt');
+        var saveSceneBtn = document.getElementById('save-scene-btn');
+        var saveSceneModal = document.getElementById('save-scene-modal');
+        var closeSceneModalBtn = document.getElementById('close-scene-modal');
+        var saveSceneForm = document.getElementById('save-scene-form');
+        var sceneNameInput = document.getElementById('scene-name-input');
+        var modalSoundsPreview = document.getElementById('modal-sounds-preview');
+        var suggestionBtns = document.querySelectorAll('.scene-tag-btn');
+        var iconBtns = document.querySelectorAll('.scene-icon-opt');
 
         function openSaveSceneModal(sceneIdToEdit = null) {
             if (!saveSceneModal) return;
             
             editingSceneId = (typeof sceneIdToEdit === 'string') ? sceneIdToEdit : null;
-            const activeKeys = Object.keys(activeTracks);
+            var activeKeys = Object.keys(activeTracks);
 
             if (editingSceneId) {
-                const scene = tableScenes.find(s => s.id === editingSceneId);
+                var scene = tableScenes.find(s => s.id === editingSceneId);
                 if (scene) {
                     if (sceneNameInput) sceneNameInput.value = scene.name;
                     
@@ -2075,7 +2075,7 @@ export function Sons() {
                         b.classList.remove('active', 'bg-amber-600', 'text-black');
                         b.classList.add('bg-zinc-800', 'text-amber-400');
                     });
-                    const targetBtn = Array.from(iconBtns).find(b => b.getAttribute('data-icon') === scene.icon) || iconBtns[0];
+                    var targetBtn = Array.from(iconBtns).find(b => b.getAttribute('data-icon') === scene.icon) || iconBtns[0];
                     if (targetBtn) {
                         targetBtn.classList.add('active', 'bg-amber-600', 'text-black');
                         targetBtn.classList.remove('bg-zinc-800', 'text-amber-400');
@@ -2088,7 +2088,7 @@ export function Sons() {
                         } else {
                             modalSoundsPreview.innerHTML = `<div class="text-amber-500 text-[10px] uppercase font-bold text-center mb-2">Mantendo sons da cena original</div>` + 
                             scene.tracks.map(trk => {
-                                const amb = getAmbientData().find(a => a.id === trk.id);
+                                var amb = getAmbientData().find(a => a.id === trk.id);
                                 if (!amb) return '';
                                 return `
                                     <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
@@ -2114,8 +2114,8 @@ export function Sons() {
                         `;
                     } else {
                         modalSoundsPreview.innerHTML = activeKeys.map(id => {
-                            const trk = activeTracks[id];
-                            const amb = trk.ambObj;
+                            var trk = activeTracks[id];
+                            var amb = trk.ambObj;
                             return `
                                 <div class="flex items-center justify-between text-zinc-300 py-1 border-b border-zinc-900 last:border-0">
                                     <span class="flex items-center gap-2">
@@ -2161,18 +2161,171 @@ export function Sons() {
             });
         });
 
-        const customAmbientForm = document.getElementById('custom-ambient-form');
+        var customAmbientForm = document.getElementById('custom-ambient-form');
         if (customAmbientForm) {
             customAmbientForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const url = document.getElementById('custom-ambient-url').value;
-                const name = document.getElementById('custom-ambient-name').value.trim();
-                const category = 'ambiente';
+                var url = document.getElementById('custom-ambient-url').value;
+                var name = document.getElementById('custom-ambient-name').value.trim();
+                var category = 'ambiente';
                 
                 // Extract YT ID
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).
-// Expose to window for inline React handlers
-(window as any).getAmbientData = getAmbientData;
+                var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                var match = url.match(regExp);
+                var ytId = (match && match[2].length === 11) ? match[2] : null;
+                
+                if (!ytId) {
+                    showToast('Link do YouTube inválido.', 'error');
+                    return;
+                }
+                if (editingCustomAmbientId) {
+                    var idx = customAmbients.findIndex(a => a.id === editingCustomAmbientId);
+                    if (idx !== -1) {
+                        customAmbients[idx].name = name;
+                        customAmbients[idx].ytId = ytId;
+                    }
+                    showToast(`Som "${name}" atualizado!`, 'success');
+                    cancelEditCustomAmbient();
+                } else {
+                    var newAmbient = {
+                        id: `custom_${Date.now()}`,
+                        name: name,
+                        category: category,
+                        icon: 'fa-music',
+                        desc: 'Personalizado',
+                        ytId: ytId,
+                        isCustom: true
+                    };
+                    customAmbients.push(newAmbient);
+                    showToast(`Som "${name}" adicionado!`, 'success');
+                    customAmbientForm.reset();
+                }
+
+                localStorage.setItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`, JSON.stringify(customAmbients));
+                syncCustomAmbientsToCloud();
+                renderAmbients();
+            });
+        }
+
+        if (saveSceneForm) {
+            saveSceneForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                var name = sceneNameInput.value.trim();
+                if (!name) {
+                    name = "Nova Cena";
+                }
+
+                if (editingSceneId) {
+                    var scene = tableScenes.find(s => s.id === editingSceneId);
+                    if (scene) {
+                        scene.name = name;
+                        scene.icon = selectedModalIcon;
+                    }
+                } else {
+                    var activeKeys = Object.keys(activeTracks);
+                    var tracksToSave = [];
+
+                    if (activeKeys.length > 0) {
+                        tracksToSave = activeKeys.map(id => ({
+                            id: id,
+                            vol: activeTracks[id].vol
+                        }));
+                    } else {
+                        tracksToSave = [{ id: 'taverna', vol: 70 }];
+                    }
+
+                    var newScene = {
+                        id: `scene_${Date.now()}`,
+                        name: name,
+                        icon: selectedModalIcon,
+                        tracks: tracksToSave
+                    };
+
+                    tableScenes.unshift(newScene);
+                    activeSceneId = newScene.id;
+                }
+
+                syncActiveProfileChanges();
+                renderScenesUI();
+                closeSaveSceneModal();
+                showToast(`Cena "${name}" salva com sucesso!`, 'success');
+            });
+        }
+
+        // CARROSSEL DE CENAS - BOTÕES DE SCROLL
+        var scrollLeftBtn = document.getElementById('scenes-scroll-left');
+        var scrollRightBtn = document.getElementById('scenes-scroll-right');
+        var scenesTrack = document.getElementById('scenes-carousel-track');
+
+        if (scrollLeftBtn && scenesTrack) {
+            scrollLeftBtn.addEventListener('click', () => {
+                scenesTrack.scrollBy({ left: -240, behavior: 'smooth' });
+            });
+        }
+        if (scrollRightBtn && scenesTrack) {
+            scrollRightBtn.addEventListener('click', () => {
+                scenesTrack.scrollBy({ left: 240, behavior: 'smooth' });
+            });
+        }
+
+        // TECLADO ATALHOS 1 A 9
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+            var key = e.key;
+            if (['1','2','3','4','5','6','7','8','9'].includes(key)) {
+                var sfxId = quickSlots[key];
+                if (sfxId) {
+                    playSFX(sfxId);
+                    var slot = document.querySelector(`.quick-slot[data-slot="${key}"]`);
+                    if (slot) {
+                        slot.classList.add('sfx-active');
+                        setTimeout(() => slot.classList.remove('sfx-active'), 200);
+                    }
+                }
+            }
+        });
+
+        // FILTROS E BUSCA
+        var categoryBtns = document.querySelectorAll('.cat-btn');
+        var searchInput = document.getElementById('search-input');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-amber-600', 'text-black');
+                    b.classList.add('bg-zinc-900', 'text-zinc-300');
+                });
+                btn.classList.add('active', 'bg-amber-600', 'text-black');
+                btn.classList.remove('bg-zinc-900', 'text-zinc-300');
+                currentCat = btn.getAttribute('data-cat');
+                currentPage = 1;
+                renderSFXCatalog();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value.toLowerCase().trim();
+                currentPage = 1;
+                renderSFXCatalog();
+            });
+        }
+
+        // INICIALIZAÇÃO DA PÁGINA
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+            renderTableProfilesUI();
+            renderQuickSlots();
+            renderFavorites();
+            renderSFXCatalog();
+            renderAmbients();
+            renderActiveTracksHeaderPanel();
+            renderScenesUI();
+            restoreActiveState(getActiveProfile()?.active_state);
+        });
+    
+
+      (window as any).getAmbientData = getAmbientData;
 (window as any).editCustomAmbient = editCustomAmbient;
 (window as any).cancelEditCustomAmbient = cancelEditCustomAmbient;
 (window as any).deleteCustomAmbient = deleteCustomAmbient;
@@ -2213,258 +2366,105 @@ export function Sons() {
 (window as any).deleteScene = deleteScene;
 (window as any).openSaveSceneModal = openSaveSceneModal;
 (window as any).closeSaveSceneModal = closeSaveSceneModal;
-;
-                const match = url.match(regExp);
-                const ytId = (match && match[2].length === 11) ? match[2] : null;
-                
-                if (!ytId) {
-                    showToast('Link do YouTube inválido.', 'error');
-                    return;
-                }
-                if (editingCustomAmbientId) {
-                    const idx = customAmbients.findIndex(a => a.id === editingCustomAmbientId);
-                    if (idx !== -1) {
-                        customAmbients[idx].name = name;
-                        customAmbients[idx].ytId = ytId;
-                    }
-                    showToast(`Som "${name}" atualizado!`, 'success');
-                    cancelEditCustomAmbient();
-                } else {
-                    const newAmbient = {
-                        id: `custom_${Date.now()}`,
-                        name: name,
-                        category: category,
-                        icon: 'fa-music',
-                        desc: 'Personalizado',
-                        ytId: ytId,
-                        isCustom: true
-                    };
-                    customAmbients.push(newAmbient);
-                    showToast(`Som "${name}" adicionado!`, 'success');
-                    customAmbientForm.reset();
-                }
 
-                localStorage.setItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`, JSON.stringify(customAmbients));
-                syncCustomAmbientsToCloud();
-                renderAmbients();
-            });
-        }
-
-        if (saveSceneForm) {
-            saveSceneForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                let name = sceneNameInput.value.trim();
-                if (!name) {
-                    name = "Nova Cena";
-                }
-
-                if (editingSceneId) {
-                    const scene = tableScenes.find(s => s.id === editingSceneId);
-                    if (scene) {
-                        scene.name = name;
-                        scene.icon = selectedModalIcon;
-                    }
-                } else {
-                    const activeKeys = Object.keys(activeTracks);
-                    let tracksToSave = [];
-
-                    if (activeKeys.length > 0) {
-                        tracksToSave = activeKeys.map(id => ({
-                            id: id,
-                            vol: activeTracks[id].vol
-                        }));
-                    } else {
-                        tracksToSave = [{ id: 'taverna', vol: 70 }];
-                    }
-
-                    const newScene = {
-                        id: `scene_${Date.now()}`,
-                        name: name,
-                        icon: selectedModalIcon,
-                        tracks: tracksToSave
-                    };
-
-                    tableScenes.unshift(newScene);
-                    activeSceneId = newScene.id;
-                }
-
-                syncActiveProfileChanges();
-                renderScenesUI();
-                closeSaveSceneModal();
-                showToast(`Cena "${name}" salva com sucesso!`, 'success');
-            });
-        }
-
-        // CARROSSEL DE CENAS - BOTÕES DE SCROLL
-        const scrollLeftBtn = document.getElementById('scenes-scroll-left');
-        const scrollRightBtn = document.getElementById('scenes-scroll-right');
-        const scenesTrack = document.getElementById('scenes-carousel-track');
-
-        if (scrollLeftBtn && scenesTrack) {
-            scrollLeftBtn.addEventListener('click', () => {
-                scenesTrack.scrollBy({ left: -240, behavior: 'smooth' });
-            });
-        }
-        if (scrollRightBtn && scenesTrack) {
-            scrollRightBtn.addEventListener('click', () => {
-                scenesTrack.scrollBy({ left: 240, behavior: 'smooth' });
-            });
-        }
-
-        // TECLADO ATALHOS 1 A 9
-        window.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;
-            const key = e.key;
-            if (['1','2','3','4','5','6','7','8','9'].includes(key)) {
-                const sfxId = quickSlots[key];
-                if (sfxId) {
-                    playSFX(sfxId);
-                    const slot = document.querySelector(`.quick-slot[data-slot="${key}"]`);
-                    if (slot) {
-                        slot.classList.add('sfx-active');
-                        setTimeout(() => slot.classList.remove('sfx-active'), 200);
-                    }
-                }
-            }
-        });
-
-        // FILTROS E BUSCA
-        const categoryBtns = document.querySelectorAll('.cat-btn');
-        var searchInput = document.getElementById('search-input');
-
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                categoryBtns.forEach(b => {
-                    b.classList.remove('active', 'bg-amber-600', 'text-black');
-                    b.classList.add('bg-zinc-900', 'text-zinc-300');
-                });
-                btn.classList.add('active', 'bg-amber-600', 'text-black');
-                btn.classList.remove('bg-zinc-900', 'text-zinc-300');
-                currentCat = btn.getAttribute('data-cat');
-                currentPage = 1;
-                renderSFXCatalog();
-            });
-        });
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                currentSearch = e.target.value.toLowerCase().trim();
-                currentPage = 1;
-                renderSFXCatalog();
-            });
-        }
-
-        // INICIALIZAÇÃO DA PÁGINA
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthUI();
-            renderTableProfilesUI();
-            renderQuickSlots();
-            renderFavorites();
-            renderSFXCatalog();
-            renderAmbients();
-            renderActiveTracksHeaderPanel();
-            renderScenesUI();
-            restoreActiveState(getActiveProfile()?.active_state);
-        });
-    
-
-    */
+    } catch(e) {
+      console.error("Error in legacy script for Sons:", e);
+    }
   }, []);
 
   return (
-    <div className="font-sans">
-      
-        {/*  Hero Section & Master Control  */}
-        <section className="relative w-full py-6 sm:py-10 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
-            <div className="container mx-auto px-4 max-w-6xl text-center">
-                <span className="inline-flex items-center gap-2 text-amber-500 text-[11px] sm:text-xs font-black tracking-widest uppercase mb-2 px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/30">
-                    <i className="fa-solid fa-sliders"></i> Painel Interativo do Mestre
+    <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+        <!-- Hero Section & Master Control -->
+        <section class="relative w-full py-6 sm:py-10 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
+            <div class="container mx-auto px-4 max-w-6xl text-center">
+                <span class="inline-flex items-center gap-2 text-amber-500 text-[11px] sm:text-xs font-black tracking-widest uppercase mb-2 px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/30">
+                    <i class="fa-solid fa-sliders"></i> Painel Interativo do Mestre
                 </span>
-                <h1 className="text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
+                <h1 class="text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
                     Estúdio Sonoro da Mesa
                 </h1>
-                <div className="mb-5">
-                    <a href="instrucoes-mesa" target="_blank" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold uppercase text-[11px] sm:text-xs tracking-wider px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 group">
-                        <i className="fa-solid fa-book-open group-hover:scale-110 transition-transform"></i>
+                <div class="mb-5">
+                    <a href="instrucoes-mesa" target="_blank" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold uppercase text-[11px] sm:text-xs tracking-wider px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 group">
+                        <i class="fa-solid fa-book-open group-hover:scale-110 transition-transform"></i>
                         <span>Aprenda a Usar a Mesa</span>
                     </a>
                 </div>
 
-                {/*  BARRA MASTER DE ÁUDIO & GERENCIADOR DE PERFIS DE MESAS  */}
-                <div className="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
+                <!-- BARRA MASTER DE ÁUDIO & GERENCIADOR DE PERFIS DE MESAS -->
+                <div class="bg-zinc-900/95 backdrop-blur-md border border-amber-600/30 rounded-2xl p-3.5 sm:p-5 max-w-5xl mx-auto shadow-2xl flex flex-col gap-4 text-left">
                     
-                    {/*  LINHA DE GERENCIAMENTO DE PERFIS DE MESAS DE RPG  */}
-                    <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3" id="table-profiles-section">
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 border border-amber-500/40">
-                                <i className="fa-solid fa-dice-d20"></i>
+                    <!-- LINHA DE GERENCIAMENTO DE PERFIS DE MESAS DE RPG -->
+                    <div class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3" id="table-profiles-section">
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 border border-amber-500/40">
+                                <i class="fa-solid fa-dice-d20"></i>
                             </div>
-                            <div className="min-w-0 flex-grow md:flex-grow-0">
-                                <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Perfil de Mesa Ativa</span>
-                                <select id="table-profile-select" className="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500 cursor-pointer w-full md:w-64">
+                            <div class="min-w-0 flex-grow md:flex-grow-0">
+                                <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Perfil de Mesa Ativa</span>
+                                <select id="table-profile-select" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500 cursor-pointer w-full md:w-64">
                                     <option value="default_mesa">Mesa 1: Aventura Principal</option>
                                 </select>
                             </div>
                         </div>
 
-                        {/*  Botões de Ação do Perfil de Mesa  */}
-                        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                            <button id="add-table-btn" className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
-                                <i className="fa-solid fa-plus text-amber-400"></i> Nova Mesa
+                        <!-- Botões de Ação do Perfil de Mesa -->
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                            <button id="add-table-btn" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-plus text-amber-400"></i> Nova Mesa
                             </button>
-                            <button id="rename-table-btn" className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Renomear Mesa">
-                                <i className="fa-solid fa-pen text-zinc-400"></i>
+                            <button id="rename-table-btn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Renomear Mesa">
+                                <i class="fa-solid fa-pen text-zinc-400"></i>
                             </button>
-                            <button id="delete-table-btn" className="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Excluir Mesa">
-                                <i className="fa-solid fa-trash text-red-400"></i>
+                            <button id="delete-table-btn" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer" title="Excluir Mesa">
+                                <i class="fa-solid fa-trash text-red-400"></i>
                             </button>
                         </div>
                     </div>
                     
-                    {/*  Linha Volume Master e Controles  */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
-                        <div className="flex items-center gap-3 w-full sm:w-auto justify-between">
-                            <div className="flex items-center gap-2.5">
-                                <button id="master-mute-btn" className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700 shrink-0" title="Silenciar / Ativar Áudio Geral">
-                                    <i className="fa-solid fa-volume-high" id="master-mute-icon"></i>
+                    <!-- Linha Volume Master e Controles -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                        <div class="flex items-center gap-3 w-full sm:w-auto justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <button id="master-mute-btn" class="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-500 flex items-center justify-center text-lg transition-all cursor-pointer border border-zinc-700 shrink-0" title="Silenciar / Ativar Áudio Geral">
+                                    <i class="fa-solid fa-volume-high" id="master-mute-icon"></i>
                                 </button>
                                 <div>
-                                    <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Volume Master</span>
-                                    <span className="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
+                                    <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold block">Volume Master</span>
+                                    <span class="text-amber-400 font-bold text-xs" id="master-vol-label">80%</span>
                                 </div>
                             </div>
-                            <input type="range" id="master-volume" min="0" max="100" value="80" className="w-32 sm:w-40 accent-amber-500 cursor-pointer" />
+                            <input type="range" id="master-volume" min="0" max="100" value="80" class="w-32 sm:w-40 accent-amber-500 cursor-pointer">
                         </div>
 
-                        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
-                            <button id="pause-all-btn" className="flex-1 sm:flex-none bg-amber-900/40 hover:bg-amber-800/60 text-amber-300 border border-amber-700/50 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i className="fa-solid fa-pause text-xs"></i> Pausar Todos
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                            <button id="pause-all-btn" class="flex-1 sm:flex-none bg-amber-900/40 hover:bg-amber-800/60 text-amber-300 border border-amber-700/50 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3.5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-pause text-xs"></i> Pausar Todos
                             </button>
-                            <button id="reset-ambients-btn" className="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Limpar todas as músicas ambientes ativas">
-                                <i className="fa-solid fa-rotate-left text-amber-500"></i> Limpar
+                            <button id="reset-ambients-btn" class="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold uppercase text-[11px] sm:text-xs tracking-wider px-3 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Limpar todas as músicas ambientes ativas">
+                                <i class="fa-solid fa-rotate-left text-amber-500"></i> Limpar
                             </button>
                         </div>
                     </div>
 
-                    {/*  Músicas Ambientes Tocando no Momento  */}
+                    <!-- Músicas Ambientes Tocando no Momento -->
                     <div>
-                        <div className="flex items-center justify-between mb-2 gap-2">
-                            <span className="text-xs uppercase tracking-wider text-amber-400 font-bold flex items-center gap-2">
-                                <i className="fa-solid fa-compact-disc animate-spin text-amber-500" style={{animationDuration: '4s'}}></i> Ambientes Ativos
+                        <div class="flex items-center justify-between mb-2 gap-2">
+                            <span class="text-xs uppercase tracking-wider text-amber-400 font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-compact-disc animate-spin text-amber-500" style="animation-duration: 4s;"></i> Ambientes Ativos
                             </span>
-                            <div className="flex items-center gap-3">
-                                <button id="save-scene-btn" className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold text-[10px] sm:text-xs uppercase px-3 py-1.5 rounded-lg transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center gap-2 cursor-pointer shrink-0 group">
-                                    <i className="fa-solid fa-bookmark group-hover:scale-110 transition-transform"></i>
-                                    <span className="hidden sm:inline">Salvar Cena Atual</span>
-                                    <span className="sm:hidden">Salvar</span>
-                                    <span id="save-scene-badge" className="bg-black/30 text-black px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold">0 sons</span>
+                            <div class="flex items-center gap-3">
+                                <button id="save-scene-btn" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold text-[10px] sm:text-xs uppercase px-3 py-1.5 rounded-lg transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center gap-2 cursor-pointer shrink-0 group">
+                                    <i class="fa-solid fa-bookmark group-hover:scale-110 transition-transform"></i>
+                                    <span class="hidden sm:inline">Salvar Cena Atual</span>
+                                    <span class="sm:hidden">Salvar</span>
+                                    <span id="save-scene-badge" class="bg-black/30 text-black px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold">0 sons</span>
                                 </button>
-                                <span className="text-[11px] text-zinc-400 whitespace-nowrap hidden sm:inline" id="active-tracks-count">0 faixas tocando</span>
+                                <span class="text-[11px] text-zinc-400 whitespace-nowrap hidden sm:inline" id="active-tracks-count">0 faixas tocando</span>
                             </div>
                         </div>
 
-                        <div id="active-tracks-container" className="min-h-[48px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2 flex flex-col gap-2">
-                            <div className="text-zinc-500 text-xs italic py-2 text-center" id="no-active-tracks-msg">
+                        <div id="active-tracks-container" class="min-h-[48px] bg-zinc-950/80 border border-zinc-800 rounded-xl p-2 flex flex-col gap-2">
+                            <div class="text-zinc-500 text-xs italic py-2 text-center" id="no-active-tracks-msg">
                                 Nenhuma música ambiente tocando. Clique em uma faixa abaixo para iniciar!
                             </div>
                         </div>
@@ -2474,60 +2474,60 @@ export function Sons() {
             </div>
         </section>
 
-        {/*  SEÇÃO: PALCO DE CENAS & PRESETS DE ÁUDIO DA AVENTURA  */}
-        <section className="py-6 sm:py-8 bg-zinc-950/95 border-b border-zinc-800 relative overflow-hidden" id="scenes-deck-section">
-            <div className="container mx-auto px-4 max-w-6xl">
+        <!-- SEÇÃO: PALCO DE CENAS & PRESETS DE ÁUDIO DA AVENTURA -->
+        <section class="py-6 sm:py-8 bg-zinc-950/95 border-b border-zinc-800 relative overflow-hidden" id="scenes-deck-section">
+            <div class="container mx-auto px-4 max-w-6xl">
                 
-                {/*  Cabeçalho da Seção de Cenas  */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3">
+                <!-- Cabeçalho da Seção de Cenas -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3">
                     <div>
-                        <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/30">Presets da Aventura</span>
-                            <h2 className="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
-                                <i className="fa-solid fa-masks-theater text-amber-400"></i> Cenas Sonoras da Mesa
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/30">Presets da Aventura</span>
+                            <h2 class="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-masks-theater text-amber-400"></i> Cenas Sonoras da Mesa
                             </h2>
                         </div>
-                        <p className="text-zinc-400 text-xs mt-1">
+                        <p class="text-zinc-400 text-xs mt-1">
                             Monte suas cenas e transicione entre momentos da narrativa. Arraste qualquer card para o palco central para fazer um crossfade suave de 4 segundos.
                         </p>
                     </div>
                 </div>
 
-                {/*  PALCO PRINCIPAL DE CENAS: CARD CENTRALIZADO ATIVO + CARROSSEL DE PRESETS  */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                <!-- PALCO PRINCIPAL DE CENAS: CARD CENTRALIZADO ATIVO + CARROSSEL DE PRESETS -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
                     
-                    {/*  CARD CENTRALIZADO ATIVO (STAGE / DROP TARGET COM CROSSFADE 4s)  */}
-                    <div className="lg:col-span-5 flex flex-col">
-                        <div className="text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-2 flex items-center justify-between">
-                            <span className="flex items-center gap-1.5">
-                                <i className="fa-solid fa-circle-play text-amber-500 animate-pulse"></i> Cena Ativa (Tocando Agora)
+                    <!-- CARD CENTRALIZADO ATIVO (STAGE / DROP TARGET COM CROSSFADE 4s) -->
+                    <div class="lg:col-span-5 flex flex-col">
+                        <div class="text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-2 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-play text-amber-500 animate-pulse"></i> Cena Ativa (Tocando Agora)
                             </span>
-                            <span className="text-[10px] text-zinc-400 font-mono" id="active-scene-status-tag">Pronto</span>
+                            <span class="text-[10px] text-zinc-400 font-mono" id="active-scene-status-tag">Pronto</span>
                         </div>
 
-                        <div id="central-active-scene-card" className="central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_30px_rgba(245,158,11,0.15)] min-h-[220px]">
-                            {/*  Preenchido dinamicamente via JavaScript  */}
+                        <div id="central-active-scene-card" class="central-scene-dropzone relative flex-grow bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/30 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all shadow-[0_0_30px_rgba(245,158,11,0.15)] min-h-[220px]">
+                            <!-- Preenchido dinamicamente via JavaScript -->
                         </div>
                     </div>
 
-                    {/*  CARROSSEL / FILEIRA DE CARDS DE CENAS DA AVENTURA  */}
-                    <div className="lg:col-span-7 flex flex-col min-w-0">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold flex items-center gap-1.5">
-                                <i className="fa-solid fa-layer-group text-zinc-400"></i> Cenas Salvas na Aventura (<span id="scenes-count-label">0</span>)
+                    <!-- CARROSSEL / FILEIRA DE CARDS DE CENAS DA AVENTURA -->
+                    <div class="lg:col-span-7 flex flex-col min-w-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] uppercase tracking-wider text-zinc-400 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-layer-group text-zinc-400"></i> Cenas Salvas na Aventura (<span id="scenes-count-label">0</span>)
                             </span>
-                            <div className="flex items-center gap-1.5">
-                                <button id="scenes-scroll-left" className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para esquerda">
-                                    <i className="fa-solid fa-chevron-left"></i>
+                            <div class="flex items-center gap-1.5">
+                                <button id="scenes-scroll-left" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para esquerda">
+                                    <i class="fa-solid fa-chevron-left"></i>
                                 </button>
-                                <button id="scenes-scroll-right" className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para direita">
-                                    <i className="fa-solid fa-chevron-right"></i>
+                                <button id="scenes-scroll-right" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 text-xs flex items-center justify-center transition-all cursor-pointer border border-zinc-800" title="Rolar para direita">
+                                    <i class="fa-solid fa-chevron-right"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <div id="scenes-carousel-track" className="scenes-track flex items-stretch gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar flex-grow select-none">
-                            {/*  Cards de cenas gerados via JavaScript  */}
+                        <div id="scenes-carousel-track" class="scenes-track flex items-stretch gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar flex-grow select-none">
+                            <!-- Cards de cenas gerados via JavaScript -->
                         </div>
                     </div>
 
@@ -2536,148 +2536,148 @@ export function Sons() {
             </div>
         </section>
 
-        {/*  SEÇÃO: BARRA DE ATALHOS RÁPIDOS (OCULTA NO MOBILE / VISÍVEL APENAS DESKTOP)  */}
-        <section className="hidden sm:block py-5 sm:py-6 bg-zinc-950 border-b border-zinc-900">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+        <!-- SEÇÃO: BARRA DE ATALHOS RÁPIDOS (OCULTA NO MOBILE / VISÍVEL APENAS DESKTOP) -->
+        <section class="hidden sm:block py-5 sm:py-6 bg-zinc-950 border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                     <div>
-                        <h2 className="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
-                            <i className="fa-solid fa-keyboard"></i> Atalhos Rápidos no Teclado (Teclas 1 a 9)
+                        <h2 class="text-lg sm:text-xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-keyboard"></i> Atalhos Rápidos no Teclado (Teclas 1 a 9)
                         </h2>
-                        <p className="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado da mesa ativa ou clique no ícone do teclado para definir o atalho no teclado.</p>
+                        <p class="text-zinc-400 text-xs">Arraste um efeito até a caixa para definir o atalho do teclado da mesa ativa ou clique no ícone do teclado para definir o atalho no teclado.</p>
                     </div>
-                    <button id="clear-slots-btn" className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shrink-0">
-                        <i className="fa-solid fa-trash-can text-xs"></i> Limpar Atalhos
+                    <button id="clear-slots-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 font-bold text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shrink-0">
+                        <i class="fa-solid fa-trash-can text-xs"></i> Limpar Atalhos
                     </button>
                 </div>
 
-                <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3" id="quick-slots-container">
-                    {/*  Gerado Dinamicamente via JavaScript  */}
+                <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3" id="quick-slots-container">
+                    <!-- Gerado Dinamicamente via JavaScript -->
                 </div>
             </div>
         </section>
 
-        {/*  SEÇÃO: BOX DE FAVORITOS DA MESA  */}
-        <section className="py-5 sm:py-6 bg-zinc-900/60 border-b border-zinc-900">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-base sm:text-lg text-amber-400 font-title uppercase flex items-center gap-2">
-                        <i className="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Mesa
+        <!-- SEÇÃO: BOX DE FAVORITOS DA MESA -->
+        <section class="py-5 sm:py-6 bg-zinc-900/60 border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-base sm:text-lg text-amber-400 font-title uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> Caixa de Favoritos da Mesa
                     </h2>
-                    <span className="text-[11px] text-zinc-400">Arraste sons para cá ou toque na ⭐</span>
+                    <span class="text-[11px] text-zinc-400">Arraste sons para cá ou toque na ⭐</span>
                 </div>
 
-                <div id="favorites-box" className="min-h-[90px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-xl p-3 transition-all grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2.5 sm:gap-3">
-                    <div className="col-span-full text-zinc-500 text-xs italic py-3 text-center w-full" id="fav-empty-msg">
-                        <i className="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Clique na ⭐ para adicionar!
+                <div id="favorites-box" class="min-h-[90px] bg-zinc-950/80 border-2 border-dashed border-zinc-800 hover:border-amber-500/50 rounded-xl p-3 transition-all grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2.5 sm:gap-3">
+                    <div class="col-span-full text-zinc-500 text-xs italic py-3 text-center w-full" id="fav-empty-msg">
+                        <i class="fa-solid fa-hand-pointer mr-1"></i> Nenhum som favorito ainda. Clique na ⭐ para adicionar!
                     </div>
                 </div>
             </div>
         </section>
 
-        {/*  FILTROS E BUSCA  */}
-        <section className="py-3.5 sm:py-4 bg-zinc-950 border-b border-zinc-900 sticky top-[60px] sm:top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
-            <div className="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1 flex-nowrap" id="category-filters">
-                    <button data-cat="all" className="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+        <!-- FILTROS E BUSCA -->
+        <section class="py-3.5 sm:py-4 bg-zinc-950 border-b border-zinc-900 sticky top-[60px] sm:top-[73px] z-40 shadow-lg backdrop-blur-md bg-zinc-950/95">
+            <div class="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1 flex-nowrap" id="category-filters">
+                    <button data-cat="all" class="cat-btn active bg-amber-600 text-black font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
                         Todos
                     </button>
-                    <button data-cat="combate" className="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
-                        <i className="fa-solid fa-sword text-amber-500 mr-1"></i> Combate
+                    <button data-cat="combate" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-sword text-amber-500 mr-1"></i> Combate
                     </button>
-                    <button data-cat="magia" className="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
-                        <i className="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magia
+                    <button data-cat="magia" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i> Magia
                     </button>
-                    <button data-cat="ambiente" className="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
-                        <i className="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambiente
+                    <button data-cat="ambiente" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-dungeon text-emerald-400 mr-1"></i> Ambiente
                     </button>
-                    <button data-cat="monstro" className="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
-                        <i className="fa-solid fa-dragon text-red-400 mr-1"></i> Monstro
+                    <button data-cat="monstro" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-dragon text-red-400 mr-1"></i> Monstro
                     </button>
-                    <button data-cat="taverna" className="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
-                        <i className="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna
+                    <button data-cat="taverna" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer shrink-0">
+                        <i class="fa-solid fa-beer-mug-empty text-amber-400 mr-1"></i> Taverna
                     </button>
                 </div>
 
-                <div className="relative w-full md:w-64 shrink-0">
-                    <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-                    <input type="text" id="search-input" placeholder="Buscar efeito..." className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all" />
+                <div class="relative w-full md:w-64 shrink-0">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                    <input type="text" id="search-input" placeholder="Buscar efeito..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all">
                 </div>
             </div>
         </section>
 
-        {/*  SEÇÃO DE EFEITOS SONOROS  */}
-        <section className="py-8 sm:py-10 bg-black border-b border-zinc-900">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="flex items-center justify-between mb-5">
+        <!-- SEÇÃO DE EFEITOS SONOROS -->
+        <section class="py-8 sm:py-10 bg-black border-b border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h2 className="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
-                            <i className="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
+                        <h2 class="text-xl sm:text-2xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Catálogo de Efeitos Sonoros (SFX)
                         </h2>
-                        <p className="text-zinc-400 text-xs">Toque para ouvir o efeito. Múltiplos toques simultâneos permitidos!</p>
+                        <p class="text-zinc-400 text-xs">Toque para ouvir o efeito. Múltiplos toques simultâneos permitidos!</p>
                     </div>
-                    <span className="text-xs text-zinc-400 font-mono hidden sm:inline" id="sfx-count-label">40 efeitos encontrados</span>
+                    <span class="text-xs text-zinc-400 font-mono hidden sm:inline" id="sfx-count-label">40 efeitos encontrados</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px] content-start" id="sfx-catalog-grid"></div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 min-h-[340px] content-start" id="sfx-catalog-grid"></div>
 
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900" id="pagination-container">
-                    <button id="prev-page-btn" className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
-                        <i className="fa-solid fa-chevron-left text-xs"></i> Anterior
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900" id="pagination-container">
+                    <button id="prev-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> Anterior
                     </button>
 
-                    <div className="flex items-center gap-1.5" id="page-numbers-container"></div>
+                    <div class="flex items-center gap-1.5" id="page-numbers-container"></div>
 
-                    <button id="next-page-btn" className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
-                        Próximo <i className="fa-solid fa-chevron-right text-xs"></i>
+                    <button id="next-page-btn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-xs uppercase px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed">
+                        Próximo <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
             </div>
         </section>
 
-        {/*  SEÇÃO SEPARADA: MÚSICAS & PAISAGENS AMBIENTES  */}
-        <section className="py-10 sm:py-12 bg-zinc-950">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <!-- SEÇÃO SEPARADA: MÚSICAS & PAISAGENS AMBIENTES -->
+        <section class="py-10 sm:py-12 bg-zinc-950">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
-                            <i className="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
+                        <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-compact-disc text-amber-400"></i> Músicas & Paisagens Ambientes
                         </h2>
-                        <p className="text-zinc-400 text-xs sm:text-sm mt-1">Clique na ★ para favoritar a faixa e fixá-la no topo da mesa!</p>
+                        <p class="text-zinc-400 text-xs sm:text-sm mt-1">Clique na ★ para favoritar a faixa e fixá-la no topo da mesa!</p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="ambient-grid"></div>
 
-                <div id="youtube-players-container" className="hidden"></div>
+                <div id="youtube-players-container" class="hidden"></div>
             </div>
         </section>
 
-        {/*  SEÇÃO DE AMBIENTES PERSONALIZADOS  */}
-        <section className="py-10 sm:py-12 bg-zinc-950 border-t border-zinc-900">
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
-                    <div className="md:w-1/3">
-                        <h2 className="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2 mb-2">
-                            <i className="fa-brands fa-youtube text-amber-400"></i> Ambientes Personalizados
+        <!-- SEÇÃO DE AMBIENTES PERSONALIZADOS -->
+        <section class="py-10 sm:py-12 bg-zinc-950 border-t border-zinc-900">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div class="md:w-1/3">
+                        <h2 class="text-xl sm:text-2xl md:text-3xl text-amber-500 font-title uppercase flex items-center gap-2 mb-2">
+                            <i class="fa-brands fa-youtube text-amber-400"></i> Ambientes Personalizados
                         </h2>
-                        <p className="text-zinc-400 text-xs sm:text-sm">Expanda seu acervo adicionando trilhas sonoras diretamente do YouTube. Essas faixas são salvas na nuvem e exclusivas da sua conta.</p>
+                        <p class="text-zinc-400 text-xs sm:text-sm">Expanda seu acervo adicionando trilhas sonoras diretamente do YouTube. Essas faixas são salvas na nuvem e exclusivas da sua conta.</p>
                     </div>
-                    <div className="md:w-2/3 bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 shadow-inner">
-                        <form id="custom-ambient-form" className="flex flex-col sm:flex-row gap-4 items-end">
-                            <div className="w-full sm:w-6/12">
-                                <label className="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Link do YouTube</label>
-                                <input type="url" id="custom-ambient-url" required placeholder="https://youtube.com/watch?v=..." className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all" />
+                    <div class="md:w-2/3 bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 shadow-inner">
+                        <form id="custom-ambient-form" class="flex flex-col sm:flex-row gap-4 items-end">
+                            <div class="w-full sm:w-6/12">
+                                <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Link do YouTube</label>
+                                <input type="url" id="custom-ambient-url" required placeholder="https://youtube.com/watch?v=..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
                             </div>
-                            <div className="w-full sm:w-6/12">
-                                <label className="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome do Som</label>
-                                <input type="text" id="custom-ambient-name" required placeholder="Ex: Tema Épico" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all" />
+                            <div class="w-full sm:w-6/12">
+                                <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Nome do Som</label>
+                                <input type="text" id="custom-ambient-name" required placeholder="Ex: Tema Épico" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-all">
                             </div>
-                            <div className="w-full sm:w-auto flex items-center gap-2">
-                                <button type="submit" id="custom-ambient-submit-btn" className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
+                            <div class="w-full sm:w-auto flex items-center gap-2">
+                                <button type="submit" id="custom-ambient-submit-btn" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
                                     Adicionar
                                 </button>
-                                <button type="button" id="custom-ambient-cancel-btn" onClick={(event) => { window.event = event; new Function('cancelEditCustomAmbient()')(); }} className="hidden w-full sm:w-auto bg-zinc-700 hover:bg-zinc-600 text-white font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
+                                <button type="button" id="custom-ambient-cancel-btn" onclick="cancelEditCustomAmbient()" class="hidden w-full sm:w-auto bg-zinc-700 hover:bg-zinc-600 text-white font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-lg transition-all cursor-pointer shadow-lg whitespace-nowrap h-[38px] flex items-center justify-center">
                                     Cancelar
                                 </button>
                             </div>
@@ -2685,10 +2685,9 @@ export function Sons() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="custom-ambient-grid"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="custom-ambient-grid"></div>
             </div>
         </section>
-    
-    </div>
+    ` }} />
   );
 }

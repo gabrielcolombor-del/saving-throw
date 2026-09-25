@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 
 export function Produto() {
   useEffect(() => {
-    
-
-        const WHATSAPP_NUMBER = "5527997947604";
-        let currentProduct = null;
-        let selectedOption = 'unpainted'; // 'unpainted' ou 'painted'
+    try {
+      
+        var WHATSAPP_NUMBER = "5527997947604";
+        var currentProduct = null;
+        var selectedOption = 'unpainted'; // 'unpainted' ou 'painted'
 
         // Fallbacks para produtos especiais
-        const STATIC_FALLBACKS = {
+        var STATIC_FALLBACKS = {
             'escudo-mestre': {
                 id: 'escudo-mestre',
                 type: 'arsenal',
@@ -57,13 +57,13 @@ export function Produto() {
             }
         };
 
-        let productImages = [];
-        let currentImageIndex = 0;
+        var productImages = [];
+        var currentImageIndex = 0;
 
         // Menu Hamburguer
         document.getElementById('menu-btn').addEventListener('click', function() {
-            const navContent = document.getElementById('nav-content');
-            const menuIcon = this.querySelector('i');
+            var navContent = document.getElementById('nav-content');
+            var menuIcon = this.querySelector('i');
             navContent.classList.toggle('hidden');
             if (navContent.classList.contains('hidden')) {
                 menuIcon.classList.replace('fa-xmark', 'fa-bars');
@@ -74,12 +74,12 @@ export function Produto() {
 
         // Carregar Detalhes do Produto
         async function loadProduct() {
-            const params = new URLSearchParams(window.location.search);
-            const productId = params.get('id');
+            var params = new URLSearchParams(window.location.search);
+            var productId = params.get('id');
 
-            const loadingEl = document.getElementById('product-loading');
-            const errorEl = document.getElementById('product-error');
-            const contentEl = document.getElementById('product-content');
+            var loadingEl = document.getElementById('product-loading');
+            var errorEl = document.getElementById('product-error');
+            var contentEl = document.getElementById('product-content');
 
             if (!productId) {
                 loadingEl.classList.add('hidden');
@@ -89,9 +89,9 @@ export function Produto() {
 
             try {
                 // Tenta buscar da API
-                const res = await fetch(`/api/products?id=${encodeURIComponent(productId)}`);
+                var res = await fetch(`/api/products?id=${encodeURIComponent(productId)}`);
                 if (res.ok) {
-                    const data = await res.json();
+                    var data = await res.json();
                     if (data.product) {
                         currentProduct = data.product;
                     }
@@ -117,10 +117,10 @@ export function Produto() {
         }
 
         function getProductProfile(p) {
-            const type = (p.type || '').toLowerCase();
-            const cat = (p.category || '').toLowerCase();
-            const name = (p.name || '').toLowerCase();
-            const id = (p.id || '').toLowerCase();
+            var type = (p.type || '').toLowerCase();
+            var cat = (p.category || '').toLowerCase();
+            var name = (p.name || '').toLowerCase();
+            var id = (p.id || '').toLowerCase();
 
             // 1. Serviço Exclusivo / Miniatura Personalizada
             if (id === 'personalizada' || cat.includes('exclusivo') || name.includes('personalizada') || name.includes('dê vida ao seu')) {
@@ -297,17 +297,17 @@ export function Produto() {
         }
 
         function renderProductDetails(p) {
-            const contentEl = document.getElementById('product-content');
-            const profile = getProductProfile(p);
+            var contentEl = document.getElementById('product-content');
+            var profile = getProductProfile(p);
             
             // Atualizar título da aba
             document.title = `${p.name} | Saving Throw`;
 
             // Breadcrumbs & Categorias
-            const breadcrumbCat = document.getElementById('breadcrumb-category');
-            const breadcrumbName = document.getElementById('breadcrumb-name');
-            const btnBack = document.getElementById('btn-back-catalog');
-            const btnViewAll = document.getElementById('btn-view-all');
+            var breadcrumbCat = document.getElementById('breadcrumb-category');
+            var breadcrumbName = document.getElementById('breadcrumb-name');
+            var btnBack = document.getElementById('btn-back-catalog');
+            var btnViewAll = document.getElementById('btn-view-all');
 
             breadcrumbCat.innerText = profile.breadcrumbCategory;
             breadcrumbCat.href = profile.breadcrumbHref;
@@ -318,7 +318,7 @@ export function Produto() {
             breadcrumbName.innerText = p.name;
 
             // Inicializar Galeria / Slider com Aspect Ratio Adaptativo
-            const rawImages = (p.images && Array.isArray(p.images) && p.images.length > 0) 
+            var rawImages = (p.images && Array.isArray(p.images) && p.images.length > 0) 
                 ? p.images 
                 : (p.image_url ? [p.image_url] : ['./assets/imagens/minis.png']);
             initGallery(rawImages, p.name);
@@ -329,7 +329,7 @@ export function Produto() {
             document.getElementById('product-type-label').innerText = profile.typeLabel;
 
             // Renderizar Micro-badges dinamicamente
-            const microBadgesContainer = document.getElementById('product-micro-badges');
+            var microBadgesContainer = document.getElementById('product-micro-badges');
             if (microBadgesContainer) {
                 microBadgesContainer.innerHTML = profile.microBadges.map(b => `
                     <div class="bg-zinc-50 border border-zinc-200 p-3 rounded-lg">
@@ -345,7 +345,7 @@ export function Produto() {
             document.getElementById('product-description').innerText = p.description || 'Peça produzida com altíssimo padrão de acabamento e fidelidade aos mínimos detalhes.';
 
             // Renderizar Especificações e Garantias dinamicamente
-            const specsContainer = document.getElementById('specs-grid');
+            var specsContainer = document.getElementById('specs-grid');
             if (specsContainer) {
                 specsContainer.innerHTML = profile.specs.map(s => `
                     <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
@@ -361,9 +361,9 @@ export function Produto() {
             }
 
             // Configurar Opções de Preço
-            const hasDualPrice = p.price_unpainted !== undefined && p.price_unpainted !== null && p.price_painted !== undefined && p.price_painted !== null;
-            const optionsContainer = document.getElementById('options-container');
-            const selectedTitle = document.getElementById('selected-option-title');
+            var hasDualPrice = p.price_unpainted !== undefined && p.price_unpainted !== null && p.price_painted !== undefined && p.price_painted !== null;
+            var optionsContainer = document.getElementById('options-container');
+            var selectedTitle = document.getElementById('selected-option-title');
 
             if (hasDualPrice) {
                 optionsContainer.classList.remove('hidden');
@@ -374,7 +374,7 @@ export function Produto() {
             } else {
                 // Produto com preço único (ex: Arsenal / Escudo / Torre)
                 optionsContainer.classList.add('hidden');
-                const singlePrice = p.price || p.price_unpainted || 0;
+                var singlePrice = p.price || p.price_unpainted || 0;
                 selectedTitle.innerText = '';
                 selectedTitle.classList.add('hidden');
                 document.getElementById('display-price').innerText = `R$ ${formatPrice(singlePrice)}`;
@@ -386,10 +386,10 @@ export function Produto() {
 
         // --- SISTEMA DE GALERIA E SLIDER COM ASPECT RATIO ADAPTATIVO (4:5 Retrato / 5:4 Paisagem) ---
         function applyFrameAspectRatio(imgSrc) {
-            const frame = document.getElementById('main-image-frame');
+            var frame = document.getElementById('main-image-frame');
             if (!frame) return;
 
-            const temp = new Image();
+            var temp = new Image();
             temp.onload = function() {
                 if (this.naturalWidth >= this.naturalHeight) {
                     frame.style.aspectRatio = '5 / 4';
@@ -419,12 +419,12 @@ export function Produto() {
             productImages = images;
             currentImageIndex = 0;
 
-            const prevBtn = document.getElementById('slider-prev-btn');
-            const nextBtn = document.getElementById('slider-next-btn');
-            const dotsContainer = document.getElementById('slider-dots');
-            const thumbsContainer = document.getElementById('slider-thumbnails');
-            const modalPrevBtn = document.getElementById('modal-prev-btn');
-            const modalNextBtn = document.getElementById('modal-next-btn');
+            var prevBtn = document.getElementById('slider-prev-btn');
+            var nextBtn = document.getElementById('slider-next-btn');
+            var dotsContainer = document.getElementById('slider-dots');
+            var thumbsContainer = document.getElementById('slider-thumbnails');
+            var modalPrevBtn = document.getElementById('modal-prev-btn');
+            var modalNextBtn = document.getElementById('modal-next-btn');
 
             if (productImages.length > 1) {
                 if (prevBtn) prevBtn.classList.remove('hidden');
@@ -468,10 +468,10 @@ export function Produto() {
             if (index >= productImages.length) index = 0;
 
             currentImageIndex = index;
-            const imgSrc = productImages[index];
-            const imgEl = document.getElementById('product-image');
-            const modalImg = document.getElementById('modal-image');
-            const modalCaption = document.getElementById('modal-caption');
+            var imgSrc = productImages[index];
+            var imgEl = document.getElementById('product-image');
+            var modalImg = document.getElementById('modal-image');
+            var modalCaption = document.getElementById('modal-caption');
 
             applyFrameAspectRatio(imgSrc);
 
@@ -495,7 +495,7 @@ export function Produto() {
             }
 
             // Atualizar Bolinhas
-            const dots = document.querySelectorAll('.slider-dot');
+            var dots = document.querySelectorAll('.slider-dot');
             dots.forEach((dot, i) => {
                 if (i === index) {
                     dot.className = 'slider-dot w-6 h-2.5 rounded-full bg-amber-500 transition-all duration-300 cursor-pointer';
@@ -505,7 +505,7 @@ export function Produto() {
             });
 
             // Atualizar Miniaturas
-            const thumbs = document.querySelectorAll('.slider-thumb');
+            var thumbs = document.querySelectorAll('.slider-thumb');
             thumbs.forEach((thumb, i) => {
                 if (i === index) {
                     thumb.className = 'slider-thumb relative w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-600 scale-105 shadow-md ring-2 ring-amber-500/30 transition-all flex-shrink-0 cursor-pointer';
@@ -526,12 +526,12 @@ export function Produto() {
         }
 
         function setupTouchSwipe() {
-            const frame = document.getElementById('main-image-frame');
+            var frame = document.getElementById('main-image-frame');
             if (!frame || frame._swipeConfigured) return;
             frame._swipeConfigured = true;
 
-            let touchStartX = 0;
-            let touchEndX = 0;
+            var touchStartX = 0;
+            var touchEndX = 0;
 
             frame.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -539,7 +539,7 @@ export function Produto() {
 
             frame.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
-                const diff = touchEndX - touchStartX;
+                var diff = touchEndX - touchStartX;
                 if (Math.abs(diff) > 40) {
                     if (diff < 0) nextSlide();
                     else prevSlide();
@@ -553,9 +553,9 @@ export function Produto() {
 
         function selectOption(opt) {
             selectedOption = opt;
-            const optUnpainted = document.getElementById('opt-unpainted');
-            const optPainted = document.getElementById('opt-painted');
-            const selectedTitle = document.getElementById('selected-option-title');
+            var optUnpainted = document.getElementById('opt-unpainted');
+            var optPainted = document.getElementById('opt-painted');
+            var selectedTitle = document.getElementById('selected-option-title');
 
             if (!currentProduct) return;
 
@@ -563,7 +563,7 @@ export function Produto() {
                 optUnpainted.classList.add('selected');
                 optPainted.classList.remove('selected');
 
-                const price = currentProduct.price_unpainted || currentProduct.price || 0;
+                var price = currentProduct.price_unpainted || currentProduct.price || 0;
                 selectedTitle.classList.remove('hidden');
                 selectedTitle.innerText = 'Sem Pintura (Resina Cinza)';
                 animatePrice(price);
@@ -572,7 +572,7 @@ export function Produto() {
                 optPainted.classList.add('selected');
                 optUnpainted.classList.remove('selected');
 
-                const price = currentProduct.price_painted || 0;
+                var price = currentProduct.price_painted || 0;
                 selectedTitle.classList.remove('hidden');
                 selectedTitle.innerText = 'Com Pintura Artística Feita à Mão';
                 animatePrice(price);
@@ -581,7 +581,7 @@ export function Produto() {
         }
 
         function animatePrice(newPrice) {
-            const displayPrice = document.getElementById('display-price');
+            var displayPrice = document.getElementById('display-price');
             displayPrice.classList.add('text-amber-600', 'scale-105');
             displayPrice.innerText = `R$ ${formatPrice(newPrice)}`;
             setTimeout(() => {
@@ -590,28 +590,28 @@ export function Produto() {
         }
 
         function updateWhatsAppButton(productName, optionLabel, priceValue) {
-            const btn = document.getElementById('btn-whatsapp-order');
+            var btn = document.getElementById('btn-whatsapp-order');
             
-            let message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${productName}\n`;
+            var message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${productName}\n`;
             if (optionLabel && optionLabel.trim() !== '') {
                 message += `*Opção:* ${optionLabel}\n`;
             }
             message += `*Preço:* R$ ${formatPrice(priceValue)}\n\nGostaria de saber mais informações e combinar o pagamento e envio!`;
             
-            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            var url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
             btn.href = url;
         }
 
         // Carregar Produtos Relacionados
         async function loadRelatedProducts(currentP) {
-            const grid = document.getElementById('related-grid');
+            var grid = document.getElementById('related-grid');
             try {
-                const typeParam = (currentP.type === 'arsenal' || currentP.type === 'escudo') ? 'arsenal' : 'miniatura';
-                const res = await fetch(`/api/products?type=${typeParam}&limit=4`);
+                var typeParam = (currentP.type === 'arsenal' || currentP.type === 'escudo') ? 'arsenal' : 'miniatura';
+                var res = await fetch(`/api/products?type=${typeParam}&limit=4`);
                 if (res.ok) {
-                    const data = await res.json();
+                    var data = await res.json();
                     if (data.products && data.products.length > 0) {
-                        const filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 4);
+                        var filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 4);
                         if (filtered.length > 0) {
                             grid.innerHTML = filtered.map(item => `
                                 <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
@@ -647,15 +647,15 @@ export function Produto() {
         }
 
         // Modal Lightbox da Imagem
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
-        const modalCaption = document.getElementById('modal-caption');
-        const btnZoom = document.getElementById('btn-zoom-image');
-        const btnClose = document.getElementById('btn-close-modal');
+        var modal = document.getElementById('image-modal');
+        var modalImg = document.getElementById('modal-image');
+        var modalCaption = document.getElementById('modal-caption');
+        var btnZoom = document.getElementById('btn-zoom-image');
+        var btnClose = document.getElementById('btn-close-modal');
 
         btnZoom.addEventListener('click', () => {
             if (!currentProduct) return;
-            const imgSrc = (productImages && productImages.length > 0) ? productImages[currentImageIndex] : (currentProduct.image_url || './assets/imagens/minis.png');
+            var imgSrc = (productImages && productImages.length > 0) ? productImages[currentImageIndex] : (currentProduct.image_url || './assets/imagens/minis.png');
             modalImg.src = imgSrc;
             modalCaption.innerText = productImages.length > 1 
                 ? `${currentProduct.name} (${currentImageIndex + 1} de ${productImages.length})` 
@@ -693,9 +693,7 @@ export function Produto() {
         document.addEventListener('DOMContentLoaded', loadProduct);
     
 
-    
-// Expose to window for inline React handlers
-(window as any).loadProduct = loadProduct;
+      (window as any).loadProduct = loadProduct;
 (window as any).getProductProfile = getProductProfile;
 (window as any).renderProductDetails = renderProductDetails;
 (window as any).applyFrameAspectRatio = applyFrameAspectRatio;
@@ -711,231 +709,232 @@ export function Produto() {
 (window as any).loadRelatedProducts = loadRelatedProducts;
 (window as any).copyLink = copyLink;
 
+    } catch(e) {
+      console.error("Error in legacy script for Produto:", e);
+    }
   }, []);
 
   return (
-    <div className="font-sans">
-      
-        <div className="container mx-auto px-4 max-w-6xl">
+    <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+        <div class="container mx-auto px-4 max-w-6xl">
             
-            {/*  Breadcrumbs  */}
-            <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-                <a href="/" className="hover:text-amber-600 transition-colors">Início</a>
-                <span className="text-zinc-300">/</span>
-                <a id="breadcrumb-category" href="miniaturas" className="hover:text-amber-600 transition-colors">Miniaturas</a>
-                <span className="text-zinc-300">/</span>
-                <span id="breadcrumb-name" className="text-zinc-900 font-extrabold truncate max-w-xs md:max-w-md">Carregando...</span>
+            <!-- Breadcrumbs -->
+            <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                <a href="/" class="hover:text-amber-600 transition-colors">Início</a>
+                <span class="text-zinc-300">/</span>
+                <a id="breadcrumb-category" href="miniaturas" class="hover:text-amber-600 transition-colors">Miniaturas</a>
+                <span class="text-zinc-300">/</span>
+                <span id="breadcrumb-name" class="text-zinc-900 font-extrabold truncate max-w-xs md:max-w-md">Carregando...</span>
             </nav>
 
-            {/*  Loading State  */}
-            <div id="product-loading" className="text-center py-24 text-zinc-500">
-                <i className="fa-solid fa-spinner fa-spin text-4xl text-amber-600 mb-4"></i>
-                <p className="text-sm font-bold uppercase tracking-widest text-zinc-700">Carregando Informações do Produto...</p>
+            <!-- Loading State -->
+            <div id="product-loading" class="text-center py-24 text-zinc-500">
+                <i class="fa-solid fa-spinner fa-spin text-4xl text-amber-600 mb-4"></i>
+                <p class="text-sm font-bold uppercase tracking-widest text-zinc-700">Carregando Informações do Produto...</p>
             </div>
 
-            {/*  Error State  */}
-            <div id="product-error" className="hidden text-center py-20 bg-zinc-50 border border-zinc-200 rounded-xl p-8 max-w-xl mx-auto">
-                <div className="text-5xl mb-4">🎲</div>
-                <h2 className="font-title text-3xl mb-2 text-zinc-900">Produto não encontrado</h2>
-                <p className="text-zinc-600 text-sm mb-6">O artefato ou miniatura que você procurava não foi localizado em nosso acervo.</p>
-                <div className="flex justify-center gap-4">
-                    <a href="miniaturas" className="bg-black hover:bg-zinc-800 text-white text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Miniaturas</a>
-                    <a href="arsenal" className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Arsenal</a>
+            <!-- Error State -->
+            <div id="product-error" class="hidden text-center py-20 bg-zinc-50 border border-zinc-200 rounded-xl p-8 max-w-xl mx-auto">
+                <div class="text-5xl mb-4">🎲</div>
+                <h2 class="font-title text-3xl mb-2 text-zinc-900">Produto não encontrado</h2>
+                <p class="text-zinc-600 text-sm mb-6">O artefato ou miniatura que você procurava não foi localizado em nosso acervo.</p>
+                <div class="flex justify-center gap-4">
+                    <a href="miniaturas" class="bg-black hover:bg-zinc-800 text-white text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Miniaturas</a>
+                    <a href="arsenal" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold uppercase py-3 px-6 rounded transition-all">Ver Arsenal</a>
                 </div>
             </div>
 
-            {/*  Product Details Container  */}
-            <div id="product-content" className="hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <!-- Product Details Container -->
+            <div id="product-content" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                     
-                    {/*  Coluna Esquerda: Slider de Imagens, Frame Adaptativo (4:5 / 5:4) & Badges  */}
-                    <div className="lg:col-span-6 flex flex-col gap-4">
-                        {/*  Frame Principal com Aspect Ratio Dinâmico (5:4 para fotos horizontais e 4:5 para verticais)  */}
-                        <div id="main-image-frame" className="relative w-full frame-ratio-5-4 bg-zinc-100 border border-zinc-200 rounded-2xl overflow-hidden shadow-md group flex items-center justify-center transition-all duration-300">
-                            {/*  Imagem Principal  */}
-                            <img id="product-image" src="" alt="Imagem do Produto" className="w-full h-full object-cover object-center group-hover:scale-105 transition-all duration-500 ease-out select-none" />
+                    <!-- Coluna Esquerda: Slider de Imagens, Frame Adaptativo (4:5 / 5:4) & Badges -->
+                    <div class="lg:col-span-6 flex flex-col gap-4">
+                        <!-- Frame Principal com Aspect Ratio Dinâmico (5:4 para fotos horizontais e 4:5 para verticais) -->
+                        <div id="main-image-frame" class="relative w-full frame-ratio-5-4 bg-zinc-100 border border-zinc-200 rounded-2xl overflow-hidden shadow-md group flex items-center justify-center transition-all duration-300">
+                            <!-- Imagem Principal -->
+                            <img id="product-image" src="" alt="Imagem do Produto" class="w-full h-full object-cover object-center group-hover:scale-105 transition-all duration-500 ease-out select-none">
                             
-                            {/*  Badges Flutuantes  */}
-                            <div className="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
-                                <span id="product-category-badge" className="bg-black/90 text-[#EBE3CB] text-xs font-black uppercase px-3 py-1.5 rounded-md shadow-md tracking-wider backdrop-blur-xs">
+                            <!-- Badges Flutuantes -->
+                            <div class="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
+                                <span id="product-category-badge" class="bg-black/90 text-[#EBE3CB] text-xs font-black uppercase px-3 py-1.5 rounded-md shadow-md tracking-wider backdrop-blur-xs">
                                     Categoria
                                 </span>
-                                <span id="product-tag-badge" className="bg-amber-600 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-md tracking-wider">
+                                <span id="product-tag-badge" class="bg-amber-600 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-md tracking-wider">
                                     Tag
                                 </span>
                             </div>
 
-                            {/*  Botões de Navegação do Slider (Anterior / Próximo)  */}
-                            <button id="slider-prev-btn" onClick={(event) => { window.event = event; new Function('prevSlide(event)')(); }} type="button" className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Foto anterior">
-                                <i className="fa-solid fa-chevron-left text-sm"></i>
+                            <!-- Botões de Navegação do Slider (Anterior / Próximo) -->
+                            <button id="slider-prev-btn" onclick="prevSlide(event)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Foto anterior">
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
                             </button>
-                            <button id="slider-next-btn" onClick={(event) => { window.event = event; new Function('nextSlide(event)')(); }} type="button" className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Próxima foto">
-                                <i className="fa-solid fa-chevron-right text-sm"></i>
+                            <button id="slider-next-btn" onclick="nextSlide(event)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-xs shadow-md hidden select-none" aria-label="Próxima foto">
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
                             </button>
 
-                            {/*  Indicador de Posição / Bolinhas Flutuantes  */}
-                            <div id="slider-dots" className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20 hidden bg-black/40 backdrop-blur-xs px-3 py-1.5 rounded-full">
-                                {/*  Preenchido via JS  */}
+                            <!-- Indicador de Posição / Bolinhas Flutuantes -->
+                            <div id="slider-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20 hidden bg-black/40 backdrop-blur-xs px-3 py-1.5 rounded-full">
+                                <!-- Preenchido via JS -->
                             </div>
 
-                            {/*  Botão de Zoom / Lightbox  */}
-                            <button id="btn-zoom-image" type="button" className="absolute bottom-4 right-4 bg-black/75 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center transition-all opacity-80 hover:opacity-100 shadow-md cursor-pointer z-20" title="Ver imagem ampliada">
-                                <i className="fa-solid fa-expand text-sm"></i>
+                            <!-- Botão de Zoom / Lightbox -->
+                            <button id="btn-zoom-image" type="button" class="absolute bottom-4 right-4 bg-black/75 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center transition-all opacity-80 hover:opacity-100 shadow-md cursor-pointer z-20" title="Ver imagem ampliada">
+                                <i class="fa-solid fa-expand text-sm"></i>
                             </button>
                         </div>
 
-                        {/*  Miniaturas / Thumbnails para navegação rápida  */}
-                        <div id="slider-thumbnails" className="flex items-center gap-2.5 overflow-x-auto pb-1 hidden scrollbar-hide">
-                            {/*  Miniaturas geradas via JS  */}
+                        <!-- Miniaturas / Thumbnails para navegação rápida -->
+                        <div id="slider-thumbnails" class="flex items-center gap-2.5 overflow-x-auto pb-1 hidden scrollbar-hide">
+                            <!-- Miniaturas geradas via JS -->
                         </div>
 
-                        {/*  Micro-badges de Destaque (Renderizados dinamicamente via JS)  */}
-                        <div id="product-micro-badges" className="grid grid-cols-3 gap-2 text-center"></div>
+                        <!-- Micro-badges de Destaque (Renderizados dinamicamente via JS) -->
+                        <div id="product-micro-badges" class="grid grid-cols-3 gap-2 text-center"></div>
                     </div>
 
-                    {/*  Coluna Direita: Informações, Opções & CTA WhatsApp  */}
-                    <div className="lg:col-span-6 flex flex-col justify-between">
+                    <!-- Coluna Direita: Informações, Opções & CTA WhatsApp -->
+                    <div class="lg:col-span-6 flex flex-col justify-between">
                         <div>
-                            {/*  Header do Produto  */}
-                            <div className="mb-4">
-                                <span id="product-type-label" className="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">
+                            <!-- Header do Produto -->
+                            <div class="mb-4">
+                                <span id="product-type-label" class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">
                                     Miniatura em Resina
                                 </span>
-                                <h1 id="product-title" className="text-3xl md:text-5xl font-title tracking-tight text-zinc-950 mb-3">
+                                <h1 id="product-title" class="text-3xl md:text-5xl font-title tracking-tight text-zinc-950 mb-3">
                                     Nome do Produto
                                 </h1>
                             </div>
 
-                            {/*  Descrição do Produto  */}
-                            <div className="border-y border-zinc-200 py-4 mb-6">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Descrição & Detalhes</h3>
-                                <p id="product-description" className="text-zinc-700 text-sm md:text-base leading-relaxed">
+                            <!-- Descrição do Produto -->
+                            <div class="border-y border-zinc-200 py-4 mb-6">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Descrição & Detalhes</h3>
+                                <p id="product-description" class="text-zinc-700 text-sm md:text-base leading-relaxed">
                                     Descrição completa da peça forjada artesanalmente para compor o seu cenário ou ficha de personagem.
                                 </p>
                             </div>
 
-                            {/*  Seletor de Opções (Com Pintura / Sem Pintura)  */}
-                            <div id="options-container" className="mb-6">
-                                <div className="flex justify-between items-center mb-3">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-1.5">
-                                        <i className="fa-solid fa-palette text-amber-600"></i> Escolha o Acabamento:
+                            <!-- Seletor de Opções (Com Pintura / Sem Pintura) -->
+                            <div id="options-container" class="mb-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-palette text-amber-600"></i> Escolha o Acabamento:
                                     </label>
-                                    <span className="text-[11px] text-zinc-500 font-medium">Selecione para ver o valor</span>
+                                    <span class="text-[11px] text-zinc-500 font-medium">Selecione para ver o valor</span>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" id="options-grid">
-                                    {/*  Opção 1: Sem Pintura  */}
-                                    <div id="opt-unpainted" onClick={(event) => { window.event = event; new Function('selectOption('unpainted')')(); }} className="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
-                                                    <div className="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="options-grid">
+                                    <!-- Opção 1: Sem Pintura -->
+                                    <div id="opt-unpainted" onclick="selectOption('unpainted')" class="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
+                                                    <div class="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
                                                 </div>
-                                                <span className="font-bold text-sm text-zinc-900">Sem Pintura</span>
+                                                <span class="font-bold text-sm text-zinc-900">Sem Pintura</span>
                                             </div>
-                                            <span id="badge-price-unpainted" className="font-black text-xs text-zinc-800">R$ --</span>
+                                            <span id="badge-price-unpainted" class="font-black text-xs text-zinc-800">R\$ --</span>
                                         </div>
-                                        <p className="text-[11px] text-zinc-500 pl-7 leading-normal">
+                                        <p class="text-[11px] text-zinc-500 pl-7 leading-normal">
                                             Modelo em Resina cinza de alta resolução, limpo e curado, pronto para você aplicar sua própria pintura.
                                         </p>
                                     </div>
 
-                                    {/*  Opção 2: Com Pintura Artística  */}
-                                    <div id="opt-painted" onClick={(event) => { window.event = event; new Function('selectOption('painted')')(); }} className="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
-                                                    <div className="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
+                                    <!-- Opção 2: Com Pintura Artística -->
+                                    <div id="opt-painted" onclick="selectOption('painted')" class="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-zinc-400 flex items-center justify-center transition-all">
+                                                    <div class="radio-dot w-2 h-2 rounded-full bg-white opacity-0 transition-all transform scale-50"></div>
                                                 </div>
-                                                <span className="font-bold text-sm text-amber-900 flex items-center gap-1">
-                                                    Com Pintura <i className="fa-solid fa-wand-magic-sparkles text-[10px] text-amber-600"></i>
+                                                <span class="font-bold text-sm text-amber-900 flex items-center gap-1">
+                                                    Com Pintura <i class="fa-solid fa-wand-magic-sparkles text-[10px] text-amber-600"></i>
                                                 </span>
                                             </div>
-                                            <span id="badge-price-painted" className="font-black text-xs text-amber-700">R$ --</span>
+                                            <span id="badge-price-painted" class="font-black text-xs text-amber-700">R\$ --</span>
                                         </div>
-                                        <p className="text-[11px] text-zinc-500 pl-7 leading-normal">
+                                        <p class="text-[11px] text-zinc-500 pl-7 leading-normal">
                                             Pintura manual profissional com degradê, sombras, iluminação e acabamento em verniz protetor.
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/*  Preço em Destaque  */}
-                            <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                            <!-- Preço em Destaque -->
+                            <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-5 mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                                 <div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-zinc-900 block">
+                                    <span class="text-xs font-black uppercase tracking-widest text-zinc-900 block">
                                         Preço:
                                     </span>
-                                    <span id="selected-option-title" className="text-xs text-zinc-600 font-medium hidden">
+                                    <span id="selected-option-title" class="text-xs text-zinc-600 font-medium hidden">
                                         Sem Pintura (Resina Cinza)
                                     </span>
                                 </div>
-                                <div className="text-left sm:text-right">
-                                    <div id="display-price" className="text-3xl md:text-4xl font-black text-zinc-950 tracking-tight transition-all">
-                                        R$ 0,00
+                                <div class="text-left sm:text-right">
+                                    <div id="display-price" class="text-3xl md:text-4xl font-black text-zinc-950 tracking-tight transition-all">
+                                        R\$ 0,00
                                     </div>
-                                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Produção artesanal sob demanda</span>
+                                    <span class="text-[10px] text-zinc-500 uppercase font-semibold">Produção artesanal sob demanda</span>
                                 </div>
                             </div>
 
-                            {/*  Botão WhatsApp CTA  */}
-                            <div className="flex flex-col gap-3">
-                                <a id="btn-whatsapp-order" href="#" target="_blank" className="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] hover:text-white font-bold uppercase text-sm py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                                    <i className="fa-brands fa-whatsapp text-xl text-green-400"></i>
+                            <!-- Botão WhatsApp CTA -->
+                            <div class="flex flex-col gap-3">
+                                <a id="btn-whatsapp-order" href="#" target="_blank" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] hover:text-white font-bold uppercase text-sm py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                    <i class="fa-brands fa-whatsapp text-xl text-green-400"></i>
                                     <span>Encomendar via WhatsApp</span>
                                 </a>
                                 
-                                <div className="flex items-center justify-center gap-2 text-center text-xs text-zinc-500">
-                                    <i className="fa-solid fa-lock text-[10px] text-zinc-400"></i>
+                                <div class="flex items-center justify-center gap-2 text-center text-xs text-zinc-500">
+                                    <i class="fa-solid fa-lock text-[10px] text-zinc-400"></i>
                                     <span>Você será redirecionado para conversar diretamente conosco no WhatsApp.</span>
                                 </div>
                             </div>
 
                         </div>
 
-                        {/*  Botão Voltar  */}
-                        <div className="mt-8 pt-6 border-t border-zinc-100 flex items-center justify-between">
-                            <a id="btn-back-catalog" href="miniaturas" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-600 hover:text-black transition-colors">
-                                <i className="fa-solid fa-arrow-left"></i> Voltar para o Catálogo
+                        <!-- Botão Voltar -->
+                        <div class="mt-8 pt-6 border-t border-zinc-100 flex items-center justify-between">
+                            <a id="btn-back-catalog" href="miniaturas" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-600 hover:text-black transition-colors">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar para o Catálogo
                             </a>
-                            <button onClick={(event) => { window.event = event; new Function('navigator.share ? navigator.share({title: document.title, url: window.location.href}) : copyLink()')(); }} className="text-xs font-bold text-zinc-500 hover:text-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
-                                <i className="fa-solid fa-share-nodes"></i> Compartilhar
+                            <button onclick="navigator.share ? navigator.share({title: document.title, url: window.location.href}) : copyLink()" class="text-xs font-bold text-zinc-500 hover:text-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-share-nodes"></i> Compartilhar
                             </button>
                         </div>
 
                     </div>
                 </div>
 
-                {/*  Detalhes Adicionais & Especificações (Renderizados dinamicamente via JS)  */}
-                <div className="mt-16 pt-12 border-t border-zinc-200">
-                    <h3 id="specs-main-title" className="font-title text-3xl mb-8 text-zinc-950 text-center">Garantias & Especificações Técnicas</h3>
+                <!-- Detalhes Adicionais & Especificações (Renderizados dinamicamente via JS) -->
+                <div class="mt-16 pt-12 border-t border-zinc-200">
+                    <h3 id="specs-main-title" class="font-title text-3xl mb-8 text-zinc-950 text-center">Garantias & Especificações Técnicas</h3>
                     
-                    <div id="specs-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/*  Inserido dinamicamente via JS de acordo com a categoria do produto  */}
+                    <div id="specs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Inserido dinamicamente via JS de acordo com a categoria do produto -->
                     </div>
                 </div>
 
-                {/*  Seção Outros Produtos Recomendados  */}
-                <div className="mt-20 pt-12 border-t border-zinc-200">
-                    <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
+                <!-- Seção Outros Produtos Recomendados -->
+                <div class="mt-20 pt-12 border-t border-zinc-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-baseline mb-8">
                         <div>
-                            <span className="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Continue Explorando</span>
-                            <h3 className="font-title text-3xl text-zinc-950">Mais Peças do Nosso Acervo</h3>
+                            <span class="text-amber-700 text-xs font-black tracking-widest uppercase mb-1 block">Continue Explorando</span>
+                            <h3 class="font-title text-3xl text-zinc-950">Mais Peças do Nosso Acervo</h3>
                         </div>
-                        <a id="btn-view-all" href="miniaturas" className="text-xs font-bold uppercase tracking-wider text-amber-700 hover:text-black transition-colors mt-2 sm:mt-0">
-                            Ver Todos os Modelos <i className="fa-solid fa-arrow-right ml-1"></i>
+                        <a id="btn-view-all" href="miniaturas" class="text-xs font-bold uppercase tracking-wider text-amber-700 hover:text-black transition-colors mt-2 sm:mt-0">
+                            Ver Todos os Modelos <i class="fa-solid fa-arrow-right ml-1"></i>
                         </a>
                     </div>
 
-                    <div id="related-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        {/*  Itens recomendados via JS  */}
+                    <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        <!-- Itens recomendados via JS -->
                     </div>
                 </div>
 
             </div>
 
         </div>
-    
-    </div>
+    ` }} />
   );
 }
