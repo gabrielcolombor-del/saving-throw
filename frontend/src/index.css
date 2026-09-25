@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Alsina", sans-serif;
+  --font-title: "Shindler", serif;
+  --font-louis: "Louis George Cafe", sans-serif;
+  --color-parchment: #EBE3CB;
+  --color-parchment-dark: #4A4435;
+  --color-zinc-850: #27272a; /* Custom intermediate gray often used in the old site */
+}
+
+@layer base {
+  @font-face {
+    font-family: 'Shindler';
+    src: url('/assets/ShindlerFont.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Alsina';
+    src: url('/assets/Alsina.TTF') format('truetype');
+  }
+  @font-face {
+    font-family: 'Louis George Cafe';
+    src: url('/assets/LouisGeorgeCafe.ttf') format('truetype');
+  }
+
+  body {
+    font-family: "Alsina", sans-serif;
+    line-height: 1.8;
+  }
+
+  h1, h2, h3 {
+    font-family: "Shindler", serif;
+    font-weight: normal;
+  }
+}
+
+/* Base resets for Samsung/Mobile that were in the original site */
+:root, html, body, header, main, footer, section, div, article, nav, aside {
+  color-scheme: light !important;
+  supported-color-schemes: light !important;
+  forced-color-adjust: none !important;
+  -webkit-forced-color-adjust: none !important;
+}
+
+.bg-parchment {
+  background-color: var(--color-parchment) !important;
+  background-image: linear-gradient(0deg, var(--color-parchment), var(--color-parchment)) !important;
+  color: #000000 !important;
+}

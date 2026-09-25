@@ -4,6 +4,7 @@
   "description": "API e Banco de Dados para Habilidades e Feitiços do Saving Throw",
   "main": "api/spells.js",
   "scripts": {
+    "build": "cd frontend && npm install && npm run build",
     "seed": "node scripts/seed-db.js",
     "parse-pdf": "node scripts/parse-phb.js"
   },

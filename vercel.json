@@ -1,9 +1,14 @@
 {
   "cleanUrls": true,
+  "outputDirectory": "frontend/dist",
   "crons": [
     {
       "path": "/api/keepalive",
       "schedule": "0 0 */3 * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
