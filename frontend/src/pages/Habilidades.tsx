@@ -18,6 +18,8 @@ export function Habilidades() {
         var sourceBadge = document.getElementById('source-badge');
 
         let allLoadedSpells = [];
+        let magiasPreparadas = [];
+        let modificadorInt = 3;
 
         // Nomes dos ciclos formatados
         const cycleNames = {
@@ -166,10 +168,16 @@ export function Habilidades() {
         // HTML Card Individual de Magia
         function renderSpellCard(spell) {
             const hasHighLevel = spell.high_level && spell.high_level.trim().length > 0;
+            const isPrepared = magiasPreparadas.some(m => m.id === spell.id);
+            const prepareBtnClass = isPrepared 
+                ? "text-[10px] uppercase font-black tracking-widest px-3 py-1.5 rounded bg-amber-600/20 border border-amber-600 text-amber-500 hover:bg-amber-600/30 transition-all"
+                : "text-[10px] uppercase font-black tracking-widest px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-400 hover:text-amber-500 hover:border-amber-600/50 transition-all";
+            const prepareBtnText = isPrepared ? "Despreparar" : "Preparar";
+
             return `
                 <div class="bg-zinc-950/80 border border-zinc-850 rounded-lg overflow-hidden shadow transition-all duration-300 hover:border-amber-600/30">
                     <!-- Cabeçalho do Card (Clicável) -->
-                    <button onclick="toggleSpellCollapse(${spell.id})" class="w-full text-left p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer focus:outline-none hover:bg-zinc-900/30 transition-colors">
+                    <div onclick="toggleSpellCollapse(${spell.id})" class="w-full text-left p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer focus:outline-none hover:bg-zinc-900/30 transition-colors">
                         <div>
                             <div class="flex items-center gap-3 flex-wrap">
                                 <h3 class="text-xl font-bold uppercase tracking-tight text-white">${spell.name}</h3>
@@ -184,12 +192,15 @@ export function Habilidades() {
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-xs text-zinc-500 font-bold uppercase tracking-widest md:block hidden">Ver detalhes</span>
+                            <button onclick="event.stopPropagation(); togglePrepareSpell(${spell.id})" class="${prepareBtnClass}">
+                                <i class="fa-solid fa-book-journal-whills mr-1"></i> ${prepareBtnText}
+                            </button>
+                            <span class="text-xs text-zinc-500 font-bold uppercase tracking-widest md:block hidden ml-2">Ver detalhes</span>
                             <div id="arrow-icon-${spell.id}" class="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-850 flex items-center justify-center text-zinc-400 transition-transform duration-300">
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
                         </div>
-                    </button>
+                    </div>
 
                     <!-- Detalhes do Grimório (Sanfona/Acordeão) -->
                     <div id="spell-details-${spell.id}" class="hidden border-t border-zinc-900 bg-zinc-900/15 p-6 transition-all">
@@ -303,11 +314,15 @@ export function Habilidades() {
 
         function updateSpellSlotsVisibility() {
             const currentClass = classSelect.value;
+            const preparedSection = document.getElementById('prepared-spells-section');
             if (fullCasters.includes(currentClass)) {
                 spellSlotsManager.classList.remove('hidden');
+                if (preparedSection) preparedSection.classList.remove('hidden');
                 renderSpellSlots();
+                renderPreparedSpells();
             } else {
                 spellSlotsManager.classList.add('hidden');
+                if (preparedSection) preparedSection.classList.add('hidden');
             }
         }
 
@@ -355,6 +370,75 @@ export function Habilidades() {
             slotsContainer.innerHTML = html;
         }
 
+        function togglePrepareSpell(spellId) {
+            const spell = allLoadedSpells.find(s => s.id === spellId);
+            if (!spell) return;
+            
+            const index = magiasPreparadas.findIndex(m => m.id === spellId);
+            if (index > -1) {
+                magiasPreparadas.splice(index, 1);
+            } else {
+                const limit = characterLevel + modificadorInt;
+                if (magiasPreparadas.length >= limit) {
+                    alert(`Limite de magias preparadas atingido (${limit}). Aumente o modificador de inteligência ou o nível.`);
+                    return;
+                }
+                magiasPreparadas.push(spell);
+            }
+            
+            renderSpellsList();
+            renderPreparedSpells();
+        }
+
+        function renderPreparedSpells() {
+            const limit = characterLevel + modificadorInt;
+            const container = document.getElementById('prepared-spells-container');
+            const countSpan = document.getElementById('prepared-count-span');
+            
+            if (countSpan) countSpan.innerText = `Magias Preparadas: ${magiasPreparadas.length} / ${limit}`;
+            
+            if (!container) return;
+            
+            if (magiasPreparadas.length === 0) {
+                container.innerHTML = `<div class="text-zinc-500 text-sm italic text-center p-4">Nenhuma magia preparada no momento.</div>`;
+                return;
+            }
+            
+            const sorted = [...magiasPreparadas].sort((a, b) => {
+                if (a.level !== b.level) return a.level - b.level;
+                return a.name.localeCompare(b.name, 'pt-BR');
+            });
+            
+            let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            sorted.forEach(spell => {
+                const cycleName = spell.level === 0 ? 'Truque' : `${spell.level}º Ciclo`;
+                html += `
+                    <div class="bg-zinc-950 border border-amber-600/30 p-3 rounded flex justify-between items-center group shadow-sm">
+                        <div>
+                            <div class="text-amber-500 font-bold text-sm truncate max-w-[150px] sm:max-w-[200px]" title="${spell.name}">${spell.name}</div>
+                            <div class="text-zinc-500 text-[10px] uppercase tracking-wider">${cycleName}</div>
+                        </div>
+                        <button onclick="togglePrepareSpell(${spell.id})" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-red-500 hover:border-red-500/50 transition-colors" title="Remover Magia">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        var modIntInput = document.getElementById('mod-int-input');
+        if (modIntInput) {
+            modIntInput.addEventListener('change', (e) => {
+                let val = parseInt(e.target.value);
+                if (isNaN(val)) val = 0;
+                e.target.value = val;
+                modificadorInt = val;
+                renderPreparedSpells();
+            });
+        }
+
         characterLevelInput.addEventListener('change', (e) => {
             let val = parseInt(e.target.value);
             if (isNaN(val) || val < 1) val = 1;
@@ -362,6 +446,7 @@ export function Habilidades() {
             e.target.value = val;
             characterLevel = val;
             renderSpellSlots();
+            renderPreparedSpells();
         });
 
         longRestBtn.addEventListener('click', () => {
@@ -405,6 +490,8 @@ export function Habilidades() {
 (window as any).showErrorState = showErrorState;
 (window as any).updateSpellSlotsVisibility = updateSpellSlotsVisibility;
 (window as any).renderSpellSlots = renderSpellSlots;
+(window as any).togglePrepareSpell = togglePrepareSpell;
+(window as any).renderPreparedSpells = renderPreparedSpells;
 
   }, []);
 
@@ -506,7 +593,11 @@ export function Habilidades() {
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <label htmlFor="character-level" className="text-xs font-bold uppercase tracking-wider text-zinc-400">Nível:</label>
-                                <input type="number" id="character-level" min="1" max="20" value="1" className="w-16 bg-zinc-950 border border-zinc-800 text-white rounded px-2 py-1.5 outline-none focus:border-amber-600 transition-all text-sm font-medium text-center" />
+                                <input type="number" id="character-level" min="1" max="20" defaultValue="1" className="w-16 bg-zinc-950 border border-zinc-800 text-white rounded px-2 py-1.5 outline-none focus:border-amber-600 transition-all text-sm font-medium text-center" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <label htmlFor="mod-int-input" className="text-xs font-bold uppercase tracking-wider text-zinc-400">Mod (Int):</label>
+                                <input type="number" id="mod-int-input" defaultValue="3" className="w-16 bg-zinc-950 border border-zinc-800 text-white rounded px-2 py-1.5 outline-none focus:border-amber-600 transition-all text-sm font-medium text-center" />
                             </div>
                             <button id="long-rest-btn" className="bg-black hover:bg-zinc-800 text-amber-500 border border-zinc-800 hover:border-amber-600/50 transition-all px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2">
                                 <i className="fa-solid fa-bed"></i> Descanso Longo
@@ -516,6 +607,22 @@ export function Habilidades() {
                     
                     <div id="slots-container" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {/*  Gerado dinamicamente via JS  */}
+                    </div>
+                </div>
+
+                {/*  Magias Preparadas  */}
+                <div id="prepared-spells-section" className="hidden bg-zinc-900/30 border border-zinc-850 p-6 rounded-xl mb-8 shadow-inner transition-all duration-300">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-zinc-800/50">
+                        <div className="flex items-center gap-3">
+                            <i className="fa-solid fa-book-open text-amber-600 text-lg"></i>
+                            <h2 className="text-base font-title text-amber-500 uppercase tracking-wide">Magias Preparadas</h2>
+                        </div>
+                        <span id="prepared-count-span" className="text-xs px-2.5 py-1 rounded-full bg-zinc-950 border border-zinc-800 font-bold text-amber-500">
+                            Magias Preparadas: 0 / 4
+                        </span>
+                    </div>
+                    <div id="prepared-spells-container">
+                        {/* Renderizado por JS */}
                     </div>
                 </div>
 
