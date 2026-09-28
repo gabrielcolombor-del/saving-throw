@@ -9,6 +9,7 @@ import { Miniaturas } from './pages/Miniaturas';
 import { Arsenal } from './pages/Arsenal';
 import { Produto } from './pages/Produto';
 import { Admin } from './pages/Admin';
+import { Modelador } from './pages/Modelador';
 import { InstrucoesMesa } from './pages/InstrucoesMesa';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="produto" element={<Produto />} />
           <Route path="admin" element={<Admin />} />
           <Route path="instrucoes-mesa" element={<InstrucoesMesa />} />
+          <Route path="modelador" element={<Modelador />} />
           <Route path="*" element={<div className="flex flex-col items-center justify-center min-h-[500px] text-center"><h1 className="text-4xl font-title text-amber-500 mb-4">Página em Construção</h1><p className="text-zinc-500">Esta página não foi encontrada.</p></div>} />
         </Route>
       </Routes>
