@@ -36,12 +36,8 @@ export function Sistema() {
             document.getElementById('video-title').innerText = videos[currentIndex].title;
         }
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
+        function initYouTubePlayer() {
+            if (!document.getElementById('youtube-player')) return;
             player = new YT.Player('youtube-player', {
                 videoId: videos[currentIndex].id,
                 playerVars: {
@@ -104,7 +100,11 @@ export function Sistema() {
     
 
       (window as any).renderThumbnails = renderThumbnails;
-(window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        if (window.YT && window.YT.Player) {
+            initYouTubePlayer();
+        } else {
+            (window as any).onYouTubeIframeAPIReady = initYouTubePlayer;
+        }
 (window as any).onPlayerStateChange = onPlayerStateChange;
 (window as any).playVideo = playVideo;
 (window as any).nextVideo = nextVideo;

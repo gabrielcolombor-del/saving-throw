@@ -1180,7 +1180,7 @@ export function Sons() {
         var activeTracks = {};
         var isYTApiReady = false;
 
-        function onYouTubeIframeAPIReady() {
+        function initYouTubePlayerSons() {
             isYTApiReady = true;
         }
 
@@ -2367,7 +2367,11 @@ export function Sons() {
 (window as any).getFilteredSFX = getFilteredSFX;
 (window as any).renderSFXCatalog = renderSFXCatalog;
 (window as any).renderPagination = renderPagination;
-(window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        if (window.YT && window.YT.Player) {
+            initYouTubePlayerSons();
+        } else {
+            (window as any).onYouTubeIframeAPIReady = initYouTubePlayerSons;
+        }
 (window as any).renderActiveTracksHeaderPanel = renderActiveTracksHeaderPanel;
 (window as any).renderAmbients = renderAmbients;
 (window as any).startAmbientTrack = startAmbientTrack;
