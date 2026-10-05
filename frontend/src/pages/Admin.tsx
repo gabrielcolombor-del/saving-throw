@@ -295,7 +295,15 @@ export function Admin() {
             document.getElementById('edit-prod-type').value = p.type || 'miniatura';
             document.getElementById('edit-prod-name').value = p.name || '';
             document.getElementById('edit-prod-desc').value = p.description || '';
-            document.getElementById('edit-prod-preview').src = p.image_url || '';
+            currentEditImages = [];
+            if (p.image_url) {
+                if (p.image_url.startsWith('[')) {
+                    try { currentEditImages = JSON.parse(p.image_url); } catch(e) {}
+                } else {
+                    currentEditImages = [p.image_url];
+                }
+            }
+            renderEditImagesPreview();
             document.getElementById('edit-prod-image').value = '';
 
             var isMini = (p.type === 'miniatura' || p.price_unpainted != null);
