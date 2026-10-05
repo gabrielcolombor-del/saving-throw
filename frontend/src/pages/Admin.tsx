@@ -11,6 +11,8 @@ export function Admin() {
         var costChartInstance = null;
         var cachedFinanceData = [];
         var cachedProductsList = [];
+        var financeCurrentPage = 1;
+        var financeItemsPerPage = 15;
 
         if (token) {
             showDashboard();

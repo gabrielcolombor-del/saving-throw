@@ -55,9 +55,10 @@ export default async function handler(req, res) {
 
             const { rows: financeiro } = await pool.query(querySql, params);
 
-            // Calcular KPIs
             let revenueTotal = 0;
             let expensesTotal = 0;
+            let salesCount = 0;
+            let costsCount = 0;
             const costCategories = {};
             const productRevenue = {};
 
@@ -67,11 +68,13 @@ export default async function handler(req, res) {
                 const val = parseFloat(reg.valor) || 0;
                 if (reg.tipo === 'Venda') {
                     revenueTotal += val;
+                    salesCount++;
                     if (reg.produto) {
                         productRevenue[reg.produto] = (productRevenue[reg.produto] || 0) + val;
                     }
                 } else if (reg.tipo === 'Custo') {
                     expensesTotal += val;
+                    costsCount++;
                     const cat = reg.categoria || 'Outros';
                     costCategories[cat] = (costCategories[cat] || 0) + val;
                 }
@@ -84,7 +87,9 @@ export default async function handler(req, res) {
                 kpis: {
                     revenueTotal,
                     expensesTotal,
-                    netProfit
+                    netProfit,
+                    salesCount,
+                    costsCount
                 },
                 charts: {
                     costCategories,
