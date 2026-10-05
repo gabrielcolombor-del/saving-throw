@@ -1143,10 +1143,10 @@ export function Admin() {
                 <input type="hidden" id="edit-prod-id">
                 <input type="hidden" id="edit-prod-type">
 
-                <div class="flex gap-3 items-center p-3 bg-zinc-50 rounded-xl border border-zinc-200">
-                    <img id="edit-prod-preview" src="" class="w-14 h-14 object-cover rounded-lg border border-zinc-300 bg-white">
+                <div class="flex flex-col gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                    <div id="edit-prod-preview-container" class="flex flex-wrap gap-2"></div>
                     <div class="flex-1">
-                        <label class="block text-[11px] font-bold uppercase text-zinc-600 mb-1">Trocar Foto (Opcional)</label>
+                        <label class="block text-[11px] font-bold uppercase text-zinc-600 mb-1">Adicionar Novas Fotos (Opcional)</label>
                         <input type="file" id="edit-prod-image" accept="image/*" multiple class="w-full text-xs text-zinc-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-black file:text-[#EBE3CB] cursor-pointer">
                     </div>
                 </div>
