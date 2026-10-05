@@ -62,6 +62,13 @@ export function Arsenal() {
         var currentPage = 1;
         var currentSearch = '';
 
+        fetch('/api/products?id=escudo-mestre').then(res => res.json()).then(data => {
+            if(data && data.product) {
+                var el = document.getElementById('escudo-showcase-price');
+                if(el) el.innerText = 'R$ ' + Number(data.product.price).toFixed(2).replace('.',',');
+            }
+        }).catch(e => console.error(e));
+
         document.getElementById('search-input').addEventListener('input', (e) => {
             currentSearch = e.target.value;
             currentPage = 1;
@@ -91,7 +98,9 @@ export function Arsenal() {
                 loading.classList.add('hidden');
                 
                 if (data.products && data.products.length > 0) {
-                    grid.innerHTML = data.products.map(p => `
+                    var filteredProducts = data.products.filter(p => p.id !== 'escudo-mestre');
+                    if (filteredProducts.length === 0 && data.products.length > 0) { empty.classList.remove('hidden'); return; }
+                    grid.innerHTML = filteredProducts.map(p => `
                         <div onclick="window.location.href='produto?id=${p.id}'" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                             <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100" style="aspect-ratio: 4/5;">
                                 <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -209,7 +218,7 @@ export function Arsenal() {
                                 <p class="text-zinc-600 text-sm mb-6 leading-relaxed">O centro de comando definitivo para o mestre. Estrutura de madeira entalhada em corte a laser de altíssima precisão, com tiras de elástico na parte de trás para prender suas folhas de consulta rápida.</p>
                             </div>
                             <div>
-                                <span class="font-black text-xl block mb-3">R\$ 299,90</span>
+                                <span id="escudo-showcase-price" class="font-black text-xl block mb-3">R\$ 179,90</span>
                                 <a href="produto?id=escudo-mestre" class="w-full bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all py-3 rounded text-center block text-xs font-bold uppercase tracking-wider shadow-sm">Saiba Mais</a>
                             </div>
                         </div>
