@@ -626,14 +626,14 @@ export function Admin() {
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Usuário</label>
                     <div class="relative">
-                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="Digite seu usuário..." required>
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="Digite seu usuário..." required>
                         <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-amber-500"></i>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Senha</label>
                     <div class="relative">
-                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="••••••••" required>
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="••••••••" required>
                         <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-amber-500"></i>
                     </div>
                 </div>
@@ -781,12 +781,12 @@ export function Admin() {
                                 
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça / Item</label>
-                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro ou Escudo do Mestre">
+                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro ou Escudo do Mestre">
                                 </div>
 
                                 <div id="field-category">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
-                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
+                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
                                         <option value="npcs">NPCs</option>
                                         <option value="monstros">Monstros</option>
                                         <option value="cenario">Cenário</option>
@@ -795,7 +795,7 @@ export function Admin() {
 
                                 <div id="field-category-arsenal" class="hidden">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Arsenal)</label>
-                                    <select id="prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                                    <select id="prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
                                         <option value="escudo">Escudo do Mestre</option>
                                         <option value="acessorios">Acessórios & Dados</option>
                                         <option value="terreno">Terreno & Cenários</option>
@@ -806,27 +806,27 @@ export function Admin() {
                                 <div id="fields-prices-mini" class="space-y-3">
                                     <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R\$)</label>
-                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="89.90">
+                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="89.90">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R\$)</label>
-                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="139.90">
+                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="139.90">
                                     </div>
                                 </div>
 
                                 <div id="field-price-arsenal" class="hidden">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
-                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto</label>
-                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
+                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Foto do Seu Computador</label>
-                                    <input type="file" id="prod-image" accept="image/*" class="w-full p-2 bg-zinc-50 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
+                                    <input type="file" id="prod-image" accept="image/*" class="w-full p-2 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
                                 </div>
 
                                 <!-- BOTÃO PUBLICAR NO SITE (SEMPRE VISÍVEL) -->
@@ -875,15 +875,15 @@ export function Admin() {
                     <form id="form-gasto-tab" class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Descrição do Gasto</label>
-                            <input type="text" id="gasto-desc-tab" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Garrafa de Resina 1L" required>
+                            <input type="text" id="gasto-desc-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Garrafa de Resina 1L" required>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor (R\$)</label>
-                            <input type="number" step="0.01" id="gasto-valor-tab" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: 150.00" required>
+                            <input type="number" step="0.01" id="gasto-valor-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: 150.00" required>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Categoria</label>
-                            <select id="gasto-cat-tab" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                            <select id="gasto-cat-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
                                 <option value="Insumo">Insumo</option>
                                 <option value="Equipamento">Equipamento</option>
                                 <option value="Fixo">Fixo</option>
@@ -911,7 +911,7 @@ export function Admin() {
                                 <p class="text-xs text-zinc-500">Histórico editável de entradas e saídas no Supabase</p>
                             </div>
                         </div>
-                        <select id="fin-filter-type" onchange="loadFinance()" class="p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-bold focus:outline-none focus:border-black cursor-pointer">
+                        <select id="fin-filter-type" onchange="loadFinance()" class="p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-bold focus:outline-none focus:border-black cursor-pointer">
                             <option value="all">Ver Todos os Lançamentos</option>
                             <option value="Venda">Apenas Entradas (Vendas)</option>
                             <option value="Custo">Apenas Saídas (Custos)</option>
@@ -953,19 +953,19 @@ export function Admin() {
                     <form id="form-cliente" class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome Completo *</label>
-                            <input type="text" id="cli-nome" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Ex: Carlos Silva">
+                            <input type="text" id="cli-nome" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Ex: Carlos Silva">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Telefone / WhatsApp *</label>
-                            <input type="text" id="cli-tel" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="(27) 99999-9999">
+                            <input type="text" id="cli-tel" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="(27) 99999-9999">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Endereço Completo *</label>
-                            <input type="text" id="cli-end" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Rua, número, bairro">
+                            <input type="text" id="cli-end" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Rua, número, bairro">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">E-mail</label>
-                            <input type="email" id="cli-email" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="cliente@email.com">
+                            <input type="email" id="cli-email" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="cliente@email.com">
                         </div>
                         <button type="submit" class="w-full bg-black text-[#EBE3CB] font-bold uppercase py-3 rounded-lg text-xs hover:bg-zinc-800 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-address-book text-amber-500"></i> Cadastrar Cliente
@@ -1023,11 +1023,11 @@ export function Admin() {
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome do Cliente *</label>
-                    <input type="text" id="modal-sale-client" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos Santos" required>
+                    <input type="text" id="modal-sale-client" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos Santos" required>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Final da Venda (R\$) *</label>
-                    <input type="number" step="0.01" id="modal-sale-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    <input type="number" step="0.01" id="modal-sale-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeSaleModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
@@ -1057,11 +1057,11 @@ export function Admin() {
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Data / Hora</label>
-                        <input type="text" id="edit-fin-data" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                        <input type="text" id="edit-fin-data" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Tipo de Registro</label>
-                        <select id="edit-fin-tipo" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                        <select id="edit-fin-tipo" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
                             <option value="Venda">Venda (Entrada)</option>
                             <option value="Custo">Custo (Saída)</option>
                         </select>
@@ -1070,28 +1070,28 @@ export function Admin() {
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição</label>
-                    <input type="text" id="edit-fin-desc" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    <input type="text" id="edit-fin-desc" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria</label>
-                        <input type="text" id="edit-fin-cat" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                        <input type="text" id="edit-fin-cat" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor (R\$)</label>
-                        <input type="number" step="0.01" id="edit-fin-valor" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                        <input type="number" step="0.01" id="edit-fin-valor" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Cliente (Opcional)</label>
-                        <input type="text" id="edit-fin-cliente" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos">
+                        <input type="text" id="edit-fin-cliente" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Produto (Opcional)</label>
-                        <input type="text" id="edit-fin-produto" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Dragão">
+                        <input type="text" id="edit-fin-produto" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Dragão">
                     </div>
                 </div>
 
@@ -1131,12 +1131,12 @@ export function Admin() {
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça / Item *</label>
-                    <input type="text" id="edit-prod-name" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    <input type="text" id="edit-prod-name" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
                 </div>
 
                 <div id="edit-field-category-mini">
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
-                    <select id="edit-prod-category-mini" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                    <select id="edit-prod-category-mini" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
                         <option value="npcs">NPCs</option>
                         <option value="monstros">Monstros</option>
                         <option value="cenario">Cenário</option>
@@ -1145,7 +1145,7 @@ export function Admin() {
 
                 <div id="edit-field-category-arsenal" class="hidden">
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Arsenal)</label>
-                    <select id="edit-prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                    <select id="edit-prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
                         <option value="escudo">Escudo do Mestre</option>
                         <option value="acessorios">Acessórios & Dados</option>
                         <option value="terreno">Terreno & Cenários</option>
@@ -1156,22 +1156,22 @@ export function Admin() {
                 <div id="edit-fields-prices-mini" class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R\$)</label>
-                        <input type="number" step="0.01" id="edit-prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="49.90">
+                        <input type="number" step="0.01" id="edit-prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="49.90">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R\$)</label>
-                        <input type="number" step="0.01" id="edit-prod-price-painted" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="89.90">
+                        <input type="number" step="0.01" id="edit-prod-price-painted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="89.90">
                     </div>
                 </div>
 
                 <div id="edit-field-price-arsenal" class="hidden">
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
-                    <input type="number" step="0.01" id="edit-prod-price" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                    <input type="number" step="0.01" id="edit-prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto *</label>
-                    <textarea id="edit-prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required></textarea>
+                    <textarea id="edit-prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required></textarea>
                 </div>
 
                 <div class="flex gap-2 pt-2">
