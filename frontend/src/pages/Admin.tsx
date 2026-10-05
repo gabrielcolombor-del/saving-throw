@@ -10,6 +10,7 @@ export function Admin() {
         var currentTab = 'miniatura';
         var costChartInstance = null;
         var cachedFinanceData = [];
+        var currentEditImages = [];
         var cachedProductsList = [];
         var financeCurrentPage = 1;
         var financeItemsPerPage = 15;
@@ -320,6 +321,24 @@ export function Admin() {
             document.getElementById('modal-edit-prod').classList.remove('hidden');
         }
 
+        function renderEditImagesPreview() {
+            var container = document.getElementById('edit-prod-preview-container');
+            if (!container) return;
+            container.innerHTML = currentEditImages.map((img, i) => `
+                <div class="relative group">
+                    <img src="${img}" class="w-16 h-16 object-cover rounded-lg border border-zinc-300 bg-white">
+                    <button type="button" onclick="removeEditImage(${i})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] cursor-pointer hover:bg-red-600 shadow-md transform scale-0 group-hover:scale-100 transition-transform">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeEditImage(index) {
+            currentEditImages.splice(index, 1);
+            renderEditImagesPreview();
+        }
+
         function closeEditProductModal() {
             document.getElementById('modal-edit-prod').classList.add('hidden');
         }
@@ -603,6 +622,7 @@ export function Admin() {
 (window as any).switchTab = switchTab;
 (window as any).loadProducts = loadProducts;
 (window as any).openEditProductModal = openEditProductModal;
+(window as any).removeEditImage = removeEditImage;
 (window as any).closeEditProductModal = closeEditProductModal;
 (window as any).deleteProduct = deleteProduct;
 (window as any).loadFinance = loadFinance;
@@ -828,7 +848,7 @@ export function Admin() {
 
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Foto do Seu Computador</label>
-                                    <input type="file" id="prod-image" accept="image/*" class="w-full p-2 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
+                                    <input type="file" id="prod-image" accept="image/*" multiple class="w-full p-2 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
                                 </div>
 
                                 <!-- BOTÃO PUBLICAR NO SITE (SEMPRE VISÍVEL) -->
@@ -1127,7 +1147,7 @@ export function Admin() {
                     <img id="edit-prod-preview" src="" class="w-14 h-14 object-cover rounded-lg border border-zinc-300 bg-white">
                     <div class="flex-1">
                         <label class="block text-[11px] font-bold uppercase text-zinc-600 mb-1">Trocar Foto (Opcional)</label>
-                        <input type="file" id="edit-prod-image" accept="image/*" class="w-full text-xs text-zinc-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-black file:text-[#EBE3CB] cursor-pointer">
+                        <input type="file" id="edit-prod-image" accept="image/*" multiple class="w-full text-xs text-zinc-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-black file:text-[#EBE3CB] cursor-pointer">
                     </div>
                 </div>
 
