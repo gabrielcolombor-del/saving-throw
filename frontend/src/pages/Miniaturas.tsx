@@ -263,7 +263,8 @@ export function Miniaturas() {
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
                             <select id="select-personalizada" onchange="atualizarPreco('personalizada')" class="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
                                 <option value="sem-pintura" data-preco="49,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                <option value="com-pintura" data-preco="99,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
+                                <option value="com-pintura" data-preco="99,90">Com Pintura Artística (Pintura feita à mão)</option>
+                                <option value="com-pintura-caixa" data-preco="119,90">Com Pintura Artística + Caixa MDF de Luxo</option>
                             </select>
                             
                             <div class="flex justify-between items-baseline mb-4">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 export function Home() {
   const [currentSlide, setCurrentSlide] = useState(1);
+  const [precoSelecionado, setPrecoSelecionado] = useState("49,90");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,12 +72,30 @@ export function Home() {
             <p className="text-zinc-700 text-lg mb-6">
               Você não precisa mais jogar com um modelo genérico. Envie uma imagem de referência do seu personagem e nós cuidamos do resto: buscamos ou adaptamos o modelo ideal, imprimimos em Resina Premium e aplicamos uma pintura artística profissional.
             </p>
-            <p className="text-zinc-700 text-lg mb-10">
-              Sua miniatura será entregue acompanhada de uma <strong>Caixa de MDF de Luxo</strong>, cortada e gravada a laser com o nome, classe e os símbolos do seu herói. É o baú do tesouro definitivo para guardar o seu avatar.
+            <p className="text-zinc-700 text-lg mb-8">
+              Sua miniatura pode ser entregue acompanhada de uma <strong>Caixa de MDF de Luxo</strong>, cortada e gravada a laser com o nome, classe e os símbolos do seu herói. É o baú do tesouro definitivo para guardar o seu avatar.
             </p>
-            <a href="https://wa.me/5527997947604" target="_blank" rel="noreferrer" className="inline-flex bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all px-8 py-4 rounded shadow-xl items-center gap-3 group font-bold uppercase text-sm tracking-wider">
-              <i className="fa-solid fa-wand-magic-sparkles text-lg group-hover:text-amber-500 transition-colors"></i> Encomendar Meu Herói
-            </a>
+
+            <div className="border-t border-amber-200 pt-6 mb-8 text-left">
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
+                <select 
+                    value={precoSelecionado}
+                    onChange={(e) => setPrecoSelecionado(e.target.value)}
+                    className="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6"
+                >
+                    <option value="49,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
+                    <option value="99,90">Com Pintura Artística (Pintura feita à mão)</option>
+                    <option value="119,90">Com Pintura Artística + Caixa MDF de Luxo</option>
+                </select>
+                
+                <div className="flex justify-between items-baseline mb-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
+                    <span className="text-3xl font-black text-amber-700">R$ {precoSelecionado}</span>
+                </div>
+                <a href="https://wa.me/5527997947604" target="_blank" rel="noreferrer" className="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase text-sm py-4 px-4 rounded transition-all flex items-center justify-center gap-3 group cursor-pointer shadow-md hover:shadow-lg">
+                    <i className="fa-solid fa-wand-magic-sparkles text-lg group-hover:text-amber-500 transition-colors"></i> Encomendar Meu Herói
+                </a>
+            </div>
           </div>
         </div>
       </section>
