@@ -76,6 +76,7 @@ export default async function handler(req, res) {
                 const pricePainted = Array.isArray(fields.price_painted) ? fields.price_painted[0] : fields.price_painted;
                 const pricePaintedBox = Array.isArray(fields.price_painted_box) ? fields.price_painted_box[0] : fields.price_painted_box;
                 const price = Array.isArray(fields.price) ? fields.price[0] : fields.price;
+                const priceOriginal = Array.isArray(fields.price_original) ? fields.price_original[0] : fields.price_original;
                 const bundleItems = Array.isArray(fields.bundle_items) ? fields.bundle_items[0] : fields.bundle_items;
 
                 const imageFiles = Array.isArray(files.image) ? files.image : (files.image ? [files.image] : []);
@@ -93,8 +94,8 @@ export default async function handler(req, res) {
                 const productId = `prod_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
                 const queryText = `
-                    INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $11, $8, $9, $10)
+                    INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $11, $8, $9, $10, $12)
                     RETURNING *
                 `;
 
@@ -108,6 +109,7 @@ export default async function handler(req, res) {
                     pricePainted ? parseFloat(pricePainted) : null,
                     description,
                     pricePaintedBox ? parseFloat(pricePaintedBox) : null,
+                    priceOriginal ? parseFloat(priceOriginal) : null,
                     imageUrl,
                     bundleItems ? bundleItems : null
                 ];

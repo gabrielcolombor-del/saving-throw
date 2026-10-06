@@ -159,6 +159,16 @@ export function Miniaturas() {
                                     <p class="text-xs text-zinc-500 line-clamp-2 mb-3" title="${p.description}">${p.description}</p>
                                 </div>
                                 <div class="border-t border-zinc-100 pt-3 mt-auto">
+                                    ${ p.type === 'pacote' ? `
+                                    <div class="flex justify-between items-baseline mb-1">
+                                        <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Valor Original</span>
+                                        <span class="text-xs font-bold text-zinc-400 line-through">R$ ${Number(p.price_original || 0).toFixed(2).replace('.',',')}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-[10px] uppercase font-bold text-amber-700 tracking-wider">Preço do Pacote</span>
+                                        <span class="text-base font-black text-amber-700">R$ ${Number(p.price || 0).toFixed(2).replace('.',',')}</span>
+                                    </div>
+                                ` : `
                                     <div class="flex justify-between items-baseline mb-1">
                                         <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Sem Pintura</span>
                                         <span class="text-base font-black text-black">R$ ${Number(p.price_unpainted || p.price || 0).toFixed(2).replace('.',',')}</span>
@@ -167,6 +177,7 @@ export function Miniaturas() {
                                         <span class="text-[10px] uppercase font-bold text-amber-700">Com Pintura</span>
                                         <span class="text-xs font-bold text-amber-700">${p.price_painted ? `R$ ${Number(p.price_painted).toFixed(2).replace('.',',')}` : 'Sob consulta'}</span>
                                     </div>
+                                `}
                                     <a href="produto?id=${p.id}" onclick="event.stopPropagation()" class="block w-full text-center bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase py-2.5 rounded-md transition-colors shadow-xs">
                                         Saiba Mais
                                     </a>
