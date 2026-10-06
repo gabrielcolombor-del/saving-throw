@@ -95,7 +95,7 @@ export default async function handler(req, res) {
 
                 const queryText = `
                     INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $11, $8, $9, $10, $12)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                     RETURNING *
                 `;
 
@@ -107,11 +107,11 @@ export default async function handler(req, res) {
                     price ? parseFloat(price) : null,
                     priceUnpainted ? parseFloat(priceUnpainted) : null,
                     pricePainted ? parseFloat(pricePainted) : null,
-                    description,
                     pricePaintedBox ? parseFloat(pricePaintedBox) : null,
-                    priceOriginal ? parseFloat(priceOriginal) : null,
+                    description,
                     imageUrl,
-                    bundleItems ? bundleItems : null
+                    bundleItems ? bundleItems : null,
+                    priceOriginal ? parseFloat(priceOriginal) : null
                 ];
 
                 const { rows } = await pool.query(queryText, queryValues);
@@ -148,6 +148,7 @@ export default async function handler(req, res) {
 
                 const kept = Array.isArray(fields.keptImages) ? fields.keptImages[0] : fields.keptImages;
                 const bundleItems = Array.isArray(fields.bundle_items) ? fields.bundle_items[0] : fields.bundle_items;
+                const priceOriginal = Array.isArray(fields.price_original) ? fields.price_original[0] : fields.price_original;
                 let imageUrls = [];
                 if (kept) {
                     try { imageUrls = JSON.parse(kept); } catch(e) {}
@@ -165,7 +166,7 @@ export default async function handler(req, res) {
 
                 const queryText = `
                     UPDATE st_products 
-                    SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6, image_url = $7, bundle_items = $9, price_painted_box = $10
+                    SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6, image_url = $7, bundle_items = $9, price_painted_box = $10, price_original = $11
                     WHERE id = $8
                     RETURNING *
                 `;
@@ -176,11 +177,11 @@ export default async function handler(req, res) {
                     priceUnpainted ? parseFloat(priceUnpainted) : null,
                     pricePainted ? parseFloat(pricePainted) : null,
                     description,
-                    pricePaintedBox ? parseFloat(pricePaintedBox) : null,
                     imageUrl,
                     id,
                     bundleItems ? bundleItems : null,
-                    pricePaintedBox ? parseFloat(pricePaintedBox) : null
+                    pricePaintedBox ? parseFloat(pricePaintedBox) : null,
+                    priceOriginal ? parseFloat(priceOriginal) : null
                 ];
 
                 const { rows } = await pool.query(queryText, queryValues);

@@ -33,8 +33,13 @@ async function ensureProductsTable() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    
+    // Add columns that were introduced later
+    await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_painted_box NUMERIC(10,2);`);
+    await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_original NUMERIC(10,2);`);
+    await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS bundle_items JSONB;`);
   } catch (e) {
-    console.error('Erro ao criar tabela st_products:', e.message);
+    console.error('Erro ao atualizar tabela st_products:', e.message);
   }
 }
 

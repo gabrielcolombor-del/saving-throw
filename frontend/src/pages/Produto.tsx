@@ -743,7 +743,7 @@ export function Produto() {
         var btnZoom = document.getElementById('btn-zoom-image');
         var btnClose = document.getElementById('btn-close-modal');
 
-        btnZoom.addEventListener('click', () => {
+        if (btnZoom) btnZoom.addEventListener('click', () => {
             if (!currentProduct) return;
             var imgSrc = (productImages && productImages.length > 0) ? productImages[currentImageIndex] : (currentProduct.image_url || '/assets/imagens/minis.png');
             modalImg.src = imgSrc;
@@ -753,11 +753,11 @@ export function Produto() {
             modal.classList.remove('hidden');
         });
 
-        btnClose.addEventListener('click', () => {
+        if (btnClose) btnClose.addEventListener('click', () => {
             modal.classList.add('hidden');
         });
 
-        modal.addEventListener('click', (e) => {
+        if (modal) modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
             }

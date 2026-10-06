@@ -262,17 +262,61 @@ export function Admin() {
                 var res = await fetch('/api/products?type=miniatura&limit=100');
                 var data = await res.json();
                 allMiniaturesForBundle = data.products || [];
-                list.innerHTML = allMiniaturesForBundle.map(m => `
+                list.innerHTML = allMiniaturesForBundle.map(m => \`
                     <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
-                        <input type="checkbox" value="${m.id}" data-name="${m.name}" data-price="${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
-                        <img src="${(function(){
+                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
+                        <img src="\${(function(){
                             var firstImg = m.image_url || '';
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
                             return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
-                        <span class="text-xs font-semibold">${m.name}</span>
+                        <span class="text-xs font-semibold">\${m.name}</span>
                     </label>
-                `).join('');
+                \`).join('');
+            } catch(e) {
+                list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
+            }
+        }
+
+        window.calculateEditBundleOriginalPrice = function() {
+            var checkboxes = document.querySelectorAll('.edit-bundle-item-checkbox:checked');
+            var total = 0;
+            var items = [];
+            checkboxes.forEach(cb => {
+                total += parseFloat(cb.dataset.price || 0);
+                items.push({ id: cb.value, name: cb.dataset.name });
+            });
+            var origField = document.getElementById('edit-prod-price-original');
+            if (origField) origField.value = total.toFixed(2);
+            window.currentEditBundleItems = JSON.stringify(items);
+        };
+
+        window.loadMiniaturesForEditBundle = async function(existingItemsJson) {
+            var list = document.getElementById('edit-bundle-miniatures-list');
+            var existingItems = [];
+            try { existingItems = JSON.parse(existingItemsJson || '[]'); } catch(e) {}
+            var existingIds = existingItems.map(i => i.id);
+
+            try {
+                if (allMiniaturesForBundle.length === 0) {
+                    var res = await fetch('/api/products?type=miniatura&limit=100');
+                    var data = await res.json();
+                    allMiniaturesForBundle = data.products || [];
+                }
+                list.innerHTML = allMiniaturesForBundle.map(m => {
+                    var isChecked = existingIds.includes(m.id) ? 'checked' : '';
+                    return \`
+                    <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
+                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="edit-bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateEditBundleOriginalPrice()" \${isChecked}>
+                        <img src="\${(function(){
+                            var firstImg = m.image_url || '';
+                            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+                            return firstImg;
+                        })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
+                        <span class="text-xs font-semibold">\${m.name}</span>
+                    </label>
+                    \`;
+                }).join('');
             } catch(e) {
                 list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
             }
@@ -370,20 +414,37 @@ export function Admin() {
             document.getElementById('edit-prod-image').value = '';
 
             var isMini = (p.type === 'miniatura' || p.price_unpainted != null);
-            if (isMini) {
-                document.getElementById('edit-field-category-mini').classList.remove('hidden');
-                document.getElementById('edit-field-category-arsenal').classList.add('hidden');
-                document.getElementById('edit-fields-prices-mini').classList.remove('hidden');
-                document.getElementById('edit-field-price-arsenal').classList.add('hidden');
+            var isPacote = (p.type === 'pacote' || p.type === 'bundle');
+            
+            var fieldCatMini = document.getElementById('edit-field-category-mini');
+            var fieldCatArs = document.getElementById('edit-field-category-arsenal');
+            var fieldPriceMini = document.getElementById('edit-fields-prices-mini');
+            var fieldPriceArs = document.getElementById('edit-field-price-arsenal');
+            var fieldPacotes = document.getElementById('edit-field-pacotes-config');
+
+            if(fieldCatMini) fieldCatMini.classList.add('hidden');
+            if(fieldCatArs) fieldCatArs.classList.add('hidden');
+            if(fieldPriceMini) fieldPriceMini.classList.add('hidden');
+            if(fieldPriceArs) fieldPriceArs.classList.add('hidden');
+            if(fieldPacotes) fieldPacotes.classList.add('hidden');
+
+            if (isPacote) {
+                if(fieldPacotes) fieldPacotes.classList.remove('hidden');
+                document.getElementById('edit-prod-price-pacote').value = p.price || '';
+                document.getElementById('edit-prod-price-original').value = p.price_original || '';
+                window.currentEditBundleItems = p.bundle_items || '[]';
+                if(window.loadMiniaturesForEditBundle) window.loadMiniaturesForEditBundle(window.currentEditBundleItems);
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Pacote';
+            } else if (isMini) {
+                if(fieldCatMini) fieldCatMini.classList.remove('hidden');
+                if(fieldPriceMini) fieldPriceMini.classList.remove('hidden');
                 document.getElementById('edit-prod-category-mini').value = p.category || 'npcs';
                 document.getElementById('edit-prod-price-unpainted').value = p.price_unpainted || '';
                 document.getElementById('edit-prod-price-painted').value = p.price_painted || '';
                 document.getElementById('edit-prod-modal-title').innerText = 'Editar Miniatura';
             } else {
-                document.getElementById('edit-field-category-mini').classList.add('hidden');
-                document.getElementById('edit-field-category-arsenal').classList.remove('hidden');
-                document.getElementById('edit-fields-prices-mini').classList.add('hidden');
-                document.getElementById('edit-field-price-arsenal').classList.remove('hidden');
+                if(fieldCatArs) fieldCatArs.classList.remove('hidden');
+                if(fieldPriceArs) fieldPriceArs.classList.remove('hidden');
                 document.getElementById('edit-prod-category-arsenal').value = p.category || 'escudo';
                 document.getElementById('edit-prod-price').value = p.price || '';
                 document.getElementById('edit-prod-modal-title').innerText = 'Editar Item de Arsenal';
@@ -422,6 +483,7 @@ export function Admin() {
             var id = document.getElementById('edit-prod-id').value;
             var type = document.getElementById('edit-prod-type').value;
             var isMini = (type === 'miniatura');
+            var isPacote = (type === 'pacote' || type === 'bundle');
 
             var formData = new FormData();
             formData.append('id', id);
@@ -429,7 +491,12 @@ export function Admin() {
             formData.append('name', document.getElementById('edit-prod-name').value);
             formData.append('description', document.getElementById('edit-prod-desc').value);
 
-            if (isMini) {
+            if (isPacote) {
+                formData.append('category', 'pacotes');
+                formData.append('price', document.getElementById('edit-prod-price-pacote').value);
+                formData.append('price_original', document.getElementById('edit-prod-price-original').value);
+                formData.append('bundle_items', window.currentEditBundleItems || '[]');
+            } else if (isMini) {
                 formData.append('category', document.getElementById('edit-prod-category-mini').value);
                 formData.append('price_unpainted', document.getElementById('edit-prod-price-unpainted').value);
                 formData.append('price_painted', document.getElementById('edit-prod-price-painted').value);
@@ -438,9 +505,13 @@ export function Admin() {
                 formData.append('price', document.getElementById('edit-prod-price').value);
             }
 
+            formData.append('keptImages', JSON.stringify(currentEditImages));
+
             var imageFileInput = document.getElementById('edit-prod-image');
             if (imageFileInput.files.length > 0) {
-                formData.append('image', imageFileInput.files[0]);
+                for (var i = 0; i < imageFileInput.files.length; i++) {
+                    formData.append('image', imageFileInput.files[i]);
+                }
             }
 
             try {
@@ -1286,6 +1357,23 @@ export function Admin() {
                 <div id="edit-field-price-arsenal" class="hidden">
                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
                     <input type="number" step="0.01" id="edit-prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                </div>
+
+                <div id="edit-field-pacotes-config" class="hidden space-y-4 pt-2">
+                    <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Miniaturas do Pacote</label>
+                        <div id="edit-bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
+                            Carregando...
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Original (Soma Automática) (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-original" class="w-full p-2.5 bg-zinc-100 text-zinc-500 border border-zinc-200 rounded-lg text-xs font-semibold cursor-not-allowed" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor Final do Pacote (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="199.90">
+                    </div>
                 </div>
 
                 <div>
