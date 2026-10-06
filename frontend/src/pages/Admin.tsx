@@ -219,6 +219,30 @@ export function Admin() {
             loadProducts();
         }
 
+        
+        var allMiniaturesForBundle = [];
+        async function loadMiniaturesForBundle() {
+            var list = document.getElementById('bundle-miniatures-list');
+            try {
+                var res = await fetch('/api/products?type=miniatura&limit=100');
+                var data = await res.json();
+                allMiniaturesForBundle = data.products || [];
+                list.innerHTML = allMiniaturesForBundle.map(m => `
+                    <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
+                        <input type="checkbox" value="${m.id}" class="bundle-item-checkbox accent-amber-600 w-4 h-4">
+                        <img src="${(function(){
+                            var firstImg = m.image_url || '';
+                            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+                            return firstImg;
+                        })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
+                        <span class="text-xs font-semibold">${m.name}</span>
+                    </label>
+                `).join('');
+            } catch(e) {
+                list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
+            }
+        }
+    
         async function loadProducts() {
             var grid = document.getElementById('products-grid');
             var loader = document.getElementById('loading-products');
@@ -256,7 +280,11 @@ export function Admin() {
                         grid.innerHTML += `
                             <div class="border border-black/10 rounded-xl p-3.5 flex flex-col justify-between relative bg-white shadow-xs hover:shadow-md transition-shadow">
                                 <div class="flex gap-3">
-                                    <img src="${p.image_url}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200 shrink-0">
+                                    <img src="${(function(){
+            var firstImg = p.image_url || '';
+            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+            return firstImg;
+        })()}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200 shrink-0">
                                     <div class="flex-1 min-w-0">
                                         <h4 class="font-bold text-xs line-clamp-1 text-zinc-900" title="${p.name}">${p.name}</h4>
                                         <span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category || p.type}</span>
@@ -422,6 +450,7 @@ export function Admin() {
                 formData.append('category', document.getElementById('prod-category').value);
                 formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
                 formData.append('price_painted', document.getElementById('prod-price-painted').value);
+            formData.append('price_painted_box', document.getElementById('prod-price-painted-box').value);
             } else {
                 formData.append('category', document.getElementById('prod-category-arsenal').value);
                 formData.append('price', document.getElementById('prod-price').value);

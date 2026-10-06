@@ -8,8 +8,9 @@ export function Miniaturas() {
       
         var precos = {
             personalizada: {
-                "sem-pintura": "89,90",
-                "com-pintura": "139,90"
+                "sem-pintura": "49,90",
+                "com-pintura": "99,90",
+                "com-pintura-caixa": "119,90"
             }
         };
 
@@ -87,7 +88,8 @@ export function Miniaturas() {
             '': document.getElementById('cat-all'),
             'npcs': document.getElementById('cat-npcs'),
             'monstros': document.getElementById('cat-monstros'),
-            'cenario': document.getElementById('cat-cenario')
+            'cenario': document.getElementById('cat-cenario'),
+            'pacotes': document.getElementById('cat-pacotes')
         };
 
         function setCategory(cat) {
@@ -131,7 +133,7 @@ export function Miniaturas() {
             loading.classList.remove('hidden');
 
             try {
-                var url = `/api/products?type=miniatura&page=${currentPage}&limit=8`;
+                var url = `/api/products?type=all&limit=100`;
                 if(currentCategory) url += `&category=${currentCategory}`;
                 if(currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
                 
@@ -144,7 +146,11 @@ export function Miniaturas() {
                     grid.innerHTML = data.products.map(p => `
                         <div onclick="window.location.href='produto?id=${p.id}'" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                             <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100" style="aspect-ratio: 4/5;">
-                                <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="${(function(){
+            var firstImg = p.image_url || '';
+            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+            return firstImg;
+        })()}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 <span class="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-1 rounded shadow-sm">${p.category}</span>
                             </div>
                             <div class="p-4 flex flex-col flex-1 justify-between">
@@ -255,14 +261,14 @@ export function Miniaturas() {
                         
                         <div class="border-t border-amber-200 pt-6">
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Opção de Pintura:</label>
-                            <select id="select-personalizada" onChange={() => atualizarPreco('personalizada')} className="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
-                                <option value="sem-pintura" data-preco="89,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
-                                <option value="com-pintura" data-preco="139,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
+                            <select id="select-personalizada" onchange="atualizarPreco('personalizada')" class="w-full p-3 bg-white border border-amber-200 rounded text-sm font-semibold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer mb-6">
+                                <option value="sem-pintura" data-preco="49,90">Sem Pintura (Modelo cinza pronto para pintar)</option>
+                                <option value="com-pintura" data-preco="99,90">Com Pintura Artística (Pintura feita à mão + Caixa MDF de Luxo)</option>
                             </select>
                             
                             <div class="flex justify-between items-baseline mb-4">
                                 <span class="text-xs font-bold uppercase tracking-wider text-zinc-500">Valor do Pedido:</span>
-                                <span id="preco-personalizada" class="text-3xl font-black text-amber-700">R\$ 89,90</span>
+                                <span id="preco-personalizada" class="text-3xl font-black text-amber-700">R\$ 49,90</span>
                             </div>
                             <button onclick="enviarPedido('personalizada')" class="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-4 px-4 rounded transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg">
                                 <i class="fa-solid fa-wand-magic-sparkles text-base"></i> Encomendar Meu Herói
@@ -325,6 +331,7 @@ export function Miniaturas() {
                             <button onclick="setCategory('npcs')" id="cat-npcs" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">NPCs</button>
                             <button onclick="setCategory('monstros')" id="cat-monstros" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Monstros</button>
                             <button onclick="setCategory('cenario')" id="cat-cenario" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Cenário</button>
+                            <button onclick="setCategory('pacotes')" id="cat-pacotes" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-amber-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors"><i class="fa-solid fa-box-open"></i> Pacotes</button>
                         </div>
                         
                         <div class="relative w-full md:w-64">

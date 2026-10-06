@@ -100,10 +100,13 @@ export function Arsenal() {
                 if (data.products && data.products.length > 0) {
                     var filteredProducts = data.products.filter(p => p.id !== 'escudo-mestre');
                     if (filteredProducts.length === 0 && data.products.length > 0) { empty.classList.remove('hidden'); return; }
-                    grid.innerHTML = filteredProducts.map(p => `
+                    grid.innerHTML = filteredProducts.map(p => {
+                        var firstImg = p.image_url || '';
+                        if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+                        return `
                         <div onclick="window.location.href='produto?id=${p.id}'" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                             <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100" style="aspect-ratio: 4/5;">
-                                <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="${firstImg}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             </div>
                             <div class="p-4 flex flex-col flex-1 justify-between">
                                 <div>
@@ -121,7 +124,7 @@ export function Arsenal() {
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                    `; }).join('');
                     
                     grid.classList.remove('hidden');
                     renderPagination(data.totalPages);

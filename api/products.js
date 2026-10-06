@@ -74,7 +74,21 @@ module.exports = async function handler(req, res) {
 
             const { rows } = await pool.query('SELECT * FROM st_products WHERE id = $1', [id]);
             if (rows.length > 0) {
-                return res.status(200).json({ product: rows[0] });
+                let product = rows[0];
+                if (product.type === 'bundle' && product.bundle_items) {
+                    try {
+                        const itemIds = typeof product.bundle_items === 'string' ? JSON.parse(product.bundle_items) : product.bundle_items;
+                        if (Array.isArray(itemIds) && itemIds.length > 0) {
+                            // Using ANY($1::varchar[]) is safer if available, but doing a dynamic IN or unnest is also fine.
+                            // The easiest way for Postgres is = ANY($1) where $1 is an array.
+                            const { rows: bundledItems } = await pool.query('SELECT id, name, price, price_unpainted, price_painted, image_url, category, description FROM st_products WHERE id = ANY($1)', [itemIds]);
+                            product.bundled_products = bundledItems;
+                        }
+                    } catch(e) {
+                        console.error('Error fetching bundle items', e);
+                    }
+                }
+                return res.status(200).json({ product });
             }
 
             if (specialProducts[id]) {

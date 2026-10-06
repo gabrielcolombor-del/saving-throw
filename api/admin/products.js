@@ -74,7 +74,9 @@ export default async function handler(req, res) {
                 const category = Array.isArray(fields.category) ? fields.category[0] : fields.category;
                 const priceUnpainted = Array.isArray(fields.price_unpainted) ? fields.price_unpainted[0] : fields.price_unpainted;
                 const pricePainted = Array.isArray(fields.price_painted) ? fields.price_painted[0] : fields.price_painted;
+                const pricePaintedBox = Array.isArray(fields.price_painted_box) ? fields.price_painted_box[0] : fields.price_painted_box;
                 const price = Array.isArray(fields.price) ? fields.price[0] : fields.price;
+                const bundleItems = Array.isArray(fields.bundle_items) ? fields.bundle_items[0] : fields.bundle_items;
 
                 const imageFiles = Array.isArray(files.image) ? files.image : (files.image ? [files.image] : []);
                 let imageUrls = [];
@@ -91,8 +93,8 @@ export default async function handler(req, res) {
                 const productId = `prod_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
                 const queryText = `
-                    INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, description, image_url)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $11, $8, $9, $10)
                     RETURNING *
                 `;
 
@@ -105,7 +107,9 @@ export default async function handler(req, res) {
                     priceUnpainted ? parseFloat(priceUnpainted) : null,
                     pricePainted ? parseFloat(pricePainted) : null,
                     description,
-                    imageUrl
+                    pricePaintedBox ? parseFloat(pricePaintedBox) : null,
+                    imageUrl,
+                    bundleItems ? bundleItems : null
                 ];
 
                 const { rows } = await pool.query(queryText, queryValues);
@@ -137,9 +141,11 @@ export default async function handler(req, res) {
                 const category = Array.isArray(fields.category) ? fields.category[0] : fields.category;
                 const priceUnpainted = Array.isArray(fields.price_unpainted) ? fields.price_unpainted[0] : fields.price_unpainted;
                 const pricePainted = Array.isArray(fields.price_painted) ? fields.price_painted[0] : fields.price_painted;
+                const pricePaintedBox = Array.isArray(fields.price_painted_box) ? fields.price_painted_box[0] : fields.price_painted_box;
                 const price = Array.isArray(fields.price) ? fields.price[0] : fields.price;
 
                 const kept = Array.isArray(fields.keptImages) ? fields.keptImages[0] : fields.keptImages;
+                const bundleItems = Array.isArray(fields.bundle_items) ? fields.bundle_items[0] : fields.bundle_items;
                 let imageUrls = [];
                 if (kept) {
                     try { imageUrls = JSON.parse(kept); } catch(e) {}
@@ -157,7 +163,7 @@ export default async function handler(req, res) {
 
                 const queryText = `
                     UPDATE st_products 
-                    SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6, image_url = $7
+                    SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6, image_url = $7, bundle_items = $9, price_painted_box = $10
                     WHERE id = $8
                     RETURNING *
                 `;
@@ -168,8 +174,11 @@ export default async function handler(req, res) {
                     priceUnpainted ? parseFloat(priceUnpainted) : null,
                     pricePainted ? parseFloat(pricePainted) : null,
                     description,
+                    pricePaintedBox ? parseFloat(pricePaintedBox) : null,
                     imageUrl,
-                    id
+                    id,
+                    bundleItems ? bundleItems : null,
+                    pricePaintedBox ? parseFloat(pricePaintedBox) : null
                 ];
 
                 const { rows } = await pool.query(queryText, queryValues);

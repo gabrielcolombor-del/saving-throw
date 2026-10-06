@@ -46,8 +46,9 @@ export function Produto() {
                 category: 'Serviço Exclusivo',
                 name: 'Miniatura Personalizada com Caixa de MDF de Luxo',
                 price: null,
-                price_unpainted: 89.90,
-                price_painted: 139.90,
+                price_unpainted: 49.90,
+                price_painted: 99.90,
+                price_painted_box: 119.90,
                 description: 'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
                 image_url: '/assets/imagens/capapersonagem1.png',
                 images: [
@@ -161,6 +162,41 @@ export function Produto() {
                             icon: 'fa-brush',
                             title: 'Pintura & Caixa de Luxo',
                             text: 'Pintura manual profissional detalhada e entrega em uma Caixa de MDF de Luxo cortada e gravada a laser com o nome, classe e símbolos do seu herói.'
+                        },
+                        {
+                            icon: 'fa-truck-fast',
+                            title: 'Prazos & Envio',
+                            text: 'O envio é feito via Correios ou transportadora para todo o país.'
+                        }
+                    ]
+                };
+            }
+
+            // 1.5 Pacotes Especiais (Bundles)
+            if (type === 'bundle' || cat.includes('pacote')) {
+                return {
+                    categoryKey: 'bundle',
+                    breadcrumbCategory: 'Pacotes Especiais',
+                    breadcrumbHref: 'miniaturas',
+                    catalogLabel: 'os Pacotes',
+                    typeLabel: 'Pacote Especial de Miniaturas',
+                    tagBadge: 'Kit Econômico',
+                    categoryBadge: p.category || 'Pacote Especial',
+                    microBadges: [
+                        { icon: 'fa-boxes-stacked', title: 'Kit Completo', subtitle: 'Múltiplas peças' },
+                        { icon: 'fa-tags', title: 'Preço Especial', subtitle: 'Desconto de pacote' },
+                        { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+                    ],
+                    specs: [
+                        {
+                            icon: 'fa-boxes-stacked',
+                            title: 'Pacote Pronto',
+                            text: 'Um kit montado com sinergia para a sua mesa, pronto para jogar.'
+                        },
+                        {
+                            icon: 'fa-tags',
+                            title: 'Economia',
+                            text: 'Adquirir o pacote completo oferece um valor mais vantajoso do que comprar as peças separadamente.'
                         },
                         {
                             icon: 'fa-truck-fast',
@@ -332,9 +368,17 @@ export function Produto() {
             breadcrumbName.innerText = p.name;
 
             // Inicializar Galeria / Slider com Aspect Ratio Adaptativo
-            var rawImages = (p.images && Array.isArray(p.images) && p.images.length > 0) 
-                ? p.images 
-                : (p.image_url ? [p.image_url] : ['/assets/imagens/minis.png']);
+            var rawImages = [];
+            if (p.image_url) {
+                if (p.image_url.startsWith('[')) {
+                    try { rawImages = JSON.parse(p.image_url); } catch(e) {}
+                } else {
+                    rawImages = [p.image_url];
+                }
+            }
+            if (!rawImages || rawImages.length === 0) {
+                rawImages = ['/assets/imagens/minis.png'];
+            }
             initGallery(rawImages, p.name);
 
             // Badges
@@ -631,7 +675,11 @@ export function Produto() {
                                 <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
                                     <div>
                                         <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-                                            <img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <img src="${(function(){
+            var firstImg = item.image_url || '';
+            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+            return firstImg;
+        })()}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                             <span class="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[9px] font-bold uppercase px-2 py-0.5 rounded">${item.category || 'Destaque'}</span>
                                         </div>
                                         <div class="p-3">
@@ -844,7 +892,7 @@ export function Produto() {
                                     <span class="text-[11px] text-zinc-500 font-medium">Selecione para ver o valor</span>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="options-grid">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="options-grid">
                                     <!-- Opção 1: Sem Pintura -->
                                     <div id="opt-unpainted" onclick="selectOption('unpainted')" class="option-card bg-white border-2 border-zinc-200 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-400">
                                         <div class="flex items-start justify-between mb-2">
@@ -924,6 +972,14 @@ export function Produto() {
                             </button>
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- Itens do Pacote -->
+                <div id="bundle-items-container" class="mt-12 pt-8 border-t border-zinc-200 hidden">
+                    <h3 class="font-title text-2xl mb-6 text-zinc-950">Miniaturas Inclusas no Pacote</h3>
+                    <div id="bundle-items-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <!-- Gerado via JS -->
                     </div>
                 </div>
 
