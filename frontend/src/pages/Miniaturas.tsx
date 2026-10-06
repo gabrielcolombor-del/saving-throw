@@ -133,7 +133,7 @@ export function Miniaturas() {
             loading.classList.remove('hidden');
 
             try {
-                var url = `/api/products?type=all&limit=100`;
+                var url = `/api/products?type=miniatura&page=${currentPage}&limit=12`;
                 if(currentCategory) url += `&category=${currentCategory}`;
                 if(currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
                 

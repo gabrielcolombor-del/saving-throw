@@ -101,11 +101,11 @@ module.exports = async function handler(req, res) {
         let whereClauses = [];
         let params = [];
 
-        if (type) {
+        if (type && type !== 'all') {
             if (type === 'arsenal') {
                 whereClauses.push(`(type = 'arsenal' OR type = 'escudo' OR category ILIKE '%escudo%' OR category ILIKE '%arsenal%')`);
             } else if (type === 'miniatura') {
-                whereClauses.push(`(type = 'miniatura' OR type = 'mini')`);
+                whereClauses.push(`(type = 'miniatura' OR type = 'mini' OR type = 'pacote' OR category ILIKE '%pacote%')`);
             } else {
                 params.push(type);
                 whereClauses.push(`type = $${params.length}`);
