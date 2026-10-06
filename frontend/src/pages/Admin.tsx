@@ -1,195 +1,88 @@
 // @ts-nocheck
 
-import React, { useEffect } from 'react';
+import function switchTab(tab) {
+            currentTab = tab === 'miniaturas' ? 'miniatura' : tab;
+            var tabMin = document.getElementById('tab-miniaturas');
+            var tabArs = document.getElementById('tab-arsenal');
+            var tabPac = document.getElementById('tab-pacotes');
+            var typeInput = document.getElementById('prod-type');
+            
+            var baseTabClass = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center gap-2 cursor-pointer';
+            var activeClass = baseTabClass + ' bg-black text-[#EBE3CB] shadow-sm';
+            var inactiveClass = baseTabClass + ' text-zinc-700 hover:bg-white/60';
 
-export function Admin() {
-  useEffect(() => {
-    try {
-      
-        var token = localStorage.getItem('adminToken');
-        var currentTab = 'miniatura';
-        var costChartInstance = null;
-        var cachedFinanceData = [];
-        var currentEditImages = [];
-        var cachedProductsList = [];
-        var financeCurrentPage = 1;
-        var financeItemsPerPage = 15;
+            if(tabMin) tabMin.className = inactiveClass;
+            if(tabArs) tabArs.className = inactiveClass;
+            if(tabPac) tabPac.className = inactiveClass;
+            
+            var fieldCat = document.getElementById('field-category');
+            var fieldCatArs = document.getElementById('field-category-arsenal');
+            var fieldPriceMini = document.getElementById('fields-prices-mini');
+            var fieldPriceArs = document.getElementById('field-price-arsenal');
+            var fieldPacotes = document.getElementById('field-pacotes-config');
 
-        if (token) {
-            showDashboard();
-            loadDashboardData();
-        }
+            if (fieldCat) fieldCat.classList.add('hidden');
+            if (fieldCatArs) fieldCatArs.classList.add('hidden');
+            if (fieldPriceMini) fieldPriceMini.classList.add('hidden');
+            if (fieldPriceArs) fieldPriceArs.classList.add('hidden');
+            if (fieldPacotes) fieldPacotes.classList.add('hidden');
 
-        // Login
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            var u = document.getElementById('username').value;
-            var p = document.getElementById('password').value;
-            try {
-                var res = await fetch('/api/admin/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-                if (res.ok) {
-                    var data = await res.json();
-                    token = data.token;
-                    localStorage.setItem('adminToken', token);
-                    document.getElementById('login-error').classList.add('hidden');
-                    showDashboard();
-                    loadDashboardData();
-                } else {
-                    document.getElementById('login-error').classList.remove('hidden');
-                }
-            } catch (err) {
-                document.getElementById('login-error').classList.remove('hidden');
+            if (currentTab === 'miniatura') {
+                formData.append('category', document.getElementById('prod-category').value);
+                formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
+                formData.append('price_painted', document.getElementById('prod-price-painted').value);
+            } else if (currentTab === 'pacotes') {
+                formData.append('category', 'pacotes');
+                formData.append('price', document.getElementById('prod-price-pacote').value);
+                formData.append('price_original', document.getElementById('prod-price-original').value);
+                formData.append('bundle_items', window.currentBundleItems || '[]');
+            } else {
+                formData.append('category', document.getElementById('prod-category-arsenal').value);
+                formData.append('price', document.getElementById('prod-price').value);
+            } else {
+                if(tabArs) tabArs.className = activeClass;
+                document.getElementById('form-title').innerText = 'Adicionar ao Arsenal / Escudo';
+                document.getElementById('list-title').innerText = 'Itens de Arsenal & Escudos Cadastrados';
+                typeInput.value = 'arsenal';
+                if(fieldCatArs) fieldCatArs.classList.remove('hidden');
+                if(fieldPriceArs) fieldPriceArs.classList.remove('hidden');
             }
-        });
-
-        function logout() {
-            token = null;
-            localStorage.removeItem('adminToken');
-            document.getElementById('dashboard-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-screen').classList.add('flex');
+            loadProducts();
         }
 
-        function showDashboard() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('flex');
-            document.getElementById('dashboard-screen').classList.remove('hidden');
-        }
-
-        function switchMainTab(tab) {
-            ['dash', 'prods', 'fin', 'cli'].forEach(t => {
-                document.getElementById(`sec-${t}`).classList.add('hidden');
-                var btn = document.getElementById(`mtab-${t}`);
-                btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
-                var iconBox = btn.querySelector('div');
-                if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
+        window.calculateBundleOriginalPrice = function() {
+            var checkboxes = document.querySelectorAll('.bundle-item-checkbox:checked');
+            var total = 0;
+            var items = [];
+            checkboxes.forEach(cb => {
+                total += parseFloat(cb.dataset.price || 0);
+                items.push({ id: cb.value, name: cb.dataset.name });
             });
+            var origField = document.getElementById('prod-price-original');
+            if (origField) origField.value = total.toFixed(2);
+            window.currentBundleItems = JSON.stringify(items);
+        };
 
-            document.getElementById(`sec-${tab}`).classList.remove('hidden');
-            var activeBtn = document.getElementById(`mtab-${tab}`);
-            activeBtn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer";
-            var activeIconBox = activeBtn.querySelector('div');
-            if (activeIconBox) activeIconBox.className = "w-6 h-6 rounded-md bg-white/10 flex items-center justify-center";
-
-            if (tab === 'dash') loadDashboardData();
-            if (tab === 'prods') loadProducts();
-            if (tab === 'fin') loadFinance();
-            if (tab === 'cli') loadCustomers();
-        }
-
-        // CARREGAR PAINEL GERAL (KPIs + Gráficos)
-        async function loadDashboardData() {
+        var allMiniaturesForBundle = [];
+        async function loadMiniaturesForBundle() {
+            var list = document.getElementById('bundle-miniatures-list');
+            if (!list) return;
             try {
-                var res = await fetch('/api/admin/finance', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                var res = await fetch('/api/products?type=miniatura&limit=100');
                 var data = await res.json();
-
-                if (data.kpis) {
-                    document.getElementById('kpi-revenue').innerText = `R$ ${data.kpis.revenueTotal.toFixed(2).replace('.', ',')}`;
-                    document.getElementById('kpi-expenses').innerText = `R$ ${data.kpis.expensesTotal.toFixed(2).replace('.', ',')}`;
-                    document.getElementById('kpi-profit').innerText = `R$ ${data.kpis.netProfit.toFixed(2).replace('.', ',')}`;
-
-                    var margin = data.kpis.revenueTotal > 0 ? ((data.kpis.netProfit / data.kpis.revenueTotal) * 100).toFixed(1) : 0;
-                    document.getElementById('summary-margin').innerText = `${margin}%`;
-                }
-
-                if (data.charts && data.charts.costCategories) {
-                    renderChart(data.charts.costCategories);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        function renderChart(costs) {
-            var ctx = document.getElementById('chart-costs').getContext('2d');
-            if (costChartInstance) costChartInstance.destroy();
-
-            var labels = Object.keys(costs);
-            var values = Object.values(costs);
-
-            costChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: ['#000000', '#d97706', '#71717a', '#b45309', '#4a4435']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        // REGISTRAR CUSTO NA ABA LIVRO DE CONTABILIDADE
-        document.getElementById('form-gasto-tab').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            var descricao = document.getElementById('gasto-desc-tab').value;
-            var valor = document.getElementById('gasto-valor-tab').value;
-            var categoria = document.getElementById('gasto-cat-tab').value;
-
-            try {
-                var res = await fetch('/api/admin/finance', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ action: 'gasto', descricao, valor, categoria })
-                });
-                if (res.ok) {
-                    alert('Custo lançado com sucesso no Livro de Contabilidade!');
-                    document.getElementById('form-gasto-tab').reset();
-                    loadFinance();
-                    loadDashboardData();
-                }
-            } catch (err) { alert('Erro ao registrar gasto'); }
-        });
-
-        // MODAL DE VENDA A PARTIR DO PRODUTO
-        function openSaleModal(productName, price) {
-            document.getElementById('modal-sale-product').value = productName;
-            document.getElementById('modal-sale-client').value = '';
-            document.getElementById('modal-sale-price').value = price || '';
-            document.getElementById('modal-sale').classList.remove('hidden');
-        }
-
-        function closeSaleModal() {
-            document.getElementById('modal-sale').classList.add('hidden');
-        }
-
-        document.getElementById('form-sale-modal').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            var produto = document.getElementById('modal-sale-product').value;
-            var cliente = document.getElementById('modal-sale-client').value;
-            var valor = document.getElementById('modal-sale-price').value;
-
-            try {
-                var res = await fetch('/api/admin/finance', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ action: 'venda', cliente, produto, valor })
-                });
-                if (res.ok) {
-                    alert(`Venda do produto "${produto}" para "${cliente}" registrada com sucesso no Supabase!`);
-                    closeSaleModal();
-                    loadDashboardData();
-                } else {
-                    alert('Erro ao registrar venda');
-                }
-            } catch (err) { alert('Erro de conexão ao registrar venda'); }
-        });
-
-        // TAB PRODUTOS (Miniaturas / Arsenal)
-        function switchTab(tab) {
+                allMiniaturesForBundle = data.products || [];
+                list.innerHTML = allMiniaturesForBundle.map(m => {
+                    var price = parseFloat(m.price_unpainted || m.price || 0).toFixed(2);
+                    return `
+                        <div class="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded cursor-pointer" onclick="this.querySelector('input').click()">
+                            <input type="checkbox" value="${m.id}" data-name="${m.name}" data-price="${price}" class="bundle-item-checkbox" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
+                            <span class="text-xs font-semibold flex-1">${m.name}</span>
+                            <span class="text-xs text-zinc-500">R$ ${price.replace('.',',')}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) { console.error(e); }
+        }function switchTab(tab) {
             currentTab = tab === 'miniaturas' ? 'miniatura' : tab;
             var tabMin = document.getElementById('tab-miniaturas');
             var tabArs = document.getElementById('tab-arsenal');
@@ -820,6 +713,9 @@ export function Admin() {
                         <button onclick="switchTab('arsenal')" id="tab-arsenal" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-shield-halved text-zinc-500"></i> Arsenal & Escudos
                         </button>
+                        <button onclick="switchTab('pacotes')" id="tab-pacotes" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-boxes-stacked text-amber-500"></i> Pacotes
+                        </button>
                     </div>
 
                     <div class="flex flex-col lg:flex-row gap-6">
@@ -876,6 +772,22 @@ export function Admin() {
                                 <div id="field-price-arsenal" class="hidden">
                                     <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
                                     <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                                </div>
+                                <div id="field-pacotes-config" class="hidden space-y-4 pt-2">
+                                    <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Selecione as Miniaturas do Pacote</label>
+                                        <div id="bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
+                                            Carregando...
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Original (Soma Automática) (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-original" class="w-full p-2.5 bg-zinc-100 text-zinc-500 border border-zinc-200 rounded-lg text-xs font-semibold cursor-not-allowed" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor com Desconto do Pacote (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="Ex: 199.90">
+                                    </div>
                                 </div>
 
                                 <div>
