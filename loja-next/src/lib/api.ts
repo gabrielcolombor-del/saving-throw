@@ -1,5 +1,5 @@
 export async function fetchProducts(params: Record<string, string | number>) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5173';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   const url = new URL(`${baseUrl}/api/products`);
   
   Object.keys(params).forEach(key => {
@@ -19,7 +19,7 @@ export async function fetchProducts(params: Record<string, string | number>) {
 }
 
 export async function fetchProductById(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5173';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   const url = new URL(`${baseUrl}/api/products`);
   url.searchParams.append('id', id);
 

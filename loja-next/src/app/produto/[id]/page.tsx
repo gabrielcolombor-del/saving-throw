@@ -38,8 +38,10 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
     const profile = getProductProfile(product);
 
     let rawImages: string[] = [];
-    if (product.image_url) {
-        if (product.image_url.startsWith('[')) {
+    if (product.images && Array.isArray(product.images)) {
+        rawImages = product.images;
+    } else if (product.image_url) {
+        if (typeof product.image_url === 'string' && product.image_url.startsWith('[')) {
             try { rawImages = JSON.parse(product.image_url); } catch(e) {}
         } else {
             rawImages = [product.image_url];
