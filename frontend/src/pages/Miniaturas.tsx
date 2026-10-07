@@ -293,7 +293,7 @@ export function Miniaturas() {
                 </div>
 
                 <!-- Destaque Principal: Miniatura Personalizada -->
-                <div class="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20 mt-20">
                     <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
                     <!-- Container para o Slider de Imagens -->
                     <div class="w-full lg:w-1/2 relative overflow-hidden flex justify-center bg-zinc-900">
