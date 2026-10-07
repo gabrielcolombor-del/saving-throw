@@ -91,7 +91,29 @@ export default async function handler(req, res) {
                 }
                 const imageUrl = JSON.stringify(imageUrls);
 
-                const productId = `prod_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+                function slugify(text) {
+                    return text.toString().toLowerCase()
+                      .normalize('NFD') // separate accent from letter
+                      .replace(/[\u0300-\u036f]/g, '') // remove all separated accents
+                      .replace(/\s+/g, '-') // spaces to dashes
+                      .replace(/[^\w\-]+/g, '') // remove non-word chars
+                      .replace(/\-\-+/g, '-') // replace multiple dashes with single
+                      .replace(/^-+/, '') // trim from start
+                      .replace(/-+$/, ''); // trim from end
+                }
+
+                let baseSlug = slugify(name || 'produto');
+                let productId = baseSlug;
+                
+                const { rows: existingRows } = await pool.query('SELECT id FROM st_products WHERE id LIKE $1', [`${baseSlug}%`]);
+                if (existingRows.length > 0) {
+                    const existingIds = existingRows.map(r => r.id);
+                    let counter = 1;
+                    while (existingIds.includes(productId)) {
+                        productId = `${baseSlug}-${counter}`;
+                        counter++;
+                    }
+                }
 
                 const queryText = `
                     INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original)
