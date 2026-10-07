@@ -146,11 +146,7 @@ export function Miniaturas() {
                     grid.innerHTML = data.products.map(p => `
                         <div onclick="window.location.href='produto?id=${p.id}'" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                             <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100" style="aspect-ratio: 4/5;">
-                                <img src="${(function(){
-            var firstImg = p.image_url || '';
-            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
-            return firstImg;
-        })()}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="/api/product-image?id=${p.id}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 <span class="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-1 rounded shadow-sm">${p.category}</span>
                             </div>
                             <div class="p-4 flex flex-col flex-1 justify-between">

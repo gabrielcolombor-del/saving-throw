@@ -703,11 +703,7 @@ export function Produto() {
                                 <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
                                     <div>
                                         <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-                                            <img src="${(function(){
-            var firstImg = item.image_url || '';
-            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
-            return firstImg;
-        })()}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <img src="/api/product-image?id=${item.id}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                             <span class="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[9px] font-bold uppercase px-2 py-0.5 rounded">${item.category || 'Destaque'}</span>
                                         </div>
                                         <div class="p-3">
