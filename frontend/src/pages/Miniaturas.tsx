@@ -246,6 +246,52 @@ export function Miniaturas() {
 
         <section class="py-20 bg-white text-black">
             <div class="container mx-auto px-4 max-w-6xl">
+                <!-- Nova Seção: Catálogo de Impressões 3D -->
+                <div id="catalogo" class="mt-20">
+                    <div class="text-center mb-10">
+                        <span class="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
+                        <h2 class="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
+                        <p class="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                            Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
+                        </p>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-zinc-200 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
+                        <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                            <button onclick="setCategory('')" id="cat-all" class="px-4 py-2 bg-black text-white text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Todos</button>
+                            <button onclick="setCategory('npcs')" id="cat-npcs" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">NPCs</button>
+                            <button onclick="setCategory('monstros')" id="cat-monstros" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Monstros</button>
+                            <button onclick="setCategory('cenario')" id="cat-cenario" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Cenário</button>
+                            <button onclick="setCategory('pacotes')" id="cat-pacotes" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-amber-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors"><i class="fa-solid fa-box-open"></i> Pacotes</button>
+                        </div>
+                        
+                        <div class="relative w-full md:w-64">
+                            <input type="text" id="search-input" placeholder="Buscar miniatura..." class="w-full pl-10 pr-4 py-2 border border-zinc-300 rounded focus:border-amber-600 focus:outline-none text-sm transition-colors">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-zinc-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Grid de Produtos -->
+                    <div id="products-loading" class="text-center py-12 text-zinc-500">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
+                        <p class="text-sm font-bold uppercase tracking-widest">Carregando Acervo...</p>
+                    </div>
+                    
+                    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 hidden">
+                        <!-- Itens gerados via JS -->
+                    </div>
+
+                    <div id="products-empty" class="text-center py-12 hidden">
+                        <p class="text-zinc-500 text-sm">Nenhuma miniatura encontrada para esta busca.</p>
+                    </div>
+
+                    <!-- Paginação -->
+                    <div id="pagination" class="flex justify-center gap-2 mt-12 hidden">
+                        <!-- Botões gerados via JS -->
+                    </div>
+                </div>
+
                 <!-- Destaque Principal: Miniatura Personalizada -->
                 <div class="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20">
                     <div class="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
@@ -322,51 +368,7 @@ export function Miniaturas() {
                 </div>
 
 
-                <!-- Nova Seção: Catálogo de Impressões 3D -->
-                <div id="catalogo" class="mt-20">
-                    <div class="text-center mb-10">
-                        <span class="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
-                        <h2 class="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
-                        <p class="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-                            Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
-                        </p>
-                    </div>
-
-                    <!-- Filtros -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-zinc-200 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
-                        <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                            <button onclick="setCategory('')" id="cat-all" class="px-4 py-2 bg-black text-white text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Todos</button>
-                            <button onclick="setCategory('npcs')" id="cat-npcs" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">NPCs</button>
-                            <button onclick="setCategory('monstros')" id="cat-monstros" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Monstros</button>
-                            <button onclick="setCategory('cenario')" id="cat-cenario" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors">Cenário</button>
-                            <button onclick="setCategory('pacotes')" id="cat-pacotes" class="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-amber-700 text-xs font-bold uppercase rounded flex-shrink-0 transition-colors"><i class="fa-solid fa-box-open"></i> Pacotes</button>
-                        </div>
-                        
-                        <div class="relative w-full md:w-64">
-                            <input type="text" id="search-input" placeholder="Buscar miniatura..." class="w-full pl-10 pr-4 py-2 border border-zinc-300 rounded focus:border-amber-600 focus:outline-none text-sm transition-colors">
-                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-zinc-400"></i>
-                        </div>
-                    </div>
-
-                    <!-- Grid de Produtos -->
-                    <div id="products-loading" class="text-center py-12 text-zinc-500">
-                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
-                        <p class="text-sm font-bold uppercase tracking-widest">Carregando Acervo...</p>
-                    </div>
-                    
-                    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 hidden">
-                        <!-- Itens gerados via JS -->
-                    </div>
-
-                    <div id="products-empty" class="text-center py-12 hidden">
-                        <p class="text-zinc-500 text-sm">Nenhuma miniatura encontrada para esta busca.</p>
-                    </div>
-
-                    <!-- Paginação -->
-                    <div id="pagination" class="flex justify-center gap-2 mt-12 hidden">
-                        <!-- Botões gerados via JS -->
-                    </div>
-                </div>
+                
 
             </div>
         </section>
