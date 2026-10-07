@@ -700,7 +700,7 @@ export function Produto() {
                         var filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 10);
                         if (filtered.length > 0) {
                             grid.innerHTML = filtered.map(item => `
-                                <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between shrink-0 snap-start min-w-[240px] md:min-w-[280px]">
+                                <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between shrink-0 snap-start w-[240px] md:w-[250px]">
                                     <div>
                                         <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100">
                                             <img src="/api/product-image?id=${item.id}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
