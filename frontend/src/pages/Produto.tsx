@@ -693,14 +693,14 @@ export function Produto() {
             var grid = document.getElementById('related-grid');
             try {
                 var typeParam = (currentP.type === 'arsenal' || currentP.type === 'escudo') ? 'arsenal' : 'miniatura';
-                var res = await fetch(`/api/products?type=${typeParam}&limit=4`);
+                var res = await fetch(`/api/products?type=${typeParam}&limit=12`);
                 if (res.ok) {
                     var data = await res.json();
                     if (data.products && data.products.length > 0) {
-                        var filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 4);
+                        var filtered = data.products.filter(item => item.id !== currentP.id).slice(0, 10);
                         if (filtered.length > 0) {
                             grid.innerHTML = filtered.map(item => `
-                                <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+                                <a href="produto?id=${item.id}" class="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between shrink-0 snap-start min-w-[240px] md:min-w-[280px]">
                                     <div>
                                         <div class="relative aspect-[4/5] overflow-hidden bg-zinc-100">
                                             <img src="/api/product-image?id=${item.id}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -1028,8 +1028,16 @@ export function Produto() {
                         </a>
                     </div>
 
-                    <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        <!-- Itens recomendados via JS -->
+                    <div class="relative group/slider w-full">
+                        <button onclick="document.getElementById('related-grid').scrollBy({left: -300, behavior: 'smooth'})" class="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-md flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity z-10 hover:bg-zinc-50 cursor-pointer hidden md:flex">
+                            <i class="fa-solid fa-chevron-left text-zinc-600"></i>
+                        </button>
+                        <div id="related-grid" class="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 pt-2 px-1 scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
+                            <!-- Itens recomendados via JS -->
+                        </div>
+                        <button onclick="document.getElementById('related-grid').scrollBy({left: 300, behavior: 'smooth'})" class="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-md flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity z-10 hover:bg-zinc-50 cursor-pointer hidden md:flex">
+                            <i class="fa-solid fa-chevron-right text-zinc-600"></i>
+                        </button>
                     </div>
                 </div>
 
