@@ -247,7 +247,7 @@ export function Miniaturas() {
         <section class="py-20 bg-white text-black">
             <div class="container mx-auto px-4 max-w-6xl">
                 <!-- Nova Seção: Catálogo de Impressões 3D -->
-                <div id="catalogo" class="mt-20">
+                <div id="catalogo">
                     <div class="text-center mb-10">
                         <span class="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
                         <h2 class="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
