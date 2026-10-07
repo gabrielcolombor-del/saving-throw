@@ -808,7 +808,7 @@ export function Produto() {
   
 
   }, []);return (
-    <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+    <div className="font-sans bg-zinc-50 min-h-screen pt-8 pb-16" dangerouslySetInnerHTML={{ __html: `
         <div class="container mx-auto px-4 max-w-6xl">
             
             <!-- Breadcrumbs -->
