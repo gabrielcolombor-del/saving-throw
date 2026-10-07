@@ -1444,6 +1444,8 @@ export function Sons() {
                         }
                         if (!startPaused) {
                             event.target.playVideo();
+                        } else {
+                            event.target.pauseVideo();
                         }
                     },
                     'onStateChange': (event) => {
