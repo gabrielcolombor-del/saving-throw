@@ -2391,6 +2391,34 @@ export function Sons() {
 (window as any).openSaveSceneModal = openSaveSceneModal;
 (window as any).closeSaveSceneModal = closeSaveSceneModal;
 
+        var googleScript = document.createElement('script');
+        googleScript.src = "https://accounts.google.com/gsi/client";
+        googleScript.async = true;
+        googleScript.defer = true;
+        googleScript.onload = function() {
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                window.google.accounts.id.initialize({
+                    client_id: '22187490404-7u85b4bssb2nn6jfntvhopbloco5vbak.apps.googleusercontent.com',
+                    callback: window.handleGoogleLoginResponse,
+                    context: 'signin',
+                    ux_mode: 'popup',
+                    auto_prompt: false
+                });
+                var googleBtnContainer = document.querySelector('.g_id_signin');
+                if (googleBtnContainer) {
+                    window.google.accounts.id.renderButton(googleBtnContainer, {
+                        type: 'standard',
+                        shape: 'rectangular',
+                        theme: 'outline',
+                        text: 'continue_with',
+                        size: 'large',
+                        logo_alignment: 'left'
+                    });
+                }
+            }
+        };
+        document.body.appendChild(googleScript);
+
     } catch(e) {
       console.error("Error in legacy script for Sons:", e);
     }
