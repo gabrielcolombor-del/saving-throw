@@ -262,7 +262,7 @@ export function Admin() {
                 var res = await fetch('/api/products?type=miniatura&limit=100');
                 var data = await res.json();
                 allMiniaturesForBundle = data.products || [];
-                list.innerHTML = allMiniaturesForBundle.map(m => \`
+                list.innerHTML = allMiniaturesForBundle.map(m => `
                     <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
                         <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
                         <img src="\${(function(){
@@ -272,7 +272,7 @@ export function Admin() {
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
                         <span class="text-xs font-semibold">\${m.name}</span>
                     </label>
-                \`).join('');
+                `).join('');
             } catch(e) {
                 list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
             }
@@ -305,7 +305,7 @@ export function Admin() {
                 }
                 list.innerHTML = allMiniaturesForBundle.map(m => {
                     var isChecked = existingIds.includes(m.id) ? 'checked' : '';
-                    return \`
+                    return `
                     <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
                         <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="edit-bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateEditBundleOriginalPrice()" \${isChecked}>
                         <img src="\${(function(){
@@ -315,7 +315,7 @@ export function Admin() {
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
                         <span class="text-xs font-semibold">\${m.name}</span>
                     </label>
-                    \`;
+                    `;
                 }).join('');
             } catch(e) {
                 list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
