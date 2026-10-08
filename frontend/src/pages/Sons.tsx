@@ -2749,9 +2749,28 @@ export function Sons() {
                 </button>
             </div>
 
+            <!-- GOOGLE LOGIN SECTION -->
+            <div class="mb-4 flex flex-col items-center justify-center w-full min-h-[44px]" id="google-btn-container">
+                <div id="g_id_onload"
+                     data-client_id="22187490404-7u85b4bssb2nn6jfntvhopbloco5vbak.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLoginResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="continue_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+
             <div class="relative flex py-2 items-center mb-4">
                 <div class="flex-grow border-t border-zinc-800"></div>
-                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">Autenticação</span>
+                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">ou com E-mail</span>
                 <div class="flex-grow border-t border-zinc-800"></div>
             </div>
 
