@@ -280,7 +280,7 @@ export function Admin() {
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
                             return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
-                        <span class="text-xs font-semibold">${m.name}</span>
+                        <span class="text-xs font-semibold text-zinc-900">${m.name}</span>
                     </label>
                 `).join('');
             } catch(e) {
@@ -333,7 +333,7 @@ export function Admin() {
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
                             return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
-                        <span class="text-xs font-semibold">${m.name}</span>
+                        <span class="text-xs font-semibold text-zinc-900">${m.name}</span>
                     </label>
                     `;
                 }).join('');
