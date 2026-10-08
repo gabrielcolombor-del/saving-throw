@@ -2405,6 +2405,12 @@ export function Sons() {
 
   }, []);return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+        <!-- ANÚNCIO DE LOGIN -->
+        <div id="top-login-banner" class="hidden bg-amber-600 text-black text-center py-2 px-4 text-[10px] sm:text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-amber-500 transition-all">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Você está usando a mesa como Visitante. Seus sons favoritos, cenas e perfil não serão salvos. 
+            <span class="underline ml-1" id="banner-login-btn">Faça Login ou Crie sua Conta</span>
+        </div>
+
         <!-- Hero Section & Master Control -->
         <section class="relative w-full py-6 sm:py-10 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-b border-zinc-800">
             <div class="container mx-auto px-4 max-w-6xl text-center">
@@ -2414,11 +2420,12 @@ export function Sons() {
                 <h1 class="text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight mb-2 text-white font-title">
                     Estúdio Sonoro da Mesa
                 </h1>
-                <div class="mb-5">
+                <div class="mb-5 flex flex-col sm:flex-row justify-center items-center gap-4">
                     <a href="instrucoes-mesa" target="_blank" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-extrabold uppercase text-[11px] sm:text-xs tracking-wider px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg hover:shadow-amber-500/20 group">
                         <i class="fa-solid fa-book-open group-hover:scale-110 transition-transform"></i>
                         <span>Aprenda a Usar a Mesa</span>
                     </a>
+                    <div id="user-header-area"></div>
                 </div>
 
                 <!-- BARRA MASTER DE ÁUDIO & GERENCIADOR DE PERFIS DE MESAS -->
@@ -2730,7 +2737,7 @@ export function Sons() {
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <h3 class="text-2xl font-title text-amber-400 uppercase">Conta de Mestre</h3>
-                <p class="text-xs text-zinc-400 mt-1">Fa├ºa login para salvar seus atalhos, favoritos e gerenciar perfis de mesas.</p>
+                <p class="text-xs text-zinc-400 mt-1">Faça login para salvar seus atalhos, favoritos e gerenciar perfis de mesas.</p>
             </div>
 
             <div class="flex border-b border-zinc-800 mb-5">
@@ -2742,29 +2749,9 @@ export function Sons() {
                 </button>
             </div>
 
-            <!-- GOOGLE LOGIN SECTION -->
-            <!-- GOOGLE LOGIN SECTION -->
-            <div class="mb-4 flex flex-col items-center justify-center w-full min-h-[44px]" id="google-btn-container">
-                <div id="g_id_onload"
-                     data-client_id="22187490404-7u85b4bssb2nn6jfntvhopbloco5vbak.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleGoogleLoginResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-shape="rectangular"
-                     data-theme="outline"
-                     data-text="continue_with"
-                     data-size="large"
-                     data-logo_alignment="left">
-                </div>
-            </div>
-
             <div class="relative flex py-2 items-center mb-4">
                 <div class="flex-grow border-t border-zinc-800"></div>
-                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">ou com E-mail</span>
+                <span class="flex-shrink mx-3 text-[10px] uppercase text-zinc-500 font-bold">Autenticação</span>
                 <div class="flex-grow border-t border-zinc-800"></div>
             </div>
 
@@ -2781,7 +2768,7 @@ export function Sons() {
 
                 <div>
                     <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Senha</label>
-                    <input type="password" id="auth-password" required placeholder="ÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇó" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
                 <div id="auth-error-msg" class="text-xs text-red-400 hidden text-center py-2 font-semibold bg-red-950/40 border border-red-900/40 rounded-lg"></div>
@@ -2796,7 +2783,7 @@ export function Sons() {
 
 
 
-    <!-- Container Global de Notifica├º├Áes Toast -->
+    <!-- Container Global de Notificações Toast -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
     <!-- MODAL DE CRIAR / SALVAR NOVA CENA -->
@@ -2822,7 +2809,7 @@ export function Sons() {
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">├ìcone da Cena</label>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Ícone da Cena</label>
                     <div class="grid grid-cols-6 sm:grid-cols-8 gap-2" id="scene-icon-selector">
                         <button type="button" data-icon="fa-masks-theater" class="scene-icon-opt active p-2 rounded-lg bg-amber-600 text-black flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-masks-theater"></i></button>
                         <button type="button" data-icon="fa-beer-mug-empty" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-beer-mug-empty"></i></button>
@@ -2838,14 +2825,12 @@ export function Sons() {
                         <button type="button" data-icon="fa-ghost" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-ghost"></i></button>
                         <button type="button" data-icon="fa-compass" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-compass"></i></button>
                         <button type="button" data-icon="fa-music" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-music"></i></button>
-                        <button type="button" data-icon="fa-hat-wizard" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-hat-wizard"></i></button>
-                        <button type="button" data-icon="fa-book-journal-whills" class="scene-icon-opt p-2 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-amber-400 flex items-center justify-center text-sm cursor-pointer"><i class="fa-solid fa-book-journal-whills"></i></button>
                     </div>
                 </div>
 
-                <!-- Resumo dos sons que ser├úo salvos -->
+                <!-- Resumo dos sons que serão salvos -->
                 <div>
-                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Sons Ativos Inclu├¡dos no Preset</label>
+                    <label class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Sons Ativos Incluídos no Preset</label>
                     <div id="modal-sounds-preview" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 max-h-28 overflow-y-auto no-scrollbar space-y-1.5 text-xs">
                         <!-- Gerado dinamicamente -->
                     </div>
