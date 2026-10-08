@@ -1,8 +1,1397 @@
+// @ts-nocheck
+
+import React, { useEffect } from 'react';
+
 export function Admin() {
-  return (
-    <div className="p-8 text-center">
-      <h1 className="text-2xl font-bold">Admin Area</h1>
-      <p className="mt-4 text-zinc-600">The admin page is temporarily disabled for maintenance.</p>
+  useEffect(() => {
+    try {
+      
+        var token = localStorage.getItem('adminToken');
+        var currentTab = 'miniatura';
+        var costChartInstance = null;
+        var cachedFinanceData = [];
+        var currentEditImages = [];
+        var cachedProductsList = [];
+        var financeCurrentPage = 1;
+        var financeItemsPerPage = 15;
+
+        if (token) {
+            showDashboard();
+            loadDashboardData();
+        }
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var u = document.getElementById('username').value;
+            var p = document.getElementById('password').value;
+            try {
+                var res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                if (res.ok) {
+                    var data = await res.json();
+                    token = data.token;
+                    localStorage.setItem('adminToken', token);
+                    document.getElementById('login-error').classList.add('hidden');
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                }
+            } catch (err) {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        function logout() {
+            token = null;
+            localStorage.removeItem('adminToken');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-screen').classList.add('flex');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('flex');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+        }
+
+        function switchMainTab(tab) {
+            ['dash', 'prods', 'fin', 'cli'].forEach(t => {
+                document.getElementById(`sec-${t}`).classList.add('hidden');
+                var btn = document.getElementById(`mtab-${t}`);
+                btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
+                var iconBox = btn.querySelector('div');
+                if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
+            });
+
+            document.getElementById(`sec-${tab}`).classList.remove('hidden');
+            var activeBtn = document.getElementById(`mtab-${tab}`);
+            activeBtn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer";
+            var activeIconBox = activeBtn.querySelector('div');
+            if (activeIconBox) activeIconBox.className = "w-6 h-6 rounded-md bg-white/10 flex items-center justify-center";
+
+            if (tab === 'dash') loadDashboardData();
+            if (tab === 'prods') loadProducts();
+            if (tab === 'fin') loadFinance();
+            if (tab === 'cli') loadCustomers();
+        }
+
+        // CARREGAR PAINEL GERAL (KPIs + Gráficos)
+        async function loadDashboardData() {
+            try {
+                var res = await fetch('/api/admin/finance', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                var data = await res.json();
+
+                if (data.kpis) {
+                    document.getElementById('kpi-revenue').innerText = `R$ ${data.kpis.revenueTotal.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('kpi-expenses').innerText = `R$ ${data.kpis.expensesTotal.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('kpi-profit').innerText = `R$ ${data.kpis.netProfit.toFixed(2).replace('.', ',')}`;
+
+                    var margin = data.kpis.revenueTotal > 0 ? ((data.kpis.netProfit / data.kpis.revenueTotal) * 100).toFixed(1) : 0;
+                    document.getElementById('summary-margin').innerText = `${margin}%`;
+                }
+
+                if (data.charts && data.charts.costCategories) {
+                    renderChart(data.charts.costCategories);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderChart(costs) {
+            var ctx = document.getElementById('chart-costs').getContext('2d');
+            if (costChartInstance) costChartInstance.destroy();
+
+            var labels = Object.keys(costs);
+            var values = Object.values(costs);
+
+            costChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#000000', '#d97706', '#71717a', '#b45309', '#4a4435']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // REGISTRAR CUSTO NA ABA LIVRO DE CONTABILIDADE
+        document.getElementById('form-gasto-tab').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var descricao = document.getElementById('gasto-desc-tab').value;
+            var valor = document.getElementById('gasto-valor-tab').value;
+            var categoria = document.getElementById('gasto-cat-tab').value;
+
+            try {
+                var res = await fetch('/api/admin/finance', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ action: 'gasto', descricao, valor, categoria })
+                });
+                if (res.ok) {
+                    alert('Custo lançado com sucesso no Livro de Contabilidade!');
+                    document.getElementById('form-gasto-tab').reset();
+                    loadFinance();
+                    loadDashboardData();
+                }
+            } catch (err) { alert('Erro ao registrar gasto'); }
+        });
+
+        // MODAL DE VENDA A PARTIR DO PRODUTO
+        function openSaleModal(productName, price) {
+            document.getElementById('modal-sale-product').value = productName;
+            document.getElementById('modal-sale-client').value = '';
+            document.getElementById('modal-sale-price').value = price || '';
+            document.getElementById('modal-sale').classList.remove('hidden');
+        }
+
+        function closeSaleModal() {
+            document.getElementById('modal-sale').classList.add('hidden');
+        }
+
+        document.getElementById('form-sale-modal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var produto = document.getElementById('modal-sale-product').value;
+            var cliente = document.getElementById('modal-sale-client').value;
+            var valor = document.getElementById('modal-sale-price').value;
+
+            try {
+                var res = await fetch('/api/admin/finance', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ action: 'venda', cliente, produto, valor })
+                });
+                if (res.ok) {
+                    alert(`Venda do produto "${produto}" para "${cliente}" registrada com sucesso no Supabase!`);
+                    closeSaleModal();
+                    loadDashboardData();
+                } else {
+                    alert('Erro ao registrar venda');
+                }
+            } catch (err) { alert('Erro de conexão ao registrar venda'); }
+        });
+
+        // TAB PRODUTOS (Miniaturas / Arsenal)
+        function switchTab(tab) {
+            currentTab = tab === 'miniaturas' ? 'miniatura' : tab;
+            var tabMin = document.getElementById('tab-miniaturas');
+            var tabArs = document.getElementById('tab-arsenal');
+            var tabPac = document.getElementById('tab-pacotes');
+            var typeInput = document.getElementById('prod-type');
+            
+            var baseTabClass = 'px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center gap-2 cursor-pointer';
+            var activeClass = baseTabClass + ' bg-black text-[#EBE3CB] shadow-sm';
+            var inactiveClass = baseTabClass + ' text-zinc-700 hover:bg-white/60';
+
+            if(tabMin) tabMin.className = inactiveClass;
+            if(tabArs) tabArs.className = inactiveClass;
+            if(tabPac) tabPac.className = inactiveClass;
+            
+            var fieldCat = document.getElementById('field-category');
+            var fieldCatArs = document.getElementById('field-category-arsenal');
+            var fieldPriceMini = document.getElementById('fields-prices-mini');
+            var fieldPriceArs = document.getElementById('field-price-arsenal');
+            var fieldPacotes = document.getElementById('field-pacotes-config');
+
+            if (fieldCat) fieldCat.classList.add('hidden');
+            if (fieldCatArs) fieldCatArs.classList.add('hidden');
+            if (fieldPriceMini) fieldPriceMini.classList.add('hidden');
+            if (fieldPriceArs) fieldPriceArs.classList.add('hidden');
+            if (fieldPacotes) fieldPacotes.classList.add('hidden');
+
+            if (currentTab === 'miniatura') {
+                if(tabMin) tabMin.className = activeClass;
+                document.getElementById('form-title').innerText = 'Adicionar Miniatura';
+                document.getElementById('list-title').innerText = 'Miniaturas Cadastradas';
+                typeInput.value = 'miniatura';
+                if(fieldCat) fieldCat.classList.remove('hidden');
+                if(fieldPriceMini) fieldPriceMini.classList.remove('hidden');
+            } else if (currentTab === 'pacotes') {
+                if(tabPac) tabPac.className = activeClass;
+                document.getElementById('form-title').innerText = 'Criar Pacote Especial';
+                document.getElementById('list-title').innerText = 'Pacotes Cadastrados';
+                typeInput.value = 'pacote';
+                if(fieldPacotes) fieldPacotes.classList.remove('hidden');
+                loadMiniaturesForBundle();
+            } else {
+                if(tabArs) tabArs.className = activeClass;
+                document.getElementById('form-title').innerText = 'Adicionar ao Arsenal / Escudo';
+                document.getElementById('list-title').innerText = 'Itens de Arsenal & Escudos Cadastrados';
+                typeInput.value = 'arsenal';
+                if(fieldCatArs) fieldCatArs.classList.remove('hidden');
+                if(fieldPriceArs) fieldPriceArs.classList.remove('hidden');
+            }
+            loadProducts();
+        }
+
+        window.calculateBundleOriginalPrice = function() {
+            var checkboxes = document.querySelectorAll('.bundle-item-checkbox:checked');
+            var total = 0;
+            var items = [];
+            checkboxes.forEach(cb => {
+                total += parseFloat(cb.dataset.price || 0);
+                items.push({ id: cb.value, name: cb.dataset.name });
+            });
+            var origField = document.getElementById('prod-price-original');
+            if (origField) origField.value = total.toFixed(2);
+            window.currentBundleItems = JSON.stringify(items);
+        };
+
+        
+        var allMiniaturesForBundle = [];
+        async function loadMiniaturesForBundle() {
+            var list = document.getElementById('bundle-miniatures-list');
+            try {
+                var res = await fetch('/api/products?type=miniatura&limit=100');
+                var data = await res.json();
+                allMiniaturesForBundle = data.products || [];
+                list.innerHTML = allMiniaturesForBundle.map(m => \`
+                    <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
+                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
+                        <img src="\${(function(){
+                            var firstImg = m.image_url || '';
+                            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+                            return firstImg;
+                        })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
+                        <span class="text-xs font-semibold">\${m.name}</span>
+                    </label>
+                \`).join('');
+            } catch(e) {
+                list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
+            }
+        }
+
+        window.calculateEditBundleOriginalPrice = function() {
+            var checkboxes = document.querySelectorAll('.edit-bundle-item-checkbox:checked');
+            var total = 0;
+            var items = [];
+            checkboxes.forEach(cb => {
+                total += parseFloat(cb.dataset.price || 0);
+                items.push({ id: cb.value, name: cb.dataset.name });
+            });
+            var origField = document.getElementById('edit-prod-price-original');
+            if (origField) origField.value = total.toFixed(2);
+            window.currentEditBundleItems = JSON.stringify(items);
+        };
+
+        window.loadMiniaturesForEditBundle = async function(existingItemsJson) {
+            var list = document.getElementById('edit-bundle-miniatures-list');
+            var existingItems = [];
+            try { existingItems = JSON.parse(existingItemsJson || '[]'); } catch(e) {}
+            var existingIds = existingItems.map(i => i.id);
+
+            try {
+                if (allMiniaturesForBundle.length === 0) {
+                    var res = await fetch('/api/products?type=miniatura&limit=100');
+                    var data = await res.json();
+                    allMiniaturesForBundle = data.products || [];
+                }
+                list.innerHTML = allMiniaturesForBundle.map(m => {
+                    var isChecked = existingIds.includes(m.id) ? 'checked' : '';
+                    return \`
+                    <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
+                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="edit-bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateEditBundleOriginalPrice()" \${isChecked}>
+                        <img src="\${(function(){
+                            var firstImg = m.image_url || '';
+                            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+                            return firstImg;
+                        })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
+                        <span class="text-xs font-semibold">\${m.name}</span>
+                    </label>
+                    \`;
+                }).join('');
+            } catch(e) {
+                list.innerHTML = '<p class="text-red-500 text-xs">Erro ao carregar miniaturas</p>';
+            }
+        }
+    
+        async function loadProducts() {
+            var grid = document.getElementById('products-grid');
+            var loader = document.getElementById('loading-products');
+            grid.classList.add('hidden'); loader.classList.remove('hidden');
+            
+            try {
+                var res = await fetch(`/api/products?type=${currentTab}&limit=50`);
+                var data = await res.json();
+                grid.innerHTML = '';
+                cachedProductsList = data.products || [];
+                if(cachedProductsList.length > 0) {
+                    cachedProductsList.forEach(p => {
+                        var isMini = p.type === 'miniatura' || p.price_unpainted != null;
+                        var mainPrice = isMini ? (p.price_unpainted || p.price || 0) : (p.price || 0);
+                        
+                        var priceHtml = '';
+                        if (isMini) {
+                            priceHtml = `
+                                <div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-xs font-black text-black">R$ ${Number(mainPrice).toFixed(2).replace('.', ',')}</span>
+                                        <span class="text-[9px] uppercase font-bold text-zinc-500">(Sem Pintura)</span>
+                                    </div>
+                                    ${p.price_painted ? `<div class="text-[10px] text-amber-700 font-bold">C/ Pintura: R$ ${Number(p.price_painted).toFixed(2).replace('.', ',')}</div>` : ''}
+                                </div>
+                            `;
+                        } else {
+                            priceHtml = `
+                                <div>
+                                    <span class="text-xs font-black text-black">R$ ${Number(mainPrice).toFixed(2).replace('.', ',')}</span>
+                                </div>
+                            `;
+                        }
+
+                        grid.innerHTML += `
+                            <div class="border border-black/10 rounded-xl p-3.5 flex flex-col justify-between relative bg-white shadow-xs hover:shadow-md transition-shadow">
+                                <div class="flex gap-3">
+                                    <img src="${(function(){
+            var firstImg = p.image_url || '';
+            if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
+            return firstImg;
+        })()}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200 shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-bold text-xs line-clamp-1 text-zinc-900" title="${p.name}">${p.name}</h4>
+                                        <span class="text-[9px] uppercase font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">${p.category || p.type}</span>
+                                        <div class="mt-1 text-[11px] text-zinc-500 line-clamp-2">${p.description}</div>
+                                    </div>
+                                    <div class="flex items-center gap-1 self-start shrink-0">
+                                        <button onclick="openEditProductModal('${p.id}')" class="text-zinc-500 hover:text-black text-xs p-1.5 cursor-pointer rounded hover:bg-zinc-100" title="Editar este produto">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button onclick="deleteProduct('${p.id}')" class="text-zinc-400 hover:text-red-600 text-xs p-1.5 cursor-pointer rounded hover:bg-zinc-100" title="Excluir produto">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-3 pt-2.5 border-t border-zinc-100 flex justify-between items-center">
+                                    ${priceHtml}
+                                    <button onclick="openSaleModal('${p.name.replace(/'/g, "\\'")}', '${mainPrice}')" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer shadow-xs">
+                                        <i class="fa-solid fa-cart-shopping text-amber-500"></i> Registrar Venda
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = '<div class="col-span-full text-center text-xs text-zinc-400 py-8">Nenhum produto cadastrado nesta categoria.</div>';
+                }
+                loader.classList.add('hidden'); grid.classList.remove('hidden');
+            } catch(e) { console.error(e); }
+        }
+
+        function openEditProductModal(id) {
+            var p = cachedProductsList.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('edit-prod-type').value = p.type || 'miniatura';
+            document.getElementById('edit-prod-name').value = p.name || '';
+            document.getElementById('edit-prod-desc').value = p.description || '';
+            currentEditImages = [];
+            if (p.image_url) {
+                if (p.image_url.startsWith('[')) {
+                    try { currentEditImages = JSON.parse(p.image_url); } catch(e) {}
+                } else {
+                    currentEditImages = [p.image_url];
+                }
+            }
+            renderEditImagesPreview();
+            document.getElementById('edit-prod-image').value = '';
+
+            var isMini = (p.type === 'miniatura' || p.price_unpainted != null);
+            var isPacote = (p.type === 'pacote' || p.type === 'bundle');
+            
+            var fieldCatMini = document.getElementById('edit-field-category-mini');
+            var fieldCatArs = document.getElementById('edit-field-category-arsenal');
+            var fieldPriceMini = document.getElementById('edit-fields-prices-mini');
+            var fieldPriceArs = document.getElementById('edit-field-price-arsenal');
+            var fieldPacotes = document.getElementById('edit-field-pacotes-config');
+
+            if(fieldCatMini) fieldCatMini.classList.add('hidden');
+            if(fieldCatArs) fieldCatArs.classList.add('hidden');
+            if(fieldPriceMini) fieldPriceMini.classList.add('hidden');
+            if(fieldPriceArs) fieldPriceArs.classList.add('hidden');
+            if(fieldPacotes) fieldPacotes.classList.add('hidden');
+
+            if (isPacote) {
+                if(fieldPacotes) fieldPacotes.classList.remove('hidden');
+                document.getElementById('edit-prod-price-pacote').value = p.price || '';
+                document.getElementById('edit-prod-price-original').value = p.price_original || '';
+                window.currentEditBundleItems = p.bundle_items || '[]';
+                if(window.loadMiniaturesForEditBundle) window.loadMiniaturesForEditBundle(window.currentEditBundleItems);
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Pacote';
+            } else if (isMini) {
+                if(fieldCatMini) fieldCatMini.classList.remove('hidden');
+                if(fieldPriceMini) fieldPriceMini.classList.remove('hidden');
+                document.getElementById('edit-prod-category-mini').value = p.category || 'npcs';
+                document.getElementById('edit-prod-price-unpainted').value = p.price_unpainted || '';
+                document.getElementById('edit-prod-price-painted').value = p.price_painted || '';
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Miniatura';
+            } else {
+                if(fieldCatArs) fieldCatArs.classList.remove('hidden');
+                if(fieldPriceArs) fieldPriceArs.classList.remove('hidden');
+                document.getElementById('edit-prod-category-arsenal').value = p.category || 'escudo';
+                document.getElementById('edit-prod-price').value = p.price || '';
+                document.getElementById('edit-prod-modal-title').innerText = 'Editar Item de Arsenal';
+            }
+
+            document.getElementById('modal-edit-prod').classList.remove('hidden');
+        }
+
+        function renderEditImagesPreview() {
+            var container = document.getElementById('edit-prod-preview-container');
+            if (!container) return;
+            container.innerHTML = currentEditImages.map((img, i) => `
+                <div class="relative group">
+                    <img src="${img}" class="w-16 h-16 object-cover rounded-lg border border-zinc-300 bg-white">
+                    <button type="button" onclick="removeEditImage(${i})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] cursor-pointer hover:bg-red-600 shadow-md transform scale-0 group-hover:scale-100 transition-transform">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeEditImage(index) {
+            currentEditImages.splice(index, 1);
+            renderEditImagesPreview();
+        }
+
+        function closeEditProductModal() {
+            document.getElementById('modal-edit-prod').classList.add('hidden');
+        }
+
+        document.getElementById('form-edit-prod-modal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var btn = document.getElementById('btn-save-edit-prod');
+            btn.disabled = true;
+
+            var id = document.getElementById('edit-prod-id').value;
+            var type = document.getElementById('edit-prod-type').value;
+            var isMini = (type === 'miniatura');
+            var isPacote = (type === 'pacote' || type === 'bundle');
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('type', type);
+            formData.append('name', document.getElementById('edit-prod-name').value);
+            formData.append('description', document.getElementById('edit-prod-desc').value);
+
+            if (isPacote) {
+                formData.append('category', 'pacotes');
+                formData.append('price', document.getElementById('edit-prod-price-pacote').value);
+                formData.append('price_original', document.getElementById('edit-prod-price-original').value);
+                formData.append('bundle_items', window.currentEditBundleItems || '[]');
+            } else if (isMini) {
+                formData.append('category', document.getElementById('edit-prod-category-mini').value);
+                formData.append('price_unpainted', document.getElementById('edit-prod-price-unpainted').value);
+                formData.append('price_painted', document.getElementById('edit-prod-price-painted').value);
+            } else {
+                formData.append('category', document.getElementById('edit-prod-category-arsenal').value);
+                formData.append('price', document.getElementById('edit-prod-price').value);
+            }
+
+            formData.append('keptImages', JSON.stringify(currentEditImages));
+
+            var imageFileInput = document.getElementById('edit-prod-image');
+            if (imageFileInput.files.length > 0) {
+                for (var i = 0; i < imageFileInput.files.length; i++) {
+                    formData.append('image', imageFileInput.files[i]);
+                }
+            }
+
+            try {
+                var res = await fetch('/api/admin/products', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (res.status === 401) {
+                    alert('Sua sessão expirou. Faça login novamente.');
+                    logout();
+                    return;
+                }
+                if (res.ok) {
+                    alert('Produto atualizado com sucesso no site!');
+                    closeEditProductModal();
+                    loadProducts();
+                } else {
+                    var errData = await res.json().catch(() => ({}));
+                    alert('Erro ao atualizar produto: ' + (errData.error || `Status ${res.status}`));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão ao salvar alterações do produto.');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var btn = document.getElementById('btn-submit');
+            btn.disabled = true;
+
+            var formData = new FormData();
+            formData.append('type', document.getElementById('prod-type').value);
+            formData.append('name', document.getElementById('prod-name').value);
+            formData.append('description', document.getElementById('prod-desc').value);
+            formData.append('image', document.getElementById('prod-image').files[0]);
+
+            if (currentTab === 'miniatura') {
+                formData.append('category', document.getElementById('prod-category').value);
+                formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
+                formData.append('price_painted', document.getElementById('prod-price-painted').value);
+            formData.append('price_painted_box', document.getElementById('prod-price-painted-box').value);
+            } else if (currentTab === 'pacotes') {
+                formData.append('category', 'pacotes');
+                formData.append('price', document.getElementById('prod-price-pacote').value);
+                formData.append('price_original', document.getElementById('prod-price-original').value);
+                formData.append('bundle_items', window.currentBundleItems || '[]');
+            } else {
+                formData.append('category', document.getElementById('prod-category-arsenal').value);
+                formData.append('price', document.getElementById('prod-price').value);
+            }
+
+            try {
+                var res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (res.status === 401) {
+                    alert('Sua sessão expirou ou não é válida. Por favor, faça login novamente no painel.');
+                    logout();
+                    return;
+                }
+                if (res.ok) {
+                    alert('Produto publicado no site com sucesso!');
+                    document.getElementById('product-form').reset();
+                    loadProducts();
+                } else {
+                    var errData = await res.json().catch(() => ({}));
+                    alert('Erro ao salvar: ' + (errData.error || `Status ${res.status}`));
+                }
+            } catch(err) { 
+                console.error(err);
+                alert('Erro na comunicação com o servidor.'); 
+            }
+            finally { btn.disabled = false; }
+        });
+
+        async function deleteProduct(id) {
+            if(!confirm('Excluir este produto do site?')) return;
+            await fetch(`/api/admin/products?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadProducts();
+        }
+
+        // LIVRO FINANCEIRO (COM EDIÇÃO DE TODOS OS REGISTROS NO SUPABASE)
+        async function loadFinance() {
+            var tbody = document.getElementById('tbody-finance');
+            var type = document.getElementById('fin-filter-type').value;
+            tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>';
+            try {
+                var res = await fetch(`/api/admin/finance?type=${type}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                var data = await res.json();
+                cachedFinanceData = data.financeiro || [];
+
+                if (cachedFinanceData.length > 0) {
+                    tbody.innerHTML = cachedFinanceData.map(r => `
+                        <tr class="hover:bg-amber-50/40 transition-colors">
+                            <td class="p-3.5 text-zinc-500 font-mono text-[11px]">${r.data}</td>
+                            <td class="p-3.5 font-bold text-black">
+                                <span class="inline-flex items-center gap-1 bg-black text-[#EBE3CB] px-2 py-0.5 rounded text-[10px] uppercase font-bold">
+                                    <i class="fa-solid ${r.tipo === 'Venda' ? 'fa-arrow-up' : 'fa-arrow-down'} text-amber-500 text-[9px]"></i> ${r.tipo}
+                                </span>
+                            </td>
+                            <td class="p-3.5 font-medium text-zinc-900">${r.descricao}</td>
+                            <td class="p-3.5"><span class="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold text-zinc-600">${r.categoria}</span></td>
+                            <td class="p-3.5 font-bold text-black">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3.5 text-center flex items-center justify-center gap-2">
+                                <button onclick="openEditFinModal('${r.id}')" class="text-zinc-600 hover:text-black p-1 cursor-pointer" title="Editar este registro"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteFinance('${r.id}')" class="text-zinc-400 hover:text-black p-1 cursor-pointer" title="Excluir lançamento"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Nenhum lançamento no livro.</td></tr>';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function openEditFinModal(id) {
+            var item = cachedFinanceData.find(f => f.id === id);
+            if (!item) return;
+
+            document.getElementById('edit-fin-id').value = item.id;
+            document.getElementById('edit-fin-data').value = item.data;
+            document.getElementById('edit-fin-tipo').value = item.tipo;
+            document.getElementById('edit-fin-desc').value = item.descricao;
+            document.getElementById('edit-fin-cat').value = item.categoria;
+            document.getElementById('edit-fin-valor').value = item.valor;
+            document.getElementById('edit-fin-cliente').value = item.cliente || '';
+            document.getElementById('edit-fin-produto').value = item.produto || '';
+
+            document.getElementById('modal-edit-fin').classList.remove('hidden');
+        }
+
+        function closeEditFinModal() {
+            document.getElementById('modal-edit-fin').classList.add('hidden');
+        }
+
+        document.getElementById('form-edit-fin-modal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var id = document.getElementById('edit-fin-id').value;
+            var data = document.getElementById('edit-fin-data').value;
+            var tipo = document.getElementById('edit-fin-tipo').value;
+            var descricao = document.getElementById('edit-fin-desc').value;
+            var categoria = document.getElementById('edit-fin-cat').value;
+            var valor = document.getElementById('edit-fin-valor').value;
+            var cliente = document.getElementById('edit-fin-cliente').value;
+            var produto = document.getElementById('edit-fin-produto').value;
+
+            try {
+                var res = await fetch('/api/admin/finance', {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ id, data, tipo, descricao, categoria, valor, cliente, produto })
+                });
+
+                if (res.ok) {
+                    alert('Lançamento atualizado no Supabase com sucesso!');
+                    closeEditFinModal();
+                    loadFinance();
+                    loadDashboardData();
+                } else {
+                    alert('Erro ao atualizar o registro no banco de dados.');
+                }
+            } catch (err) { alert('Erro de conexão ao salvar alterações.'); }
+        });
+
+        async function deleteFinance(id) {
+            if(!confirm('Excluir este lançamento do banco Supabase?')) return;
+            await fetch(`/api/admin/finance?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadFinance();
+            loadDashboardData();
+        }
+
+        // CLIENTES
+        async function loadCustomers() {
+            var tbody = document.getElementById('tbody-customers');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-zinc-400">Carregando clientes...</td></tr>';
+            try {
+                var res = await fetch('/api/admin/customers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                var data = await res.json();
+                if (data.clientes && data.clientes.length > 0) {
+                    tbody.innerHTML = data.clientes.map(c => `
+                        <tr class="hover:bg-amber-50/40 transition-colors">
+                            <td class="p-3.5 font-bold text-zinc-900">${c.nome}</td>
+                            <td class="p-3.5 text-zinc-700 font-semibold">${c.telefone}</td>
+                            <td class="p-3.5 text-zinc-500">${c.endereco}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="deleteCustomer('${c.id}')" class="text-zinc-400 hover:text-black p-1 cursor-pointer" title="Excluir cliente"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-zinc-400">Nenhum cliente cadastrado.</td></tr>';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        document.getElementById('form-cliente').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            var nome = document.getElementById('cli-nome').value;
+            var telefone = document.getElementById('cli-tel').value;
+            var endereco = document.getElementById('cli-end').value;
+            var email = document.getElementById('cli-email').value;
+
+            try {
+                var res = await fetch('/api/admin/customers', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ nome, telefone, endereco, email })
+                });
+                if (res.ok) {
+                    alert('Cliente cadastrado com sucesso!');
+                    document.getElementById('form-cliente').reset();
+                    loadCustomers();
+                }
+            } catch (err) { alert('Erro ao cadastrar cliente'); }
+        });
+
+        async function deleteCustomer(id) {
+            if(!confirm('Excluir este cliente?')) return;
+            await fetch(`/api/admin/customers?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadCustomers();
+        }
+    
+
+      (window as any).logout = logout;
+(window as any).showDashboard = showDashboard;
+(window as any).switchMainTab = switchMainTab;
+(window as any).loadDashboardData = loadDashboardData;
+(window as any).renderChart = renderChart;
+(window as any).openSaleModal = openSaleModal;
+(window as any).closeSaleModal = closeSaleModal;
+(window as any).switchTab = switchTab;
+(window as any).loadProducts = loadProducts;
+(window as any).openEditProductModal = openEditProductModal;
+(window as any).removeEditImage = removeEditImage;
+(window as any).closeEditProductModal = closeEditProductModal;
+(window as any).deleteProduct = deleteProduct;
+(window as any).loadFinance = loadFinance;
+(window as any).openEditFinModal = openEditFinModal;
+(window as any).closeEditFinModal = closeEditFinModal;
+(window as any).deleteFinance = deleteFinance;
+(window as any).loadCustomers = loadCustomers;
+(window as any).deleteCustomer = deleteCustomer;
+
+    } catch(e) {
+      console.error("Error in legacy script for Admin:", e);
+    }
+  }, []);return (
+    <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-md w-full border border-black/10 text-center">
+            <h1 class="text-4xl font-title text-black tracking-wide mb-1">Saving Throw</h1>
+            <p class="text-xs uppercase font-bold tracking-widest text-zinc-500 mb-6">Acesso Restrito ao Painel ERP</p>
+            
+            <form id="login-form" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Usuário</label>
+                    <div class="relative">
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="Digite seu usuário..." required>
+                        <i class="fa-solid fa-user-shield absolute left-3.5 top-3.5 text-amber-500"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Senha</label>
+                    <div class="relative">
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg focus:border-amber-600 focus:bg-white focus:outline-none text-sm transition-colors font-semibold" placeholder="••••••••" required>
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-amber-500"></i>
+                    </div>
+                </div>
+                <div id="login-error" class="text-amber-700 text-xs hidden font-bold bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-500"></i> Credenciais inválidas. Verifique usuário e senha.
+                </div>
+                <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-3.5 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm tracking-wider cursor-pointer">
+                    <i class="fa-solid fa-dungeon text-amber-500"></i> Entrar no ERP
+                </button>
+            </form>
+        </div>
     </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="hidden flex-1 flex flex-col">
+        <!-- HEADER -->
+        
+
+        <div class="flex-1 container mx-auto px-4 py-6 max-w-6xl">
+            <!-- MAIN NAVIGATION TABS -->
+            <div class="flex flex-wrap gap-2 mb-6 bg-white/40 p-1.5 rounded-xl border border-black/10 shadow-xs">
+                <button onclick="switchMainTab('dash')" id="mtab-dash" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-500"></i></div>
+                    Painel Geral
+                </button>
+                <button onclick="switchMainTab('prods')" id="mtab-prods" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-zinc-600"></i></div>
+                    Produtos do Site
+                </button>
+                <button onclick="switchMainTab('fin')" id="mtab-fin" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-book text-zinc-600"></i></div>
+                    Livro de Contabilidade
+                </button>
+                <button onclick="switchMainTab('cli')" id="mtab-cli" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-users text-zinc-600"></i></div>
+                    Clientes (CRM)
+                </button>
+            </div>
+
+            <!-- TAB 1: PAINEL GERAL / DASHBOARD (SOMENTE GRÁFICOS E INFORMAÇÕES GERAIS) -->
+            <div id="sec-dash" class="space-y-6">
+                <!-- KPIs CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Receita -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-coins text-amber-500"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Receita Total</span>
+                            <span id="kpi-revenue" class="text-2xl font-black text-black">R\$ 0,00</span>
+                        </div>
+                    </div>
+                    <!-- Despesas -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-receipt text-amber-500"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Despesas Totais</span>
+                            <span id="kpi-expenses" class="text-2xl font-black text-black">R\$ 0,00</span>
+                        </div>
+                    </div>
+                    <!-- Lucro -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-scale-balanced text-amber-500"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Lucro Líquido</span>
+                            <span id="kpi-profit" class="text-2xl font-black text-amber-700">R\$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS CHARTS SECTION -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                <i class="fa-solid fa-chart-pie text-amber-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-xl text-parchment-dark">Despesas por Categoria</h3>
+                                <p class="text-xs text-zinc-500">Distribuição dos custos operacionais no Supabase</p>
+                            </div>
+                        </div>
+                        <div class="h-64 relative flex items-center justify-center">
+                            <canvas id="chart-costs"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                <i class="fa-solid fa-chart-bar text-amber-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-title text-xl text-parchment-dark">Resumo Financeiro Geral</h3>
+                                <p class="text-xs text-zinc-500">Indicadores consolidados da loja</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 my-auto py-2">
+                            <div class="flex justify-between items-center p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                                <span class="text-xs font-bold uppercase text-zinc-600">Margem Operacional</span>
+                                <span id="summary-margin" class="text-sm font-black text-amber-700">0%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                                <span class="text-xs font-bold uppercase text-zinc-600">Status Geral do Banco</span>
+                                <span class="text-xs font-bold uppercase text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">100% Sincronizado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PRODUTOS DO SITE (MINIATURAS E ARSENAL/ESCUDO DO MESTRE) -->
+            <div id="sec-prods" class="hidden flex flex-col lg:flex-row gap-8">
+                <div class="w-full">
+                    <!-- SUBTABS -->
+                    <div class="flex gap-2 mb-6 border-b border-black/10 pb-2">
+                        <button onclick="switchTab('miniaturas')" id="tab-miniaturas" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all bg-black text-[#EBE3CB] shadow-sm flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-dragon text-amber-500"></i> Miniaturas
+                        </button>
+                        <button onclick="switchTab('arsenal')" id="tab-arsenal" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-shield-halved text-zinc-500"></i> Arsenal & Escudos
+                        </button>
+                        <button onclick="switchTab('pacotes')" id="tab-pacotes" class="px-5 py-2 text-xs font-bold uppercase rounded-lg transition-all text-zinc-700 hover:bg-white/60 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-boxes-stacked text-amber-500"></i> Pacotes
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- FORM CADASTRO DE PRODUTO -->
+                        <div class="w-full lg:w-1/3 bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-black/10 self-start">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-plus-circle text-amber-500"></i>
+                                </div>
+                                <div>
+                                    <h2 class="font-title text-xl text-parchment-dark" id="form-title">Adicionar Miniatura</h2>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Exibido no Catálogo do Site</p>
+                                </div>
+                            </div>
+
+                            <form id="product-form" class="space-y-4">
+                                <input type="hidden" id="prod-type" value="miniatura">
+                                
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça / Item</label>
+                                    <input type="text" id="prod-name" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" required placeholder="Ex: Orc Guerreiro ou Escudo do Mestre">
+                                </div>
+
+                                <div id="field-category">
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
+                                    <select id="prod-category" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
+                                        <option value="npcs">NPCs</option>
+                                        <option value="monstros">Monstros</option>
+                                        <option value="cenario">Cenário</option>
+                                    </select>
+                                </div>
+
+                                <div id="field-category-arsenal" class="hidden">
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Arsenal)</label>
+                                    <select id="prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                                        <option value="escudo">Escudo do Mestre</option>
+                                        <option value="acessorios">Acessórios & Dados</option>
+                                        <option value="terreno">Terreno & Cenários</option>
+                                        <option value="geral">Outros Equipamentos</option>
+                                    </select>
+                                </div>
+
+                                <div id="fields-prices-mini" class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="89.90">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-painted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="139.90">
+                                    </div>
+                                </div>
+
+                                <div id="field-price-arsenal" class="hidden">
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
+                                    <input type="number" step="0.01" id="prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                                </div>
+                                
+                                <div id="field-pacotes-config" class="hidden space-y-4 pt-2">
+                                    <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Selecione as Miniaturas do Pacote</label>
+                                        <div id="bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
+                                            Carregando...
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Original (Soma Automática) (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-original" class="w-full p-2.5 bg-zinc-100 text-zinc-500 border border-zinc-200 rounded-lg text-xs font-semibold cursor-not-allowed" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor com Desconto do Pacote (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="Ex: 199.90">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto</label>
+                                    <textarea id="prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none" placeholder="Detalhes do modelo..." required></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Foto do Seu Computador</label>
+                                    <input type="file" id="prod-image" accept="image/*" multiple class="w-full p-2 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-black file:text-[#EBE3CB] hover:file:bg-zinc-800 cursor-pointer" required>
+                                </div>
+
+                                <!-- BOTÃO PUBLICAR NO SITE (SEMPRE VISÍVEL) -->
+                                <div class="pt-2">
+                                    <button type="submit" id="btn-submit" class="w-full bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-3.5 rounded-lg text-xs transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer border border-black/20">
+                                        <i class="fa-solid fa-cloud-arrow-up text-amber-500"></i> Publicar no Site
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- LISTA DE PRODUTOS CADASTRADOS -->
+                        <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-black/10">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                    <i class="fa-solid fa-list-check text-amber-500"></i>
+                                </div>
+                                <div>
+                                    <h2 class="font-title text-xl text-parchment-dark" id="list-title">Miniaturas Cadastradas</h2>
+                                    <p class="text-[10px] uppercase font-bold text-zinc-400">Gerenciamento do Catálogo Ativo</p>
+                                </div>
+                            </div>
+                            <div id="loading-products" class="text-center py-12 text-zinc-500">
+                                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-amber-500"></i>
+                                <p class="text-xs font-bold uppercase tracking-wider">Buscando itens no Supabase...</p>
+                            </div>
+                            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: LIVRO DE CONTABILIDADE (COM REGISTRO DE CUSTO E EDIÇÃO COMPLETA) -->
+            <div id="sec-fin" class="hidden space-y-6">
+                <!-- FORM DE REGISTRO DE CUSTO -->
+                <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-minus-circle text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Registrar Novo Custo</h2>
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Lançamento de Despesa no Livro</p>
+                        </div>
+                    </div>
+                    <form id="form-gasto-tab" class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Descrição do Gasto</label>
+                            <input type="text" id="gasto-desc-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Garrafa de Resina 1L" required>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Valor (R\$)</label>
+                            <input type="number" step="0.01" id="gasto-valor-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: 150.00" required>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-zinc-600 mb-1">Categoria</label>
+                            <select id="gasto-cat-tab" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                                <option value="Insumo">Insumo</option>
+                                <option value="Equipamento">Equipamento</option>
+                                <option value="Fixo">Fixo</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-4 mt-2">
+                            <button type="submit" class="w-full md:w-auto px-6 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-plus text-amber-500"></i> Lançar Custo no Livro
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TABELA DO LIVRO DE CONTABILIDADE -->
+                <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                                <i class="fa-solid fa-book-bookmark text-amber-500"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-title text-2xl text-parchment-dark">Livro de Contabilidade</h2>
+                                <p class="text-xs text-zinc-500">Histórico editável de entradas e saídas no Supabase</p>
+                            </div>
+                        </div>
+                        <select id="fin-filter-type" onchange="loadFinance()" class="p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-bold focus:outline-none focus:border-black cursor-pointer">
+                            <option value="all">Ver Todos os Lançamentos</option>
+                            <option value="Venda">Apenas Entradas (Vendas)</option>
+                            <option value="Custo">Apenas Saídas (Custos)</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-black/10">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3.5">Data / Hora</th>
+                                    <th class="p-3.5">Tipo</th>
+                                    <th class="p-3.5">Descrição</th>
+                                    <th class="p-3.5">Categoria</th>
+                                    <th class="p-3.5">Valor Total</th>
+                                    <th class="p-3.5 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-finance" class="divide-y divide-zinc-200 bg-white">
+                                <tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: CLIENTES (CRM) -->
+            <div id="sec-cli" class="hidden flex flex-col lg:flex-row gap-6">
+                <!-- FORM CLIENTE -->
+                <div class="w-full lg:w-1/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm self-start">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-user-plus text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Novo Cliente</h2>
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Cadastro da Guilda</p>
+                        </div>
+                    </div>
+                    <form id="form-cliente" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome Completo *</label>
+                            <input type="text" id="cli-nome" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Ex: Carlos Silva">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Telefone / WhatsApp *</label>
+                            <input type="text" id="cli-tel" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="(27) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Endereço Completo *</label>
+                            <input type="text" id="cli-end" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required placeholder="Rua, número, bairro">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">E-mail</label>
+                            <input type="email" id="cli-email" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="cliente@email.com">
+                        </div>
+                        <button type="submit" class="w-full bg-black text-[#EBE3CB] font-bold uppercase py-3 rounded-lg text-xs hover:bg-zinc-800 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-address-book text-amber-500"></i> Cadastrar Cliente
+                        </button>
+                    </form>
+                </div>
+
+                <!-- LISTA CLIENTES -->
+                <div class="w-full lg:w-2/3 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-users text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Clientes Registrados</h2>
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Base de Dados de Membros</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-black/10">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3.5">Nome</th>
+                                    <th class="p-3.5">Telefone</th>
+                                    <th class="p-3.5">Endereço</th>
+                                    <th class="p-3.5 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-customers" class="divide-y divide-zinc-200 bg-white">
+                                <tr><td colspan="4" class="p-8 text-center text-zinc-400">Carregando clientes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: REGISTRAR VENDA A PARTIR DO CARD DE PRODUTO -->
+    <div id="modal-sale" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full border border-black/10">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-cart-shopping text-amber-500"></i>
+                    </div>
+                    <h3 class="font-title text-xl text-black">Efetuar Venda de Produto</h3>
+                </div>
+                <button onclick="closeSaleModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
+            </div>
+            <form id="form-sale-modal" class="space-y-3 text-left">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Produto</label>
+                    <input type="text" id="modal-sale-product" class="w-full p-2.5 bg-zinc-100 border border-zinc-300 rounded-lg text-xs font-bold text-zinc-800" readonly>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome do Cliente *</label>
+                    <input type="text" id="modal-sale-client" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos Santos" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Final da Venda (R\$) *</label>
+                    <input type="number" step="0.01" id="modal-sale-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeSaleModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs flex items-center justify-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-check text-amber-500"></i> Salvar Venda
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: EDITAR REGISTRO FINANCEIRO DO LIVRO -->
+    <div id="modal-edit-fin" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full border border-black/10">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                    </div>
+                    <h3 class="font-title text-xl text-black">Editar Lançamento no Supabase</h3>
+                </div>
+                <button onclick="closeEditFinModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
+            </div>
+            <form id="form-edit-fin-modal" class="space-y-3 text-left">
+                <input type="hidden" id="edit-fin-id">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Data / Hora</label>
+                        <input type="text" id="edit-fin-data" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Tipo de Registro</label>
+                        <select id="edit-fin-tipo" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                            <option value="Venda">Venda (Entrada)</option>
+                            <option value="Custo">Custo (Saída)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição</label>
+                    <input type="text" id="edit-fin-desc" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria</label>
+                        <input type="text" id="edit-fin-cat" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor (R\$)</label>
+                        <input type="number" step="0.01" id="edit-fin-valor" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Cliente (Opcional)</label>
+                        <input type="text" id="edit-fin-cliente" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Produto (Opcional)</label>
+                        <input type="text" id="edit-fin-produto" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Dragão">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditFinModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs flex items-center justify-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk text-amber-500"></i> Atualizar Banco
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: EDITAR PRODUTO DO SITE -->
+    <div id="modal-edit-prod" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full border border-black/10 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                    </div>
+                    <h3 class="font-title text-xl text-black" id="edit-prod-modal-title">Editar Produto</h3>
+                </div>
+                <button onclick="closeEditProductModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
+            </div>
+            <form id="form-edit-prod-modal" class="space-y-3 text-left">
+                <input type="hidden" id="edit-prod-id">
+                <input type="hidden" id="edit-prod-type">
+
+                <div class="flex flex-col gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                    <div id="edit-prod-preview-container" class="flex flex-wrap gap-2"></div>
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-bold uppercase text-zinc-600 mb-1">Adicionar Novas Fotos (Opcional)</label>
+                        <input type="file" id="edit-prod-image" accept="image/*" multiple class="w-full text-xs text-zinc-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-black file:text-[#EBE3CB] cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome da Peça / Item *</label>
+                    <input type="text" id="edit-prod-name" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+                </div>
+
+                <div id="edit-field-category-mini">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Miniaturas)</label>
+                    <select id="edit-prod-category-mini" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                        <option value="npcs">NPCs</option>
+                        <option value="monstros">Monstros</option>
+                        <option value="cenario">Cenário</option>
+                    </select>
+                </div>
+
+                <div id="edit-field-category-arsenal" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Categoria (Arsenal)</label>
+                    <select id="edit-prod-category-arsenal" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                        <option value="escudo">Escudo do Mestre</option>
+                        <option value="acessorios">Acessórios & Dados</option>
+                        <option value="terreno">Terreno & Cenários</option>
+                        <option value="geral">Outros Equipamentos</option>
+                    </select>
+                </div>
+
+                <div id="edit-fields-prices-mini" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Sem Pintura (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-unpainted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="49.90">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Com Pintura (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-painted" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="89.90">
+                    </div>
+                </div>
+
+                <div id="edit-field-price-arsenal" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor do Produto (R\$)</label>
+                    <input type="number" step="0.01" id="edit-prod-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="299.90">
+                </div>
+
+                <div id="edit-field-pacotes-config" class="hidden space-y-4 pt-2">
+                    <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Miniaturas do Pacote</label>
+                        <div id="edit-bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
+                            Carregando...
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Original (Soma Automática) (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-original" class="w-full p-2.5 bg-zinc-100 text-zinc-500 border border-zinc-200 rounded-lg text-xs font-semibold cursor-not-allowed" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor Final do Pacote (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="199.90">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Descrição do Produto *</label>
+                    <textarea id="edit-prod-desc" rows="3" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required></textarea>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditProductModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
+                    <button type="submit" id="btn-save-edit-prod" class="flex-1 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs flex items-center justify-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk text-amber-500"></i> Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+` }} />
   );
 }
