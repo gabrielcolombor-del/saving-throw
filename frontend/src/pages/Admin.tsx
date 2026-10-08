@@ -576,7 +576,9 @@ export function Admin() {
                 formData.append('category', document.getElementById('prod-category').value);
                 formData.append('price_unpainted', document.getElementById('prod-price-unpainted').value);
                 formData.append('price_painted', document.getElementById('prod-price-painted').value);
-            formData.append('price_painted_box', document.getElementById('prod-price-painted-box').value);
+                
+                var boxElem = document.getElementById('prod-price-painted-box');
+                if (boxElem) formData.append('price_painted_box', boxElem.value);
             } else if (currentTab === 'pacotes') {
                 formData.append('category', 'pacotes');
                 formData.append('price', document.getElementById('prod-price-pacote').value);
