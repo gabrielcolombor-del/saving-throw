@@ -118,6 +118,24 @@ module.exports = async function handler(req, res) {
                         console.error('Error fetching bundle items', e);
                     }
                 }
+                
+                // Truncate Base64 images for single products as well
+                if (product.image_url) {
+                    let parsedImages = [];
+                    if (product.image_url.startsWith('[')) {
+                        try { parsedImages = JSON.parse(product.image_url); } catch(e){}
+                    } else {
+                        parsedImages = [product.image_url];
+                    }
+                    
+                    parsedImages = parsedImages.map((img, i) => {
+                        return (img && img.includes('data:image')) ? `/api/product-image?id=${product.id}&index=${i}` : img;
+                    });
+                    
+                    product.images = parsedImages;
+                    product.image_url = JSON.stringify(parsedImages);
+                }
+
                 return res.status(200).json({ product });
             }
 
@@ -173,7 +191,14 @@ module.exports = async function handler(req, res) {
             LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
         `;
 
-        const { rows: products } = await pool.query(querySql, params);
+        let { rows: products } = await pool.query(querySql, params);
+
+        products = products.map(p => {
+            if (p.image_url && p.image_url.includes('data:image')) {
+                p.image_url = `/api/product-image?id=${p.id}&thumb=1`;
+            }
+            return p;
+        });
 
         return res.status(200).json({
             products,

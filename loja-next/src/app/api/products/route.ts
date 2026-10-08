@@ -107,6 +107,24 @@ export async function GET(request: Request) {
                         console.error('Error fetching bundle items', e);
                     }
                 }
+                
+                // Truncate Base64 images for single products as well
+                if (product.image_url) {
+                    let parsedImages: string[] = [];
+                    if (product.image_url.startsWith('[')) {
+                        try { parsedImages = JSON.parse(product.image_url); } catch(e){}
+                    } else {
+                        parsedImages = [product.image_url];
+                    }
+                    
+                    parsedImages = parsedImages.map((img, i) => {
+                        return (img && img.includes('data:image')) ? `/api/product-image?id=${product.id}&index=${i}` : img;
+                    });
+                    
+                    product.images = parsedImages;
+                    product.image_url = JSON.stringify(parsedImages);
+                }
+
                 return NextResponse.json({ product });
             }
 

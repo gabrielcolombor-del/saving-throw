@@ -15,20 +15,21 @@ module.exports = async function handler(req, res) {
         return res.status(500).send('Banco de dados não conectado.');
     }
 
-    const { id, thumb } = req.query;
+    const { id, thumb, index } = req.query;
     if (!id) return res.status(400).send('ID is required');
 
     try {
         const { rows } = await pool.query('SELECT image_url FROM st_products WHERE id = $1', [id]);
         if (rows.length === 0 || !rows[0].image_url) {
-            // Se não tiver imagem, podemos retornar a padrão.
             return res.redirect(302, '/assets/imagens/minis.png');
         }
 
         let imgData = rows[0].image_url;
         if (imgData.startsWith('[')) {
             try {
-                imgData = JSON.parse(imgData)[0];
+                const parsed = JSON.parse(imgData);
+                const imgIndex = parseInt(index) || 0;
+                imgData = parsed[imgIndex] || parsed[0];
             } catch (e) {}
         }
 
