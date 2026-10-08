@@ -136,7 +136,7 @@ module.exports = async function handler(req, res) {
         const offsetParamIndex = params.length;
 
         const querySql = `
-            SELECT id, name, type, category, price, price_unpainted, price_painted, price_painted_box, price_original, bundle_items, description, created_at 
+            SELECT id, name, type, category, price, price_unpainted, price_painted, price_painted_box, price_original, bundle_items, description, image_url, created_at 
             FROM st_products 
             ${whereSql} 
             ORDER BY created_at DESC 

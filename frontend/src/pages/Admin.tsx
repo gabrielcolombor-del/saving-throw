@@ -268,7 +268,7 @@ export function Admin() {
                         <img src="\${(function(){
                             var firstImg = m.image_url || '';
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
-                            return firstImg || '/assets/imagens/logo quadrada.png';
+                            return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
                         <span class="text-xs font-semibold">\${m.name}</span>
                     </label>
@@ -311,7 +311,7 @@ export function Admin() {
                         <img src="\${(function(){
                             var firstImg = m.image_url || '';
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
-                            return firstImg || '/assets/imagens/logo quadrada.png';
+                            return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
                         <span class="text-xs font-semibold">\${m.name}</span>
                     </label>
@@ -362,7 +362,7 @@ export function Admin() {
                                     <img src="${(function(){
             var firstImg = p.image_url || '';
             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
-            return firstImg || '/assets/imagens/logo quadrada.png';
+            return firstImg;
         })()}" class="w-16 h-16 object-cover rounded-lg bg-zinc-100 border border-zinc-200 shrink-0">
                                     <div class="flex-1 min-w-0">
                                         <h4 class="font-bold text-xs line-clamp-1 text-zinc-900" title="${p.name}">${p.name}</h4>
