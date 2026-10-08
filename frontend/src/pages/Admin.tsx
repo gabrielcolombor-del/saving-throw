@@ -256,6 +256,16 @@ export function Admin() {
 
         
         var allMiniaturesForBundle = [];
+        window.filterBundleMiniatures = function(val) {
+            var items = document.querySelectorAll('#bundle-miniatures-list label');
+            items.forEach(el => {
+                if(el.textContent.toLowerCase().includes(val.toLowerCase())) {
+                    el.style.display = 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        };
         async function loadMiniaturesForBundle() {
             var list = document.getElementById('bundle-miniatures-list');
             try {
@@ -264,13 +274,13 @@ export function Admin() {
                 allMiniaturesForBundle = data.products || [];
                 list.innerHTML = allMiniaturesForBundle.map(m => `
                     <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
-                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
-                        <img src="\${(function(){
+                        <input type="checkbox" value="${m.id}" data-name="${m.name}" data-price="${m.price_unpainted || m.price || 0}" class="bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateBundleOriginalPrice()">
+                        <img src="${(function(){
                             var firstImg = m.image_url || '';
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
                             return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
-                        <span class="text-xs font-semibold">\${m.name}</span>
+                        <span class="text-xs font-semibold">${m.name}</span>
                     </label>
                 `).join('');
             } catch(e) {
@@ -291,6 +301,16 @@ export function Admin() {
             window.currentEditBundleItems = JSON.stringify(items);
         };
 
+        window.filterEditBundleMiniatures = function(val) {
+            var items = document.querySelectorAll('#edit-bundle-miniatures-list label');
+            items.forEach(el => {
+                if(el.textContent.toLowerCase().includes(val.toLowerCase())) {
+                    el.style.display = 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        };
         window.loadMiniaturesForEditBundle = async function(existingItemsJson) {
             var list = document.getElementById('edit-bundle-miniatures-list');
             var existingItems = [];
@@ -307,13 +327,13 @@ export function Admin() {
                     var isChecked = existingIds.includes(m.id) ? 'checked' : '';
                     return `
                     <label class="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer border-b border-black/5">
-                        <input type="checkbox" value="\${m.id}" data-name="\${m.name}" data-price="\${m.price_unpainted || m.price || 0}" class="edit-bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateEditBundleOriginalPrice()" \${isChecked}>
-                        <img src="\${(function(){
+                        <input type="checkbox" value="${m.id}" data-name="${m.name}" data-price="${m.price_unpainted || m.price || 0}" class="edit-bundle-item-checkbox accent-amber-600 w-4 h-4" onclick="event.stopPropagation(); window.calculateEditBundleOriginalPrice()" ${isChecked}>
+                        <img src="${(function(){
                             var firstImg = m.image_url || '';
                             if(firstImg.startsWith('[')) { try { firstImg = JSON.parse(firstImg)[0] || ''; } catch(e){} }
                             return firstImg;
                         })()}" class="w-8 h-8 object-cover rounded bg-zinc-200">
-                        <span class="text-xs font-semibold">\${m.name}</span>
+                        <span class="text-xs font-semibold">${m.name}</span>
                     </label>
                     `;
                 }).join('');
@@ -995,6 +1015,7 @@ export function Admin() {
                                 <div id="field-pacotes-config" class="hidden space-y-4 pt-2">
                                     <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
                                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Selecione as Miniaturas do Pacote</label>
+                                        <input type="text" onkeyup="window.filterBundleMiniatures(this.value)" placeholder="Pesquisar por nome..." class="w-full p-2 mb-2 bg-white text-zinc-900 border border-zinc-300 rounded text-xs font-semibold focus:border-black focus:outline-none">
                                         <div id="bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
                                             Carregando...
                                         </div>
@@ -1362,6 +1383,7 @@ export function Admin() {
                 <div id="edit-field-pacotes-config" class="hidden space-y-4 pt-2">
                     <div class="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
                         <label class="block text-xs font-bold uppercase text-zinc-600 mb-2">Miniaturas do Pacote</label>
+                        <input type="text" onkeyup="window.filterEditBundleMiniatures(this.value)" placeholder="Pesquisar por nome..." class="w-full p-2 mb-2 bg-white text-zinc-900 border border-zinc-300 rounded text-xs font-semibold focus:border-black focus:outline-none">
                         <div id="edit-bundle-miniatures-list" class="max-h-48 overflow-y-auto space-y-1 bg-white border border-zinc-200 rounded p-2">
                             Carregando...
                         </div>
