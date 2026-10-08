@@ -160,7 +160,14 @@ export async function GET(request: Request) {
             LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
         `;
 
-        const { rows: products } = await pool.query(querySql, params);
+        let { rows: products } = await pool.query(querySql, params);
+
+        products = products.map(p => {
+            if (p.image_url && p.image_url.includes('data:image')) {
+                p.image_url = `/api/product-image?id=${p.id}&thumb=1`;
+            }
+            return p;
+        });
 
         return NextResponse.json({
             products,

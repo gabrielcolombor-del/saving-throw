@@ -1,5 +1,7 @@
 const { pool } = require('./_lib/db');
 
+const sharp = require('sharp');
+
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,7 +15,7 @@ module.exports = async function handler(req, res) {
         return res.status(500).send('Banco de dados não conectado.');
     }
 
-    const { id } = req.query;
+    const { id, thumb } = req.query;
     if (!id) return res.status(400).send('ID is required');
 
     try {
@@ -36,9 +38,22 @@ module.exports = async function handler(req, res) {
                 const mimeType = matches[1];
                 const base64Data = matches[2];
                 const buffer = Buffer.from(base64Data, 'base64');
-                res.setHeader('Content-Type', mimeType);
-                res.setHeader('Cache-Control', 'public, max-age=86400');
-                return res.status(200).send(buffer);
+                
+                try {
+                    const optimizedBuffer = await sharp(buffer)
+                        .resize({ width: thumb === '1' ? 400 : 800, withoutEnlargement: true })
+                        .webp({ quality: 80 })
+                        .toBuffer();
+
+                    res.setHeader('Content-Type', 'image/webp');
+                    res.setHeader('Cache-Control', 'public, max-age=86400');
+                    return res.status(200).send(optimizedBuffer);
+                } catch (sharpErr) {
+                    console.error("Erro no Sharp:", sharpErr);
+                    res.setHeader('Content-Type', mimeType);
+                    res.setHeader('Cache-Control', 'public, max-age=86400');
+                    return res.status(200).send(buffer);
+                }
             }
         }
         
