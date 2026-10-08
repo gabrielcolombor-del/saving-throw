@@ -72,6 +72,36 @@ export async function GET(request: Request) {
                         if (Array.isArray(itemIds) && itemIds.length > 0) {
                             const { rows: bundledItems } = await pool.query('SELECT id, name, price, price_unpainted, price_painted, image_url, category, description FROM st_products WHERE id = ANY($1)', [itemIds]);
                             product.bundled_products = bundledItems;
+                            
+                            // Mesclar imagens dos itens filhos no pacote
+                            let allImages: string[] = [];
+                            if (product.image_url) {
+                                if (product.image_url.startsWith('[')) {
+                                    try { allImages = JSON.parse(product.image_url); } catch(e){}
+                                } else {
+                                    allImages.push(product.image_url);
+                                }
+                            }
+                            
+                            for (let item of bundledItems) {
+                                if (item.image_url) {
+                                    if (item.image_url.startsWith('[')) {
+                                        try { 
+                                            let subImgs = JSON.parse(item.image_url); 
+                                            if (subImgs.length > 0) allImages.push(subImgs[0]);
+                                        } catch(e){}
+                                    } else {
+                                        allImages.push(item.image_url);
+                                    }
+                                }
+                            }
+                            
+                            // Remove duplicatas
+                            allImages = Array.from(new Set(allImages));
+                            if (allImages.length > 0) {
+                                product.image_url = JSON.stringify(allImages);
+                                product.images = allImages;
+                            }
                         }
                     } catch(e) {
                         console.error('Error fetching bundle items', e);
