@@ -56,6 +56,7 @@ async function publishProductToML(productData, imageFiles) {
         if (file && (file.filepath || file.buffer)) {
             const form = new FormData();
             
+            let tmpFile = null;
             if (file.filepath) {
                 const fs = require('fs');
                 form.append('file', fs.createReadStream(file.filepath));
@@ -63,25 +64,27 @@ async function publishProductToML(productData, imageFiles) {
                 const fs = require('fs');
                 const path = require('path');
                 const os = require('os');
-                const tmpFile = path.join(os.tmpdir(), `ml-sync-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`);
+                tmpFile = path.join(os.tmpdir(), `ml-sync-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`);
                 fs.writeFileSync(tmpFile, file.buffer);
-                
                 const stream = fs.createReadStream(tmpFile);
                 form.append('file', stream);
-                
-                // Nós anexamos um evento para deletar o arquivo temporário quando terminar de ler
-                stream.on('close', () => {
-                    try { fs.unlinkSync(tmpFile); } catch(e) {}
-                });
             }
 
             try {
                 const axios = require('axios');
+                const formHeaders = form.getHeaders();
+                const formLength = await new Promise((resolve, reject) => {
+                    form.getLength((err, length) => err ? reject(err) : resolve(length));
+                });
+                
                 const res = await axios.post('https://api.mercadolibre.com/pictures/items', form, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        ...form.getHeaders()
-                    }
+                        ...formHeaders,
+                        'Content-Length': formLength
+                    },
+                    maxBodyLength: Infinity,
+                    maxContentLength: Infinity
                 });
                 
                 if (res.data && res.data.id) {
@@ -90,7 +93,19 @@ async function publishProductToML(productData, imageFiles) {
                     console.error("Erro no upload da imagem (Sem ID na resposta):", res.data);
                 }
             } catch (e) {
-                console.error("Erro de requisição ao subir imagem:", e.response ? e.response.data : e.message);
+                console.error("Erro de requisição ao subir imagem:");
+                if (e.response) {
+                    console.error(`Status: ${e.response.status} ${e.response.statusText}`);
+                    console.error("Headers:", e.response.headers);
+                    console.error("Data:", e.response.data);
+                } else {
+                    console.error(e.message);
+                }
+            } finally {
+                if (tmpFile) {
+                    const fs = require('fs');
+                    try { fs.unlinkSync(tmpFile); } catch(e) {}
+                }
             }
         }
     }

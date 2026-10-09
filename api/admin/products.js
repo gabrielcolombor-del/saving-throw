@@ -142,7 +142,7 @@ export default async function handler(req, res) {
                 // Sincronização com Mercado Livre (Em Background)
                 if (imageFiles.length > 0) {
                     try {
-                        const { publishProductToML } = require('../integrations/mercadolivre/ml-service');
+                        const { publishProductToML } = require('../integrations/mercadolivre/_ml-service');
                         
                         // Fazemos de forma async assíncrona para não travar a resposta do admin,
                         // mas logamos na tabela de integrações
