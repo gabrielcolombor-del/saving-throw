@@ -61,9 +61,16 @@ export function Admin() {
         }
 
         function switchMainTab(tab) {
-            ['dash', 'prods', 'fin', 'cli'].forEach(t => {
-                document.getElementById(`sec-${t}`).classList.add('hidden');
+            ['dash', 'prods', 'fin', 'cli', 'mkt'].forEach(t => {
+                var sec = document.getElementById(`sec-${t}`);
+                if (sec) sec.classList.add('hidden');
                 var btn = document.getElementById(`mtab-${t}`);
+                if (btn) {
+                    btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
+                    var iconBox = btn.querySelector('div');
+                    if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
+                }
+            });
                 btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
                 var iconBox = btn.querySelector('div');
                 if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
@@ -79,6 +86,12 @@ export function Admin() {
             if (tab === 'prods') loadProducts();
             if (tab === 'fin') loadFinance();
             if (tab === 'cli') loadCustomers();
+            if (tab === 'mkt') loadMarketplaceData();
+        }
+
+        async function loadMarketplaceData() {
+            // Futura função para carregar dados do ML no painel (skeleton)
+            console.log("Aba marketplace carregada");
         }
 
         // CARREGAR PAINEL GERAL (KPIs + Gráficos)
@@ -782,9 +795,10 @@ export function Admin() {
         }
     
 
-      (window as any).logout = logout;
+(window as any).logout = logout;
 (window as any).showDashboard = showDashboard;
 (window as any).switchMainTab = switchMainTab;
+(window as any).loadMarketplaceData = loadMarketplaceData;
 (window as any).loadDashboardData = loadDashboardData;
 (window as any).renderChart = renderChart;
 (window as any).openSaleModal = openSaleModal;
@@ -862,6 +876,10 @@ export function Admin() {
                 <button onclick="switchMainTab('cli')" id="mtab-cli" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
                     <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-users text-zinc-600"></i></div>
                     Clientes (CRM)
+                </button>
+                <button onclick="switchMainTab('mkt')" id="mtab-mkt" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shop text-zinc-600"></i></div>
+                    Marketplaces
                 </button>
             </div>
 
@@ -1211,6 +1229,71 @@ export function Admin() {
                                 <tr><td colspan="4" class="p-8 text-center text-zinc-400">Carregando clientes...</td></tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: MARKETPLACES -->
+            <div id="sec-mkt" class="hidden space-y-6">
+                <!-- CABEÇALHO MARKETPLACE -->
+                <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-store text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-title text-xl text-parchment-dark">Gestão de Marketplaces</h2>
+                            <p class="text-xs text-zinc-500">Sincronização com Mercado Livre e Shopee</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="alert('Sincronização manual em breve!')" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase px-4 py-2 rounded-lg text-[10px] flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
+                            <i class="fa-solid fa-handshake"></i> Sincronizar Catálogo ML
+                        </button>
+                        <button disabled class="bg-orange-500 opacity-50 cursor-not-allowed text-white font-bold uppercase px-4 py-2 rounded-lg text-[10px] flex items-center gap-2 shadow-xs">
+                            <i class="fa-solid fa-bag-shopping"></i> Shopee (Aguardando)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- LISTA DE PRODUTOS SINCRONIZADOS -->
+                    <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                        <h3 class="font-title text-lg mb-4 text-black">Anúncios no Mercado Livre</h3>
+                        <div class="overflow-x-auto rounded-xl border border-black/10">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
+                                    <tr>
+                                        <th class="p-3">Item Interno</th>
+                                        <th class="p-3">Status ML</th>
+                                        <th class="p-3">ID Anúncio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-mkt-products" class="divide-y divide-zinc-200 bg-white">
+                                    <tr><td colspan="3" class="p-6 text-center text-zinc-400">Sincronização automática em desenvolvimento.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ULTIMAS VENDAS MARKETPLACE -->
+                    <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
+                        <h3 class="font-title text-lg mb-4 text-black">Vendas Recentes (ML)</h3>
+                        <div class="overflow-x-auto rounded-xl border border-black/10">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
+                                    <tr>
+                                        <th class="p-3">Data</th>
+                                        <th class="p-3">Produto</th>
+                                        <th class="p-3">Valor</th>
+                                        <th class="p-3">Comprador</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-mkt-sales" class="divide-y divide-zinc-200 bg-white">
+                                    <tr><td colspan="4" class="p-6 text-center text-zinc-400">Nenhuma venda de marketplace registrada.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
