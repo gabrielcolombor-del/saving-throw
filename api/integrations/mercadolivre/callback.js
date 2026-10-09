@@ -11,6 +11,20 @@ module.exports = async function handler(req, res) {
   const clientSecret = process.env.ML_CLIENT_SECRET;
   const redirectUri = process.env.ML_REDIRECT_URI;
 
+  // Extrair o code_verifier do cookie
+  let codeVerifier = '';
+  if (req.headers.cookie) {
+    const cookies = req.headers.cookie.split(';').map(c => c.trim());
+    const verifierCookie = cookies.find(c => c.startsWith('ml_code_verifier='));
+    if (verifierCookie) {
+      codeVerifier = verifierCookie.split('=')[1];
+    }
+  }
+
+  if (!codeVerifier) {
+    return res.status(400).json({ error: 'PKCE code_verifier não encontrado na sessão. Tente logar novamente.' });
+  }
+
   try {
     const response = await fetch('https://api.mercadolibre.com/oauth/token', {
       method: 'POST',
@@ -23,7 +37,8 @@ module.exports = async function handler(req, res) {
         client_id: appId || '',
         client_secret: clientSecret || '',
         code: code,
-        redirect_uri: redirectUri || ''
+        redirect_uri: redirectUri || '',
+        code_verifier: codeVerifier
       })
     });
 
