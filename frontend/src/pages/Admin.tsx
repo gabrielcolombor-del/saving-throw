@@ -831,6 +831,28 @@ export function Admin() {
     
 
 (window as any).logout = logout;
+        async function syncMLCatalog() {
+            try {
+                const btn = document.getElementById('btn-sync-ml');
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
+                
+                const token = localStorage.getItem('st_token');
+                const res = await fetch('/api/admin/sync-ml', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                alert(data.message || 'Sincronização iniciada.');
+            } catch (e) {
+                alert('Erro ao iniciar sincronização.');
+            } finally {
+                const btn = document.getElementById('btn-sync-ml');
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-handshake"></i> Sincronizar Catálogo ML';
+                loadMarketplaceData();
+            }
+        }
+        (window as any).syncMLCatalog = syncMLCatalog;
+
 (window as any).showDashboard = showDashboard;
 (window as any).switchMainTab = switchMainTab;
 (window as any).loadMarketplaceData = loadMarketplaceData;
@@ -1282,7 +1304,7 @@ export function Admin() {
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="alert('Sincronização manual em breve!')" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase px-4 py-2 rounded-lg text-[10px] flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
+                        <button id="btn-sync-ml" onclick="syncMLCatalog()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase px-4 py-2 rounded-lg text-[10px] flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
                             <i class="fa-solid fa-handshake"></i> Sincronizar Catálogo ML
                         </button>
                         <button disabled class="bg-orange-500 opacity-50 cursor-not-allowed text-white font-bold uppercase px-4 py-2 rounded-lg text-[10px] flex items-center gap-2 shadow-xs">

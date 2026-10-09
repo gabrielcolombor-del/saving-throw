@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     const parts = url.pathname.split('/');
     const route = parts[parts.length - 1] || parts[parts.length - 2];
     
-    const allowedRoutes = ['customers', 'finance', 'login', 'marketplace', 'products'];
+    const allowedRoutes = ['customers', 'finance', 'login', 'marketplace', 'products', 'sync-ml'];
     
     if (allowedRoutes.includes(route)) {
         try {
