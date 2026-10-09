@@ -71,10 +71,6 @@ export function Admin() {
                     if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
                 }
             });
-                btn.className = "flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer";
-                var iconBox = btn.querySelector('div');
-                if (iconBox) iconBox.className = "w-6 h-6 rounded-md bg-black/5 flex items-center justify-center";
-            });
 
             document.getElementById(`sec-${tab}`).classList.remove('hidden');
             var activeBtn = document.getElementById(`mtab-${tab}`);

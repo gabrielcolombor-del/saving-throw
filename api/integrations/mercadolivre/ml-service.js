@@ -50,30 +50,47 @@ async function publishProductToML(productData, imageFiles) {
     const token = await getMLToken();
     if (!token) throw new Error("Mercado Livre não está conectado ou token expirou.");
 
-    // Faz upload das imagens para o ML primeiro
     const FormData = require('form-data');
-    const fs = require('fs');
     let mlPictureIds = [];
-
     for (let file of imageFiles) {
-        if (file && file.filepath) {
+        if (file && (file.filepath || file.buffer)) {
             const form = new FormData();
-            form.append('file', fs.createReadStream(file.filepath));
+            
+            if (file.filepath) {
+                const fs = require('fs');
+                form.append('file', fs.createReadStream(file.filepath));
+            } else if (file.buffer) {
+                const fs = require('fs');
+                const path = require('path');
+                const os = require('os');
+                const tmpFile = path.join(os.tmpdir(), `ml-sync-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`);
+                fs.writeFileSync(tmpFile, file.buffer);
+                
+                const stream = fs.createReadStream(tmpFile);
+                form.append('file', stream);
+                
+                // Nós anexamos um evento para deletar o arquivo temporário quando terminar de ler
+                stream.on('close', () => {
+                    try { fs.unlinkSync(tmpFile); } catch(e) {}
+                });
+            }
+
             try {
-                const res = await fetch('https://api.mercadolibre.com/pictures/items', {
-                    method: 'POST',
+                const axios = require('axios');
+                const res = await axios.post('https://api.mercadolibre.com/pictures/items', form, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         ...form.getHeaders()
-                    },
-                    body: form
+                    }
                 });
-                const data = await res.json();
-                if (res.ok && data.id) {
-                    mlPictureIds.push({ id: data.id });
+                
+                if (res.data && res.data.id) {
+                    mlPictureIds.push({ id: res.data.id });
+                } else {
+                    console.error("Erro no upload da imagem (Sem ID na resposta):", res.data);
                 }
             } catch (e) {
-                console.error("Erro ao subir imagem para o ML:", e);
+                console.error("Erro de requisição ao subir imagem:", e.response ? e.response.data : e.message);
             }
         }
     }
