@@ -1,6 +1,6 @@
 require('dotenv').config({ path: './.env' });
 const { pool } = require('../api/_lib/db');
-const { publishProductToML } = require('../api/integrations/mercadolivre/ml-service');
+const { publishProductToML } = require('../api/integrations/mercadolivre/_ml-service');
 
 async function test() {
     const { rows: products } = await pool.query(`SELECT p.* FROM st_products p WHERE name = 'Monge' LIMIT 1`);

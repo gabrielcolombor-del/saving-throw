@@ -101,9 +101,18 @@ export function Admin() {
                 if (data.products && data.products.length > 0) {
                     tbodyProds.innerHTML = data.products.map(p => `
                         <tr class="hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
-                            <td class="p-3 font-semibold text-zinc-900">${p.name}</td>
+                            <td class="p-3 font-semibold text-zinc-900 flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] uppercase font-bold ${p.platform === 'shopee' ? 'bg-orange-100 text-orange-600' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${p.platform === 'shopee' ? '<i class="fa-solid fa-bag-shopping"></i> SHOPEE' : '<i class="fa-solid fa-handshake"></i> ML'}
+                                </span>
+                                ${p.name}
+                            </td>
                             <td class="p-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] uppercase font-bold rounded-md">${p.status}</span></td>
-                            <td class="p-3 text-zinc-500 font-mono text-[11px]"><a href="https://produto.mercadolivre.com.br/${p.external_id}" target="_blank" class="hover:text-amber-600 hover:underline">${p.external_id} <i class="fa-solid fa-external-link-alt ml-1"></i></a></td>
+                            <td class="p-3 text-zinc-500 font-mono text-[11px]">
+                                <a href="${p.platform === 'shopee' ? '#' : `https://produto.mercadolivre.com.br/${p.external_id}`}" target="_blank" class="hover:text-amber-600 hover:underline">
+                                    ${p.external_id} <i class="fa-solid fa-external-link-alt ml-1"></i>
+                                </a>
+                            </td>
                         </tr>
                     `).join('');
                 } else {
@@ -114,13 +123,18 @@ export function Admin() {
                     tbodySales.innerHTML = data.sales.map(s => `
                         <tr class="hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
                             <td class="p-3 text-zinc-500 text-[11px]">${new Date(s.created_at).toLocaleDateString('pt-BR')}</td>
-                            <td class="p-3 font-semibold text-zinc-900">${s.external_order_id}</td>
+                            <td class="p-3 font-semibold text-zinc-900 flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] uppercase font-bold ${s.platform === 'shopee' ? 'bg-orange-100 text-orange-600' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${s.platform === 'shopee' ? '<i class="fa-solid fa-bag-shopping"></i> SHOPEE' : '<i class="fa-solid fa-handshake"></i> ML'}
+                                </span>
+                                ${s.external_order_id}
+                            </td>
                             <td class="p-3 font-bold text-amber-700">R$ ${Number(s.total_price).toFixed(2).replace('.', ',')}</td>
                             <td class="p-3"><span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-[10px] uppercase font-bold rounded-md">${s.status}</span></td>
                         </tr>
                     `).join('');
                 } else {
-                    tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-zinc-400">Nenhuma venda registrada do ML.</td></tr>';
+                    tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-zinc-400">Nenhuma venda registrada nos marketplaces.</td></tr>';
                 }
             } catch(e) {
                 console.error(e);
@@ -1316,7 +1330,7 @@ export function Admin() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- LISTA DE PRODUTOS SINCRONIZADOS -->
                     <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
-                        <h3 class="font-title text-lg mb-4 text-black">Anúncios no Mercado Livre</h3>
+                        <h3 class="font-title text-lg mb-4 text-black">Anúncios Ativos</h3>
                         <div class="overflow-x-auto rounded-xl border border-black/10">
                             <table class="w-full text-left text-xs">
                                 <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
@@ -1335,7 +1349,7 @@ export function Admin() {
 
                     <!-- ULTIMAS VENDAS MARKETPLACE -->
                     <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-black/10 shadow-sm">
-                        <h3 class="font-title text-lg mb-4 text-black">Vendas Recentes (ML)</h3>
+                        <h3 class="font-title text-lg mb-4 text-black">Vendas Recentes</h3>
                         <div class="overflow-x-auto rounded-xl border border-black/10">
                             <table class="w-full text-left text-xs">
                                 <thead class="bg-black text-[#EBE3CB] font-title uppercase tracking-wider">
