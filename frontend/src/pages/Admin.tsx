@@ -90,8 +90,47 @@ export function Admin() {
         }
 
         async function loadMarketplaceData() {
-            // Futura função para carregar dados do ML no painel (skeleton)
-            console.log("Aba marketplace carregada");
+            var tbodyProds = document.getElementById('tbody-mkt-products');
+            var tbodySales = document.getElementById('tbody-mkt-sales');
+            
+            if (tbodyProds) tbodyProds.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-zinc-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando dados...</td></tr>';
+            if (tbodySales) tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-zinc-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando dados...</td></tr>';
+
+            try {
+                var res = await fetch('/api/admin/marketplace', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                var data = await res.json();
+                
+                if (data.products && data.products.length > 0) {
+                    tbodyProds.innerHTML = data.products.map(p => `
+                        <tr class="hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                            <td class="p-3 font-semibold text-zinc-900">${p.name}</td>
+                            <td class="p-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] uppercase font-bold rounded-md">${p.status}</span></td>
+                            <td class="p-3 text-zinc-500 font-mono text-[11px]"><a href="https://produto.mercadolivre.com.br/${p.external_id}" target="_blank" class="hover:text-amber-600 hover:underline">${p.external_id} <i class="fa-solid fa-external-link-alt ml-1"></i></a></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbodyProds.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-zinc-400">Nenhum produto sincronizado.</td></tr>';
+                }
+
+                if (data.sales && data.sales.length > 0) {
+                    tbodySales.innerHTML = data.sales.map(s => `
+                        <tr class="hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                            <td class="p-3 text-zinc-500 text-[11px]">${new Date(s.created_at).toLocaleDateString('pt-BR')}</td>
+                            <td class="p-3 font-semibold text-zinc-900">${s.external_order_id}</td>
+                            <td class="p-3 font-bold text-amber-700">R$ ${Number(s.total_price).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3"><span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-[10px] uppercase font-bold rounded-md">${s.status}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-zinc-400">Nenhuma venda registrada do ML.</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+                if (tbodyProds) tbodyProds.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-red-500">Erro ao carregar dados</td></tr>';
+                if (tbodySales) tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-red-500">Erro ao carregar dados</td></tr>';
+            }
         }
 
         // CARREGAR PAINEL GERAL (KPIs + Gráficos)

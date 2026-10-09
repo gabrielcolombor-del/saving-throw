@@ -137,8 +137,38 @@ export default async function handler(req, res) {
                 ];
 
                 const { rows } = await pool.query(queryText, queryValues);
+                const createdProduct = rows[0];
 
-                return res.status(201).json(rows[0]);
+                // Sincronização com Mercado Livre (Em Background)
+                if (imageFiles.length > 0) {
+                    try {
+                        const { publishProductToML } = require('../integrations/mercadolivre/ml-service');
+                        
+                        // Fazemos de forma async assíncrona para não travar a resposta do admin,
+                        // mas logamos na tabela de integrações
+                        publishProductToML({
+                            name: name,
+                            price: price,
+                            priceUnpainted: priceUnpainted,
+                            type: type,
+                            description: description
+                        }, imageFiles).then(async (mlItemId) => {
+                            // Salva a integração
+                            await pool.query(`
+                                INSERT INTO st_product_integrations (product_id, platform, external_id, status)
+                                VALUES ($1, 'mercadolivre', $2, 'active')
+                            `, [createdProduct.id, mlItemId]);
+                            console.log("Produto enviado ao ML com sucesso:", mlItemId);
+                        }).catch(e => {
+                            console.error("Erro ao enviar produto ao ML em background:", e.message);
+                        });
+
+                    } catch(e) {
+                        console.error("ML module error:", e);
+                    }
+                }
+
+                return res.status(201).json(createdProduct);
 
             } catch(e) {
                 console.error(e);
