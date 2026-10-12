@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { pool, ensureProductsTable } = require('../../_lib/db');
+const { pool, ensureProductsTable } = require('../_lib/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'saving-throw-admin-secret-2026';
 
