@@ -34,18 +34,18 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // Obter ultimos 10 produtos sincronizados
+        // Obter ultimos produtos sincronizados
         const productsQuery = await pool.query(`
-            SELECT pi.external_id, pi.status, pi.platform, p.name 
+            SELECT pi.external_id, COALESCE(pi.sync_status, 'active') AS status, pi.platform, p.name 
             FROM st_product_integrations pi
             JOIN st_products p ON pi.product_id = p.id
-            ORDER BY pi.updated_at DESC
+            ORDER BY pi.last_sync DESC
             LIMIT 15
         `);
 
-        // Obter ultimas 10 vendas
+        // Obter ultimas vendas
         const ordersQuery = await pool.query(`
-            SELECT external_order_id, status, platform, total_price, created_at
+            SELECT external_order_id, status, platform, total_amount AS total_price, created_at
             FROM st_external_orders
             ORDER BY created_at DESC
             LIMIT 15

@@ -49,7 +49,7 @@ async function syncAllToML() {
             }
 
             // Publica no ML
-            const mlItemId = await publishProductToML({
+            const mlResult = await publishProductToML({
                 name: product.name,
                 price: product.price,
                 priceUnpainted: product.price_unpainted,
@@ -57,11 +57,22 @@ async function syncAllToML() {
                 description: product.description || `Adquira já: ${product.name} - Qualidade de impressão 3D (Resina).`
             }, imageFiles);
 
+            const mlItemId = typeof mlResult === 'object' ? mlResult.id : mlResult;
+            const mlUrl = typeof mlResult === 'object' && mlResult.permalink 
+                ? mlResult.permalink 
+                : `https://produto.mercadolivre.com.br/${mlItemId}`;
+
             // Salva na tabela de integrações
             await pool.query(`
-                INSERT INTO st_product_integrations (product_id, platform, external_id, status)
-                VALUES ($1, 'mercadolivre', $2, 'active')
-            `, [product.id, mlItemId]);
+                INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync)
+                VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP)
+                ON CONFLICT (product_id, platform)
+                DO UPDATE SET
+                    external_id = EXCLUDED.external_id,
+                    external_url = EXCLUDED.external_url,
+                    sync_status = EXCLUDED.sync_status,
+                    last_sync = CURRENT_TIMESTAMP
+            `, [product.id, mlItemId, mlUrl]);
 
             console.log(`✅ SUCESSO! ML ID: ${mlItemId}`);
 

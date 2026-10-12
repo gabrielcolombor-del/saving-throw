@@ -61,13 +61,10 @@ async function publishProductToML(productData, imageFiles) {
                 const fs = require('fs');
                 form.append('file', fs.createReadStream(file.filepath));
             } else if (file.buffer) {
-                const fs = require('fs');
-                const path = require('path');
-                const os = require('os');
-                tmpFile = path.join(os.tmpdir(), `ml-sync-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`);
-                fs.writeFileSync(tmpFile, file.buffer);
-                const stream = fs.createReadStream(tmpFile);
-                form.append('file', stream);
+                form.append('file', file.buffer, {
+                    filename: file.filename || 'image.jpg',
+                    contentType: 'image/jpeg'
+                });
             }
 
             try {
@@ -77,7 +74,8 @@ async function publishProductToML(productData, imageFiles) {
                     form.getLength((err, length) => err ? reject(err) : resolve(length));
                 });
                 
-                const res = await axios.post('https://api.mercadolibre.com/pictures/items', form, {
+                // Endpoint oficial de upload de imagem para CDN do Mercado Livre
+                const res = await axios.post('https://api.mercadolibre.com/pictures/items/upload', form, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         ...formHeaders,
@@ -93,10 +91,9 @@ async function publishProductToML(productData, imageFiles) {
                     console.error("Erro no upload da imagem (Sem ID na resposta):", res.data);
                 }
             } catch (e) {
-                console.error("Erro de requisição ao subir imagem:");
+                console.error("Erro de requisição ao subir imagem no ML:");
                 if (e.response) {
                     console.error(`Status: ${e.response.status} ${e.response.statusText}`);
-                    console.error("Headers:", e.response.headers);
                     console.error("Data:", e.response.data);
                 } else {
                     console.error(e.message);
@@ -114,36 +111,65 @@ async function publishProductToML(productData, imageFiles) {
         throw new Error("Nenhuma imagem pôde ser enviada para o Mercado Livre.");
     }
 
-    // Configura os dados baseados na preferência do usuário
-    // O usuário pediu: Clássico (classic), 3 dias de produção, 10 estoque
-    // Categoria: MLB278480 (Miniaturas de RPG)
+    // Identificar se a conta é user_product_seller (novo modelo do ML)
+    let isUserProductSeller = true;
+    try {
+        const userRes = await fetch('https://api.mercadolibre.com/users/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (userRes.ok) {
+            const userData = await userRes.json();
+            isUserProductSeller = Array.isArray(userData.tags) && userData.tags.includes('user_product_seller');
+        }
+    } catch(e) {
+        console.warn("Não foi possível verificar tags do usuário ML, assumindo user_product_seller:", e.message);
+    }
 
     let finalPrice = productData.price;
     // Se for miniatura e tiver valor sem pintura
     if (productData.type === 'miniatura' && productData.priceUnpainted) {
         finalPrice = productData.priceUnpainted; // Anuncia o valor base mais barato
     }
+    if (!finalPrice || isNaN(parseFloat(finalPrice))) {
+        finalPrice = 29.90;
+    }
+
+    const titleText = `Miniatura ${productData.name} RPG D&D Resina`.substring(0, 60);
 
     const itemBody = {
-        title: productData.name.substring(0, 60), // Limite do ML
-        category_id: 'MLB278480',
+        category_id: 'MLB457877', // Categoria ativa de Miniaturas
         price: parseFloat(finalPrice),
         currency_id: 'BRL',
         available_quantity: 10,
         buying_mode: 'buy_it_now',
-        listing_type_id: 'gold_classic', // Clássico
+        listing_type_id: 'gold_special', // Clássico no Mercado Livre Brasil
         condition: 'new',
         pictures: mlPictureIds,
+        shipping: {
+            mode: 'me2',
+            local_pick_up: false,
+            free_shipping: false
+        },
+        attributes: [
+            { id: 'BRAND', value_name: 'Saving Throw' },
+            { id: 'MODEL', value_name: `Miniatura RPG ${productData.name}`.substring(0, 30) }
+        ],
         sale_terms: [
             {
                 id: 'MANUFACTURING_TIME',
-                value_name: '3 días'
+                value_name: '3 dias'
             }
         ]
     };
 
+    if (isUserProductSeller) {
+        itemBody.family_name = titleText;
+    } else {
+        itemBody.title = titleText;
+    }
+
     // Tentar criar o anúncio
-    const res = await fetch('https://api.mercadolibre.com/items', {
+    let res = await fetch('https://api.mercadolibre.com/items', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -151,27 +177,54 @@ async function publishProductToML(productData, imageFiles) {
         },
         body: JSON.stringify(itemBody)
     });
-    const result = await res.json();
+    let result = await res.json();
 
-    if (!res.ok) {
-        throw new Error(`Erro ML: ${result.message || JSON.stringify(result)}`);
-    }
-
-    // Adiciona a descrição
-    try {
-        await fetch(`https://api.mercadolibre.com/items/${result.id}/description`, {
+    // Se falhar por conta do modelo de título / family_name, tenta a alternativa
+    if (!res.ok && result.message && (result.message.includes('family_name') || result.message.includes('title'))) {
+        console.warn("Retentando com ajuste de family_name/title:", result.message);
+        if (itemBody.family_name) {
+            delete itemBody.family_name;
+            itemBody.title = titleText;
+        } else {
+            delete itemBody.title;
+            itemBody.family_name = titleText;
+        }
+        res = await fetch('https://api.mercadolibre.com/items', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ plain_text: productData.description })
+            body: JSON.stringify(itemBody)
         });
-    } catch(e) {
-        console.error("Erro ao adicionar descrição no ML:", e);
+        result = await res.json();
     }
 
-    return result.id;
+    if (!res.ok) {
+        const errorMsg = result.message || (result.cause && result.cause.map(c => c.message).join(', ')) || JSON.stringify(result);
+        throw new Error(`Erro ML: ${errorMsg}`);
+    }
+
+    // Adiciona a descrição
+    if (productData.description) {
+        try {
+            await fetch(`https://api.mercadolibre.com/items/${result.id}/description`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ plain_text: productData.description })
+            });
+        } catch(e) {
+            console.error("Erro ao adicionar descrição no ML:", e);
+        }
+    }
+
+    return {
+        id: result.id,
+        permalink: result.permalink || `https://produto.mercadolivre.com.br/${result.id}`
+    };
 }
 
 module.exports = { getMLToken, publishProductToML };
