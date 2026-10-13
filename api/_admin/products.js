@@ -5,7 +5,7 @@ const { pool, ensureProductsTable } = require('../_lib/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'saving-throw-admin-secret-2026';
 
-export const config = {
+const config = {
     api: {
         bodyParser: false,
     },
@@ -23,7 +23,7 @@ const verifyAuth = (req) => {
     }
 };
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE');
@@ -249,3 +249,8 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
+
+handler.config = config;
+module.exports = handler;
+module.exports.config = config;
+module.exports.default = handler;

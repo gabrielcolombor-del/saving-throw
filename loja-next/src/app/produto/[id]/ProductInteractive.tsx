@@ -76,7 +76,7 @@ export default function ProductInteractive({ product, images }: { product: any, 
     if (selectedTitle && selectedTitle.trim() !== '') {
         message += `*Opção:* ${selectedTitle}\n`;
     }
-    message += `*Preço:* R$ ${formatPrice(currentPrice)}\n\nGostaria de saber mais informações e combinar o pagamento e envio!`;
+    message += `*Preço:* R$ ${formatPrice(currentPrice)}\n\nGostaria de saber mais informações e combinar o pagamento e envio! (Dica: Pedidos a partir de R$ 149 têm Frete Grátis)`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
@@ -178,6 +178,10 @@ export default function ProductInteractive({ product, images }: { product: any, 
                               <span className={`text-4xl md:text-5xl font-black text-black tracking-tight transition-colors duration-300 ${isAnimatingPrice ? 'text-amber-600 scale-105' : ''}`}>R$ {formatPrice(currentPrice)}</span>
                           </div>
                           <p className="text-[10px] text-zinc-400 mt-1 uppercase tracking-wider">Produção Sob Demanda</p>
+                          <div className="mt-3 inline-flex items-center gap-2 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200/80 rounded-lg px-3 py-1.5 font-medium">
+                              <i className="fa-solid fa-truck-fast text-emerald-600"></i>
+                              <span><strong>Frete Grátis</strong> em compras a partir de <strong>R$ 149,00</strong></span>
+                          </div>
                       </div>
                   </div>
 

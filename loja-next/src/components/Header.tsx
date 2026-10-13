@@ -15,8 +15,13 @@ export function Header() {
   };
 
   return (
-    <header className="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
-      <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <>
+      <div className="bg-zinc-900 text-zinc-300 text-[11px] sm:text-xs py-1.5 px-4 text-center border-b border-zinc-800 flex items-center justify-center gap-2">
+        <i className="fa-solid fa-truck-fast text-amber-400"></i>
+        <span><strong>FRETE GRÁTIS</strong> para todo o Brasil em compras a partir de <strong>R$ 149,00</strong>!</span>
+      </div>
+      <header className="bg-parchment text-black sticky top-0 z-50 shadow-md border-b border-black/10">
+        <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex justify-between items-center w-full md:w-auto">
           <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center text-2xl md:text-3xl tracking-wide font-title drop-shadow-sm">
             Saving Throw
@@ -45,5 +50,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

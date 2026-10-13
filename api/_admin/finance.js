@@ -21,7 +21,7 @@ function formatNow() {
     return `${agora.getFullYear()}-${pad(agora.getMonth() + 1)}-${pad(agora.getDate())} ${pad(agora.getHours())}:${pad(agora.getMinutes())}:${pad(agora.getSeconds())}`;
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE,PUT');
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
                 params.push(type);
             }
 
-            querySql += ' ORDER BY id DESC';
+            querySql += ' ORDER BY data DESC, created_at DESC';
 
             const { rows: financeiro } = await pool.query(querySql, params);
 
@@ -200,3 +200,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: e.message });
     }
 }
+
+module.exports = handler;
+module.exports.default = handler;

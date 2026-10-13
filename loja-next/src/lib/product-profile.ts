@@ -185,7 +185,7 @@ export function getProductProfile(p: any) {
       microBadges: [
           { icon: 'fa-gem', title: 'Alta Definição', subtitle: 'Riqueza em relevo' },
           { icon: 'fa-spray-can-sparkles', title: 'Curada & Lavada', subtitle: 'Pronta p/ uso' },
-          { icon: 'fa-truck-fast', title: 'Envio Nacional', subtitle: 'Correios / Transportadora' }
+          { icon: 'fa-truck-fast', title: 'Frete Grátis', subtitle: 'A partir de R$ 149' }
       ],
       specs: [
           {
@@ -200,8 +200,8 @@ export function getProductProfile(p: any) {
           },
           {
               icon: 'fa-truck-fast',
-              title: 'Prazos & Envio',
-              text: 'O envio é feito via Correios ou transportadora para todo o país.'
+              title: 'Prazos & Frete Grátis',
+              text: 'Envio para todo o país via Correios ou transportadora. Aproveite e monte seu grupo: pedidos a partir de R$ 149,00 contam com Frete Grátis!'
           }
       ]
   };

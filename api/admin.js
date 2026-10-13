@@ -7,9 +7,19 @@ module.exports = async (req, res) => {
     
     const allowedRoutes = ['customers', 'finance', 'login', 'marketplace', 'products', 'sync-ml'];
     
+    if (!req.query) {
+        req.query = {};
+    }
+    url.searchParams.forEach((value, key) => {
+        if (req.query[key] === undefined) {
+            req.query[key] = value;
+        }
+    });
+
     if (allowedRoutes.includes(route)) {
         try {
-            const handler = require(`./_admin/${route}.js`);
+            const mod = require(`./_admin/${route}.js`);
+            const handler = mod.default || mod;
             return handler(req, res);
         } catch (e) {
             console.error(e);

@@ -136,6 +136,8 @@ async function publishProductToML(productData, imageFiles) {
 
     const titleText = `Miniatura ${productData.name} RPG D&D Resina`.substring(0, 60);
 
+    const isFreeShipping = parseFloat(finalPrice) >= 79.0;
+
     const itemBody = {
         category_id: 'MLB457877', // Categoria ativa de Miniaturas
         price: parseFloat(finalPrice),
@@ -148,11 +150,24 @@ async function publishProductToML(productData, imageFiles) {
         shipping: {
             mode: 'me2',
             local_pick_up: false,
-            free_shipping: false
+            free_shipping: isFreeShipping
         },
         attributes: [
             { id: 'BRAND', value_name: 'Saving Throw' },
-            { id: 'MODEL', value_name: `Miniatura RPG ${productData.name}`.substring(0, 30) }
+            { id: 'MODEL', value_name: `Miniatura RPG ${productData.name}`.substring(0, 30) },
+            { id: 'MANUFACTURER', value_name: 'Saving Throw' },
+            { id: 'LINE', value_name: 'Miniaturas RPG' },
+            { id: 'COLLECTION', value_name: productData.category || 'Dungeons & Dragons' },
+            { id: 'MATERIALS', value_name: 'Resina' },
+            { id: 'PIECES_NUMBER', value_name: '1' },
+            { id: 'IS_COLLECTIBLE', value_id: '242085' },
+            { id: 'IS_SET', value_id: '242084' },
+            { id: 'REQUIRES_ASSEMBLY', value_id: '242084' },
+            { id: 'IS_REALISTIC_REPLICA', value_id: '242084' },
+            { id: 'IS_SURPRISE', value_id: '242084' },
+            { id: 'SCALE', value_name: '32mm' },
+            { id: 'MIN_RECOMMENDED_AGE', value_name: '14 anos' },
+            { id: 'EMPTY_GTIN_REASON', value_id: '17055158' }
         ],
         sale_terms: [
             {
@@ -206,19 +221,19 @@ async function publishProductToML(productData, imageFiles) {
     }
 
     // Adiciona a descrição
-    if (productData.description) {
-        try {
-            await fetch(`https://api.mercadolibre.com/items/${result.id}/description`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ plain_text: productData.description })
-            });
-        } catch(e) {
-            console.error("Erro ao adicionar descrição no ML:", e);
-        }
+    const fullDescription = `${productData.description || `Miniatura ${productData.name} - Saving Throw RPG`}\n\n🎲 ESPECIFICAÇÕES:\n- Material: Resina de Alta Resolução (8K/12K)\n- Escala: 32mm (padrão D&D / RPG de Mesa)\n- Peça curada, higienizada e pronta para mesa ou pintura.\n- Fabricante: Saving Throw\n\n🚚 DICA DE FRETE GRÁTIS NO MERCADO LIVRE:\nAdicione mais miniaturas da Saving Throw ao seu carrinho! Em compras a partir de R$ 79,00, o Mercado Livre oferece Frete Grátis ou desconto especial de envio para a sua região.`;
+
+    try {
+        await fetch(`https://api.mercadolibre.com/items/${result.id}/description`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ plain_text: fullDescription })
+        });
+    } catch(e) {
+        console.error("Erro ao adicionar descrição no ML:", e);
     }
 
     return {

@@ -15,7 +15,7 @@ const verifyAuth = (req) => {
     }
 };
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE,PUT');
@@ -94,3 +94,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: e.message });
     }
 }
+
+module.exports = handler;
+module.exports.default = handler;
