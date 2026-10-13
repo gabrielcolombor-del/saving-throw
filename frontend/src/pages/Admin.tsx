@@ -96,6 +96,7 @@ export function Admin() {
                 var res = await fetch('/api/admin/marketplace', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401) { logout(); return; }
                 var data = await res.json();
                 
                 if (data.products && data.products.length > 0) {
@@ -149,6 +150,7 @@ export function Admin() {
                 var res = await fetch('/api/admin/finance', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401) { logout(); return; }
                 var data = await res.json();
 
                 if (data.kpis) {
@@ -695,6 +697,7 @@ export function Admin() {
                 var res = await fetch(`/api/admin/finance?type=${type}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401) { logout(); return; }
                 var data = await res.json();
                 cachedFinanceData = data.financeiro || [];
 
@@ -792,6 +795,7 @@ export function Admin() {
                 var res = await fetch('/api/admin/customers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401) { logout(); return; }
                 var data = await res.json();
                 if (data.clientes && data.clientes.length > 0) {
                     tbody.innerHTML = data.clientes.map(c => `
@@ -931,26 +935,31 @@ export function Admin() {
 
         <div class="flex-1 container mx-auto px-4 py-6 max-w-6xl">
             <!-- MAIN NAVIGATION TABS -->
-            <div class="flex flex-wrap gap-2 mb-6 bg-white/40 p-1.5 rounded-xl border border-black/10 shadow-xs">
-                <button onclick="switchMainTab('dash')" id="mtab-dash" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-500"></i></div>
-                    Painel Geral
-                </button>
-                <button onclick="switchMainTab('prods')" id="mtab-prods" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-zinc-600"></i></div>
-                    Produtos do Site
-                </button>
-                <button onclick="switchMainTab('fin')" id="mtab-fin" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-book text-zinc-600"></i></div>
-                    Livro de Contabilidade
-                </button>
-                <button onclick="switchMainTab('cli')" id="mtab-cli" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-users text-zinc-600"></i></div>
-                    Clientes (CRM)
-                </button>
-                <button onclick="switchMainTab('mkt')" id="mtab-mkt" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
-                    <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shop text-zinc-600"></i></div>
-                    Marketplaces
+            <div class="flex flex-wrap gap-2 mb-6 bg-white/40 p-1.5 rounded-xl border border-black/10 shadow-xs items-center justify-between">
+                <div class="flex flex-wrap gap-2 flex-1">
+                    <button onclick="switchMainTab('dash')" id="mtab-dash" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 bg-black text-[#EBE3CB] shadow-md cursor-pointer">
+                        <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-amber-500"></i></div>
+                        Painel Geral
+                    </button>
+                    <button onclick="switchMainTab('prods')" id="mtab-prods" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                        <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-zinc-600"></i></div>
+                        Produtos do Site
+                    </button>
+                    <button onclick="switchMainTab('fin')" id="mtab-fin" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                        <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-book text-zinc-600"></i></div>
+                        Livro de Contabilidade
+                    </button>
+                    <button onclick="switchMainTab('cli')" id="mtab-cli" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                        <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-users text-zinc-600"></i></div>
+                        Clientes (CRM)
+                    </button>
+                    <button onclick="switchMainTab('mkt')" id="mtab-mkt" class="flex-1 md:flex-none px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 text-zinc-700 hover:bg-white/60 cursor-pointer">
+                        <div class="w-6 h-6 rounded-md bg-black/5 flex items-center justify-center"><i class="fa-solid fa-shop text-zinc-600"></i></div>
+                        Marketplaces
+                    </button>
+                </div>
+                <button onclick="logout()" class="px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center gap-2 cursor-pointer border border-red-200/60 bg-white/80 shadow-xs shrink-0">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </button>
             </div>
 
