@@ -47,12 +47,12 @@ module.exports = async function handler(req, res) {
                         .toBuffer();
 
                     res.setHeader('Content-Type', 'image/webp');
-                    res.setHeader('Cache-Control', 'public, max-age=86400');
+                    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=31536000, stale-while-revalidate=86400, immutable');
                     return res.status(200).send(optimizedBuffer);
                 } catch (sharpErr) {
                     console.error("Erro no Sharp:", sharpErr);
                     res.setHeader('Content-Type', mimeType);
-                    res.setHeader('Cache-Control', 'public, max-age=86400');
+                    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=31536000, stale-while-revalidate=86400, immutable');
                     return res.status(200).send(buffer);
                 }
             }

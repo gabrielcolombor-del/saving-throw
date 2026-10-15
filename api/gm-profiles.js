@@ -9,6 +9,8 @@ if (connectionString) {
     pool = new Pool({
       connectionString: connectionString,
       ssl: { rejectUnauthorized: false },
+      max: 2,
+      idleTimeoutMillis: 5000,
       connectionTimeoutMillis: 3000
     });
   } catch (err) {
@@ -30,7 +32,10 @@ async function executeDbQuery(queryText, params = []) {
   }
 }
 
+let gmTablesChecked = false;
+
 async function ensureTablesExist() {
+  if (!pool || gmTablesChecked) return;
   const query = `
     CREATE TABLE IF NOT EXISTS users (
       id VARCHAR(255) PRIMARY KEY,
@@ -58,6 +63,7 @@ async function ensureTablesExist() {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_ambients JSONB DEFAULT '[]'::jsonb;
   `;
   await executeDbQuery(query);
+  gmTablesChecked = true;
 }
 
 module.exports = async (req, res) => {

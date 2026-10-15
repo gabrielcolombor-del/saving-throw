@@ -41,9 +41,12 @@ async function handler(req, res) {
 
     try {
         if (req.method === 'GET') {
-            const { type } = req.query;
+            const { type, page = 1, limit = 100 } = req.query;
+            const pageNum = Math.max(1, parseInt(page, 10));
+            const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10)));
+            const offset = (pageNum - 1) * limitNum;
 
-            let querySql = 'SELECT * FROM st_finance';
+            let querySql = 'SELECT id, data, tipo, descricao, valor, categoria, cliente, produto, created_at FROM st_finance';
             let params = [];
 
             if (type && type !== 'all') {
@@ -51,36 +54,50 @@ async function handler(req, res) {
                 params.push(type);
             }
 
-            querySql += ' ORDER BY data DESC, created_at DESC';
+            querySql += ` ORDER BY data DESC, created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+            params.push(limitNum, offset);
 
-            const { rows: financeiro } = await pool.query(querySql, params);
+            const [itemsRes, kpiRes, costCatRes, prodRevRes] = await Promise.all([
+                pool.query(querySql, params),
+                pool.query(`
+                    SELECT 
+                        COALESCE(SUM(CASE WHEN tipo = 'Venda' THEN valor ELSE 0 END), 0) AS revenue_total,
+                        COALESCE(SUM(CASE WHEN tipo = 'Custo' THEN valor ELSE 0 END), 0) AS expenses_total,
+                        COUNT(CASE WHEN tipo = 'Venda' THEN 1 END) AS sales_count,
+                        COUNT(CASE WHEN tipo = 'Custo' THEN 1 END) AS costs_count
+                    FROM st_finance
+                `),
+                pool.query(`
+                    SELECT COALESCE(categoria, 'Outros') as cat, SUM(valor) as total 
+                    FROM st_finance 
+                    WHERE tipo = 'Custo' 
+                    GROUP BY categoria
+                `),
+                pool.query(`
+                    SELECT produto, SUM(valor) as total 
+                    FROM st_finance 
+                    WHERE tipo = 'Venda' AND produto IS NOT NULL AND produto != ''
+                    GROUP BY produto
+                `)
+            ]);
 
-            let revenueTotal = 0;
-            let expensesTotal = 0;
-            let salesCount = 0;
-            let costsCount = 0;
+            const financeiro = itemsRes.rows;
+            const kpiRow = kpiRes.rows[0] || {};
+            const revenueTotal = parseFloat(kpiRow.revenue_total) || 0;
+            const expensesTotal = parseFloat(kpiRow.expenses_total) || 0;
+            const netProfit = revenueTotal - expensesTotal;
+            const salesCount = parseInt(kpiRow.sales_count, 10) || 0;
+            const costsCount = parseInt(kpiRow.costs_count, 10) || 0;
+
             const costCategories = {};
-            const productRevenue = {};
-
-            const allRows = (await pool.query('SELECT * FROM st_finance')).rows;
-
-            allRows.forEach(reg => {
-                const val = parseFloat(reg.valor) || 0;
-                if (reg.tipo === 'Venda') {
-                    revenueTotal += val;
-                    salesCount++;
-                    if (reg.produto) {
-                        productRevenue[reg.produto] = (productRevenue[reg.produto] || 0) + val;
-                    }
-                } else if (reg.tipo === 'Custo') {
-                    expensesTotal += val;
-                    costsCount++;
-                    const cat = reg.categoria || 'Outros';
-                    costCategories[cat] = (costCategories[cat] || 0) + val;
-                }
+            costCatRes.rows.forEach(r => {
+                costCategories[r.cat] = parseFloat(r.total) || 0;
             });
 
-            const netProfit = revenueTotal - expensesTotal;
+            const productRevenue = {};
+            prodRevRes.rows.forEach(r => {
+                productRevenue[r.produto] = parseFloat(r.total) || 0;
+            });
 
             return res.status(200).json({
                 financeiro,

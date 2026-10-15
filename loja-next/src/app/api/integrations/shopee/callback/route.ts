@@ -51,6 +51,10 @@ export async function GET(request: Request) {
     const { access_token, refresh_token, expire_in } = data;
     const expiresAt = new Date(Date.now() + expire_in * 1000);
 
+    if (!pool) {
+      return NextResponse.json({ error: 'Banco de dados não conectado' }, { status: 500 });
+    }
+
     // Salvar no banco
     await pool.query(`
       INSERT INTO st_integrations (platform, seller_id, access_token, refresh_token, expires_at, updated_at)

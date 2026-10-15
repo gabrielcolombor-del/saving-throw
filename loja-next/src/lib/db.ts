@@ -9,7 +9,9 @@ if (connectionString) {
     pool = new Pool({
       connectionString,
       ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 10000
+      max: 2,
+      idleTimeoutMillis: 5000,
+      connectionTimeoutMillis: 5000
     });
   } catch (e: any) {
     console.error('Erro ao conectar com PostgreSQL:', e.message);

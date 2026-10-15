@@ -125,7 +125,11 @@ export async function GET(request: Request) {
                     product.image_url = JSON.stringify(parsedImages);
                 }
 
-                return NextResponse.json({ product });
+                return NextResponse.json({ product }, {
+                    headers: {
+                        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600'
+                    }
+                });
             }
 
             if (specialProducts[id]) {
@@ -171,7 +175,29 @@ export async function GET(request: Request) {
         const offsetParamIndex = params.length;
 
         const querySql = `
-            SELECT id, name, type, category, price, price_unpainted, price_painted, price_painted_box, price_original, bundle_items, description, image_url, created_at 
+            SELECT 
+                id, 
+                name, 
+                type, 
+                category, 
+                price, 
+                price_unpainted, 
+                price_painted, 
+                price_painted_box, 
+                price_original, 
+                bundle_items, 
+                description, 
+                CASE 
+                    WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
+                    WHEN image_url LIKE '[%' THEN (
+                        CASE 
+                            WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
+                            ELSE image_url 
+                        END
+                    )
+                    ELSE COALESCE(image_url, '/assets/imagens/minis.png')
+                END AS image_url, 
+                created_at 
             FROM st_products 
             ${whereSql} 
             ORDER BY created_at DESC 
@@ -193,6 +219,10 @@ export async function GET(request: Request) {
             page,
             limit,
             totalPages: Math.ceil(total / limit)
+        }, {
+            headers: {
+                'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600'
+            }
         });
     } catch (e: any) {
         console.error(e);

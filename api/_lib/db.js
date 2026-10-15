@@ -9,15 +9,19 @@ if (connectionString) {
     pool = new Pool({
       connectionString,
       ssl: { rejectUnauthorized: false },
-      connectionTimeoutMillis: 10000
+      max: 2,
+      idleTimeoutMillis: 5000,
+      connectionTimeoutMillis: 5000
     });
   } catch (e) {
     console.error('Erro ao conectar com PostgreSQL:', e.message);
   }
 }
 
+let tableChecked = false;
+
 async function ensureProductsTable() {
-  if (!pool) return;
+  if (!pool || tableChecked) return;
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS st_products (
@@ -38,6 +42,7 @@ async function ensureProductsTable() {
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_painted_box NUMERIC(10,2);`);
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_original NUMERIC(10,2);`);
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS bundle_items JSONB;`);
+    tableChecked = true;
   } catch (e) {
     console.error('Erro ao atualizar tabela st_products:', e.message);
   }

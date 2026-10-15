@@ -13,7 +13,9 @@ if (connectionString) {
       ssl: {
         rejectUnauthorized: false
       },
-      connectionTimeoutMillis: 5000 // 5 segundos de limite para evitar travamentos
+      max: 2,
+      idleTimeoutMillis: 5000,
+      connectionTimeoutMillis: 5000
     });
     console.log('Pool do PostgreSQL inicializado.');
   } catch (err) {
@@ -52,7 +54,7 @@ module.exports = async (req, res) => {
   if (pool) {
     try {
       const query = `
-        SELECT s.* 
+        SELECT s.id, s.name, s.level, s.school, s.casting_time, s.range, s.components, s.duration, s.description, s.high_level 
         FROM spells s
         JOIN spell_classes sc ON s.id = sc.spell_id
         WHERE LOWER(sc.class_name) = LOWER($1) AND s.level <= $2
@@ -76,6 +78,7 @@ module.exports = async (req, res) => {
         classes: [className] // A classe buscada está garantida na lista
       }));
 
+      res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
       return res.status(200).json({
         source: 'postgresql',
         spells: formattedRows

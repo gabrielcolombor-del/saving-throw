@@ -1,3 +1,5 @@
+import { cache } from 'react';
+
 export async function fetchProducts(params: Record<string, string | number>) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   const url = new URL(`${baseUrl}/api/products`);
@@ -9,7 +11,12 @@ export async function fetchProducts(params: Record<string, string | number>) {
   });
 
   try {
-    const res = await fetch(url.toString(), { cache: 'no-store' });
+    const res = await fetch(url.toString(), { 
+      next: { 
+        revalidate: 3600, 
+        tags: ['products'] 
+      } 
+    });
     if (!res.ok) throw new Error('Failed to fetch products');
     return res.json();
   } catch (error) {
@@ -18,13 +25,18 @@ export async function fetchProducts(params: Record<string, string | number>) {
   }
 }
 
-export async function fetchProductById(id: string) {
+export const fetchProductById = cache(async (id: string) => {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   const url = new URL(`${baseUrl}/api/products`);
   url.searchParams.append('id', id);
 
   try {
-    const res = await fetch(url.toString(), { cache: 'no-store' });
+    const res = await fetch(url.toString(), { 
+      next: { 
+        revalidate: 3600, 
+        tags: [`product-${id}`, 'products'] 
+      } 
+    });
     if (!res.ok) throw new Error('Failed to fetch product');
     const data = await res.json();
     return data.product || null;
@@ -32,4 +44,4 @@ export async function fetchProductById(id: string) {
     console.error('Error fetching product:', error);
     return null;
   }
-}
+});

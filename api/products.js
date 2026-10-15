@@ -136,6 +136,7 @@ module.exports = async function handler(req, res) {
                     product.image_url = JSON.stringify(parsedImages);
                 }
 
+                res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
                 return res.status(200).json({ product });
             }
 
@@ -184,7 +185,29 @@ module.exports = async function handler(req, res) {
         const offsetParamIndex = params.length;
 
         const querySql = `
-            SELECT id, name, type, category, price, price_unpainted, price_painted, price_painted_box, price_original, bundle_items, description, image_url, created_at 
+            SELECT 
+                id, 
+                name, 
+                type, 
+                category, 
+                price, 
+                price_unpainted, 
+                price_painted, 
+                price_painted_box, 
+                price_original, 
+                bundle_items, 
+                description, 
+                CASE 
+                    WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
+                    WHEN image_url LIKE '[%' THEN (
+                        CASE 
+                            WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
+                            ELSE image_url 
+                        END
+                    )
+                    ELSE COALESCE(image_url, '/assets/imagens/minis.png')
+                END AS image_url, 
+                created_at 
             FROM st_products 
             ${whereSql} 
             ORDER BY created_at DESC 
@@ -200,6 +223,7 @@ module.exports = async function handler(req, res) {
             return p;
         });
 
+        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
         return res.status(200).json({
             products,
             total,

@@ -9,6 +9,8 @@ if (connectionString) {
     pool = new Pool({
       connectionString: connectionString,
       ssl: { rejectUnauthorized: false },
+      max: 1,
+      idleTimeoutMillis: 3000,
       connectionTimeoutMillis: 5000
     });
   } catch (err) {

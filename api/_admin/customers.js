@@ -35,12 +35,12 @@ async function handler(req, res) {
 
     try {
         if (req.method === 'GET') {
-            const { search, customerName } = req.query;
+            const { search, customerName, page = 1, limit = 50 } = req.query;
 
             // Histórico de compras de um cliente específico
             if (customerName) {
                 const { rows: purchases } = await pool.query(
-                    'SELECT * FROM st_sales WHERE cliente ILIKE $1 ORDER BY created_at DESC',
+                    'SELECT id, data, cliente, produto, valor_final, created_at FROM st_sales WHERE cliente ILIKE $1 ORDER BY created_at DESC LIMIT 50',
                     [customerName]
                 );
                 let totalSpent = 0;
@@ -49,8 +49,12 @@ async function handler(req, res) {
                 return res.status(200).json({ purchases, totalSpent });
             }
 
-            // Lista geral de clientes
-            let querySql = 'SELECT * FROM st_customers';
+            // Lista geral de clientes paginada
+            const pageNum = Math.max(1, parseInt(page, 10));
+            const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
+            const offset = (pageNum - 1) * limitNum;
+
+            let querySql = 'SELECT id, nome, telefone, endereco, email, cpf, observacoes, created_at FROM st_customers';
             let params = [];
 
             if (search) {
@@ -58,10 +62,11 @@ async function handler(req, res) {
                 params.push(`%${search}%`);
             }
 
-            querySql += ' ORDER BY created_at DESC';
+            querySql += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+            params.push(limitNum, offset);
 
             const { rows: clientes } = await pool.query(querySql, params);
-            return res.status(200).json({ clientes });
+            return res.status(200).json({ clientes, page: pageNum, limit: limitNum });
         }
 
         if (req.method === 'POST') {
