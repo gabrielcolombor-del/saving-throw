@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/auth';
 import crypto from 'crypto';
 import { pool } from '@/lib/db';
 
 export async function GET(request: Request) {
+  if (!isAdminRequest(request)) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const shopId = searchParams.get('shop_id');

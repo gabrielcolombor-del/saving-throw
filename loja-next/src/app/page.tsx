@@ -1,69 +1,138 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { HeroSlides } from '@/components/home/HeroSlides';
+import { CustomOrderPicker } from '@/components/home/CustomOrderPicker';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <>
+      <div className="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
+        🛡️ Produção Artesanal Premium: Peças sob encomenda com envio em até 7 dias úteis.
+      </div>
+      <section 
+        className="relative w-full max-w-[1920px] mx-auto min-h-[680px] py-12 md:py-0 md:h-[850px] bg-cover bg-center overflow-hidden border-b border-zinc-800 flex items-center justify-center" 
+        style={{ backgroundImage: "url('/assets/imagens/banner.png')" }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center max-w-4xl">
+          <span className="text-[#EBE3CB] text-xs font-black tracking-widest uppercase mb-6 px-3 py-1 bg-zinc-900 rounded-full border border-zinc-800">
+            Boutique Premium de RPG
+          </span>
+          <img src="/assets/imagens/logo quadrada2.png" alt="Saving Throw Logo" className="w-32 md:w-40 h-auto mb-6 drop-shadow-2xl" />
+          <h1 className="text-4xl md:text-6xl uppercase tracking-tight leading-none mb-6 text-white font-title">
+            Leve a imersão da sua mesa para o próximo nível
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-[#EBE3CB] text-base md:text-lg max-w-2xl mb-10 font-medium drop-shadow-md font-sans">
+            Miniaturas de resina com pintura artística profissional e artefatos de corte a laser esculpidos em alto relevo. Tudo pronto para ir direto para o seu mapa de combate.
           </p>
+          <div className="flex flex-wrap justify-center gap-4 font-sans">
+            <a href="#loja" className="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg hover:scale-105">
+              Explorar Catálogo
+            </a>
+            <Link href="/sistema" className="bg-zinc-900 text-white border border-zinc-700 font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-zinc-800 transition-all hover:scale-105">
+              Conheça o Sistema
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section id="personalizada" className="bg-parchment text-black py-24 border-b border-black/10">
+        <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-16 max-w-6xl">
+          <div className="w-full lg:w-1/2 flex justify-center">
+            <div className="relative group">
+              <div className="absolute -inset-2 bg-amber-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+              
+              <HeroSlides />
+              
+              <div className="absolute -bottom-6 -right-6 bg-black text-[#EBE3CB] p-4 rounded shadow-xl border border-zinc-800 rotate-3 transform group-hover:-rotate-3 transition-all duration-500 z-10">
+                <span className="block font-title text-xl">Caixa MDF Personalizada</span>
+                <span className="text-xs uppercase tracking-widest font-bold font-sans">Escala 50mm</span>
+              </div>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 text-center lg:text-left font-sans">
+            <span className="text-amber-700 text-xs font-black tracking-widest uppercase mb-4 block">Serviço Exclusivo</span>
+            <h2 className="text-4xl md:text-5xl font-title uppercase tracking-tight mb-6 text-parchment-dark">Dê vida ao seu personagem</h2>
+            <p className="text-zinc-700 text-lg mb-6">
+              Você não precisa mais jogar com um modelo genérico. Envie uma imagem de referência do seu personagem e nós cuidamos do resto: buscamos ou adaptamos o modelo ideal, imprimimos em Resina Premium e aplicamos uma pintura artística profissional.
+            </p>
+            <p className="text-zinc-700 text-lg mb-8">
+              Sua miniatura pode ser entregue acompanhada de uma <strong>Caixa de MDF de Luxo</strong>, cortada e gravada a laser com o nome, classe e os símbolos do seu herói. É o baú do tesouro definitivo para guardar o seu avatar.
+            </p>
+
+            <CustomOrderPicker />
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section id="loja" className="bg-white text-black py-20 font-sans">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight font-title">Nossos Artefatos</h2>
+            <div className="w-16 h-1 bg-black mx-auto mt-3"></div>
+            <p className="text-zinc-600 mt-4 text-sm font-medium">Selecione as opções do seu combo diretamente no card e finalize o fechamento personalizado da encomenda conosco pelo WhatsApp.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div>
+                <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden relative group">
+                  <img src="/assets/imagens/one shots.jpg" alt="Kit Aventura" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                    <span className="text-white text-xs font-bold tracking-widest uppercase border border-white px-3 py-1 rounded">Ver Detalhes</span>
+                  </div>
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">One Shots & Campanhas</span>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Kits de Aventura</h3>
+                <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
+                  Módulos de campanha prontos para rolar dados. Cada kit inclui a história impressa com mapas e encontros detalhados, além das miniaturas em resina dos monstros, vilões e heróis.
+                </p>
+              </div>
+              <div className="border-t border-zinc-200 pt-4 mt-4">
+                <Link href="/oneshots" className="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 px-4 rounded transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                  <i className="fa-solid fa-eye text-base"></i> Ver Detalhes dos Kits
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div>
+                <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden group">
+                  <img src="/assets/imagens/minis.png" alt="Miniaturas Pintadas" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">Bestiário & Heróis Avulsos</span>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Miniaturas de Resina</h3>
+                <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
+                  Modelos impressos em resina de altíssima definição. Peças entregues sem suportes, totalmente curadas e finalizadas com pintura técnica e contrastes marcantes.
+                </p>
+              </div>
+              <div className="border-t border-zinc-200 pt-4 mt-4">
+                <Link href="/miniaturas" className="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 px-4 rounded transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                  <i className="fa-solid fa-eye text-base"></i> Ver Detalhes
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div>
+                <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden group">
+                  <img src="/assets/imagens/escudo_mestre.png" alt="Arsenal de RPG" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">Arsenal de RPG</span>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Artefatos & Suportes</h3>
+                <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
+                  Escudos do mestre, torres de dados e bandejas personalizadas em MDF de alta precisão para enriquecer suas sessões.
+                </p>
+              </div>
+              <div className="border-t border-zinc-200 pt-4 mt-4">
+                <Link href="/arsenal" className="w-full bg-black hover:bg-zinc-800 text-white font-bold uppercase text-sm py-3 px-4 rounded transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                  <i className="fa-solid fa-eye text-base"></i> Ver Catálogo Completo
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

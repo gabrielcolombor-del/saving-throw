@@ -24,16 +24,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
     const resolvedParams = await params;
     const product = await fetchProductById(resolvedParams.id);
     
-    if (!product) {
-        return (
-            <div className="flex-grow flex flex-col items-center justify-center pt-32 pb-20 text-zinc-500 min-h-screen">
-                <i className="fa-solid fa-triangle-exclamation text-5xl mb-4 text-red-300"></i>
-                <h2 className="text-2xl font-title text-zinc-800 mb-2">Produto Não Encontrado</h2>
-                <p className="text-sm mb-6 max-w-md text-center">A peça que você está procurando pode não estar mais no catálogo ou o link está incorreto.</p>
-                <Link href="/" className="bg-black text-[#EBE3CB] px-6 py-3 rounded text-xs font-bold uppercase tracking-wider hover:bg-zinc-800 transition-colors">Voltar para a Página Inicial</Link>
-            </div>
-        );
-    }
+    if (!product) notFound();
 
     const profile = getProductProfile(product);
 

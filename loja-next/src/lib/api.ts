@@ -1,45 +1,37 @@
 import { cache } from 'react';
+import { getProductById, listProducts, type Product, type ProductList } from '@/lib/products';
 
-export async function fetchProducts(params: Record<string, string | number>) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-  const url = new URL(`${baseUrl}/api/products`);
-  
-  Object.keys(params).forEach(key => {
-    if (params[key] !== undefined && params[key] !== '') {
-      url.searchParams.append(key, params[key].toString());
-    }
-  });
+/*
+ * Acesso a dados para os Server Components.
+ * Antes, estas funções faziam fetch HTTP para a própria /api/products (via NEXT_PUBLIC_API_URL),
+ * o que quebrava no build (servidor ainda não está no ar) e gerava uma ida e volta extra.
+ * Agora consultam o banco direto, com cache de 5 minutos invalidado pelo admin.
+ */
 
+type Params = Record<string, string | number | undefined>;
+
+export async function fetchProducts(params: Params): Promise<ProductList & { product?: Product | null }> {
   try {
-    const res = await fetch(url.toString(), { 
-      next: { 
-        revalidate: 3600, 
-        tags: ['products'] 
-      } 
+    if (params.id) {
+      const product = await getProductById(String(params.id));
+      return { products: product ? [product] : [], total: product ? 1 : 0, page: 1, limit: 1, totalPages: 1, product };
+    }
+    return await listProducts({
+      type: params.type ? String(params.type) : null,
+      category: params.category ? String(params.category) : null,
+      search: params.search ? String(params.search) : null,
+      page: Number(params.page) || 1,
+      limit: Number(params.limit) || 8,
     });
-    if (!res.ok) throw new Error('Failed to fetch products');
-    return res.json();
   } catch (error) {
     console.error('Error fetching products:', error);
-    return { products: [], total: 0, totalPages: 0 };
+    return { products: [], total: 0, page: 1, limit: 0, totalPages: 0 };
   }
 }
 
-export const fetchProductById = cache(async (id: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-  const url = new URL(`${baseUrl}/api/products`);
-  url.searchParams.append('id', id);
-
+export const fetchProductById = cache(async (id: string): Promise<Product | null> => {
   try {
-    const res = await fetch(url.toString(), { 
-      next: { 
-        revalidate: 3600, 
-        tags: [`product-${id}`, 'products'] 
-      } 
-    });
-    if (!res.ok) throw new Error('Failed to fetch product');
-    const data = await res.json();
-    return data.product || null;
+    return await getProductById(id);
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;

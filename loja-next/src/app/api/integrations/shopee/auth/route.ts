@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/auth';
 import crypto from 'crypto';
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isAdminRequest(request)) return NextResponse.redirect(new URL('/admin', request.url));
+
   const partnerId = process.env.SHOPEE_PARTNER_ID;
   const partnerKey = process.env.SHOPEE_PARTNER_KEY;
   const redirectUri = process.env.SHOPEE_REDIRECT_URI; // e.g. https://seusite.com/api/integrations/shopee/callback
