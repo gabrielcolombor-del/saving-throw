@@ -105,6 +105,27 @@ export function Sons() {
         var defaultPresetScenes = [];
 
         var currentUser = JSON.parse(localStorage.getItem('st_user')) || null;
+
+        // O site antigo guardava senhas no navegador; remove esses dados.
+        try {
+            var _storedUsers = JSON.parse(localStorage.getItem('st_registered_users')) || [];
+            if (_storedUsers.some(u => u && 'password' in u)) {
+                localStorage.setItem('st_registered_users', JSON.stringify(_storedUsers.map(({ password, ...u }) => u)));
+            }
+        } catch (e) {}
+
+        var sessionExpiredNotified = false;
+        function onSessionExpired() {
+            if (!currentUser || sessionExpiredNotified) return;
+            sessionExpiredNotified = true;
+            handleLogout(true);
+            showToast('Sua sessão expirou. Entre novamente para salvar suas mesas na nuvem.', 'error');
+        }
+
+        function checkSession(resp) {
+            if (resp && resp.status === 401) onSessionExpired();
+            return resp;
+        }
         var customAmbients = JSON.parse(localStorage.getItem(`st_custom_ambients_${currentUser ? currentUser.id : 'guest'}`)) || [];
         var editingCustomAmbientId = null;
 
@@ -157,14 +178,12 @@ export function Sons() {
         async function syncCustomAmbientsToCloud() {
             if (!currentUser || !currentUser.id) return;
             try {
-                await fetch('/api/gm-profiles?action=save_custom_ambients', {
+                checkSession(await fetch('/api/gm-profiles?action=save_custom_ambients', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: currentUser.id,
-                        customAmbients: customAmbients
-                    })
-                });
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ customAmbients: customAmbients })
+                }));
             } catch (e) {
                 console.warn('Erro ao sincronizar custom ambients:', e);
             }
@@ -278,8 +297,8 @@ export function Sons() {
                 fetch('/api/gm-profiles?action=save_profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
-                        userId: currentUser.id,
                         profileId: p.id,
                         name: p.name,
                         favorites: p.favorites,
@@ -288,7 +307,7 @@ export function Sons() {
                         scenes: p.scenes,
                         activeState: p.active_state
                     })
-                }).catch(e => console.log('Sync server err:', e));
+                }).then(checkSession).catch(e => console.log('Sync server err:', e));
             }
         }
 
@@ -423,8 +442,9 @@ export function Sons() {
                     fetch('/api/gm-profiles?action=delete_profile', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: currentUser.id, profileId: p.id })
-                    }).catch(e => console.log('Delete profile err:', e));
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ profileId: p.id })
+                    }).then(checkSession).catch(e => console.log('Delete profile err:', e));
 
                     syncActiveProfileChanges();
                     renderTableProfilesUI();
@@ -457,7 +477,7 @@ export function Sons() {
             }
         }
 
-        function saveRegisteredUser(userObj, password = null) {
+        function saveRegisteredUser(userObj) {
             var users = getRegisteredUsers();
             var normalizedEmail = (userObj.email || '').toLowerCase().trim();
             var idx = users.findIndex(u => u.email.toLowerCase() === normalizedEmail);
@@ -466,12 +486,12 @@ export function Sons() {
                 email: normalizedEmail,
                 name: userObj.name || 'Mestre de RPG',
                 avatarUrl: userObj.avatarUrl || '',
-                password: password || (idx >= 0 ? users[idx].password : ''),
                 isGoogle: !!userObj.isGoogle,
                 updated_at: new Date().toISOString()
             };
             if (idx >= 0) {
                 users[idx] = { ...users[idx], ...record };
+                delete users[idx].password;
             } else {
                 users.push(record);
             }
@@ -590,7 +610,7 @@ export function Sons() {
                             document.getElementById('user-dropdown')?.classList.add('hidden');
                         }
                     });
-                    document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+                    document.getElementById('logout-btn')?.addEventListener('click', () => handleLogout());
                 }
             } else {
                 if (banner) banner.classList.remove('hidden');
@@ -619,9 +639,11 @@ export function Sons() {
             if (authModal) authModal.classList.add('hidden');
         }
 
-        function handleLogout() {
+        function handleLogout(silent = false) {
             var oldName = currentUser?.name || 'Mestre';
             currentUser = null;
+            fetch('/api/gm-profiles?action=logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+            try { if (window.google && window.google.accounts && window.google.accounts.id) window.google.accounts.id.disableAutoSelect(); } catch (e) {}
             localStorage.removeItem('st_user');
             localStorage.removeItem('st_table_profiles');
             localStorage.removeItem('st_active_profile');
@@ -653,7 +675,7 @@ export function Sons() {
             renderAmbients();
             renderScenesUI();
 
-            showToast(`Até logo, <strong>${oldName}</strong>! Desconectado com sucesso.`, 'info');
+            if (!silent) showToast(`Até logo, <strong>${oldName}</strong>! Desconectado com sucesso.`, 'info');
         }
 
         if (bannerLoginBtn) bannerLoginBtn.addEventListener('click', openAuthModal);
@@ -723,94 +745,34 @@ export function Sons() {
 
                 try {
                     var endpointAction = authMode === 'login' ? 'email_login' : 'email_register';
-
-                    var apiResult = null;
-                    var apiSucceeded = false;
-
+                    var resp = null;
+                    var data = {};
                     try {
-                        var resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
+                        resp = await fetch(`/api/gm-profiles?action=${endpointAction}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
+                            credentials: 'same-origin',
                             body: JSON.stringify({ email, password, name })
                         });
-                        var data = await resp.json();
-                        if (resp.ok && data.success) {
-                            apiResult = data;
-                            apiSucceeded = true;
-                        } else if (data.error && !data.fallback) {
-                            if (authErrorMsg) {
-                                authErrorMsg.textContent = data.error;
-                                authErrorMsg.classList.remove('hidden');
-                            }
-                            if (authSubmitBtn) {
-                                authSubmitBtn.disabled = false;
-                                authSubmitBtn.innerHTML = originalBtnHtml;
-                            }
-                            return;
-                        }
+                        data = await resp.json().catch(() => ({}));
                     } catch (netErr) {
-                        console.log('Modo local ativo:', netErr);
+                        console.warn('Falha de rede no login:', netErr);
                     }
 
-                    var localUsers = getRegisteredUsers();
-                    var existingUser = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+                    if (!resp || !resp.ok || !data.success || !data.user) {
+                        if (authErrorMsg) {
+                            authErrorMsg.textContent = (data && data.error) || 'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.';
+                            authErrorMsg.classList.remove('hidden');
+                        }
+                        return;
+                    }
 
+                    saveRegisteredUser(data.user);
+                    applyUserData(data.user, data.profiles);
                     if (authMode === 'register') {
-                        if (existingUser && !apiSucceeded) {
-                            if (authErrorMsg) {
-                                authErrorMsg.textContent = 'Este e-mail já está cadastrado. Alterne para a aba "Entrar"!';
-                                authErrorMsg.classList.remove('hidden');
-                            }
-                            if (authSubmitBtn) {
-                                authSubmitBtn.disabled = false;
-                                authSubmitBtn.innerHTML = originalBtnHtml;
-                            }
-                            return;
-                        }
-
-                        var newUser = apiResult?.user || {
-                            id: `usr_${Date.now()}_${Math.floor(Math.random()*1000)}`,
-                            email: email.toLowerCase(),
-                            name: name || 'Mestre de RPG',
-                            avatarUrl: ''
-                        };
-
-                        saveRegisteredUser(newUser, password);
-                        applyUserData(newUser, apiResult?.profiles);
-                        showToast(`✨ Conta de Mestre criada com sucesso! Bem-vindo, <strong>${newUser.name}</strong>!`, 'success');
-
+                        showToast(`✨ Conta de Mestre criada com sucesso! Bem-vindo, <strong>${data.user.name}</strong>!`, 'success');
                     } else {
-                        // authMode === 'login'
-                        if (apiSucceeded && apiResult.user) {
-                            saveRegisteredUser(apiResult.user, password);
-                            applyUserData(apiResult.user, apiResult.profiles);
-                            showToast(`⚔️ Bem-vindo de volta, <strong>${apiResult.user.name}</strong>!`, 'success');
-                        } else if (existingUser) {
-                            if (existingUser.password && existingUser.password !== password) {
-                                if (authErrorMsg) {
-                                    authErrorMsg.textContent = 'Senha incorreta. Verifique e tente novamente.';
-                                    authErrorMsg.classList.remove('hidden');
-                                }
-                                if (authSubmitBtn) {
-                                    authSubmitBtn.disabled = false;
-                                    authSubmitBtn.innerHTML = originalBtnHtml;
-                                }
-                                return;
-                            }
-
-                            applyUserData(existingUser);
-                            showToast(`⚔️ Bem-vindo de volta, <strong>${existingUser.name}</strong>!`, 'success');
-                        } else {
-                            if (authErrorMsg) {
-                                authErrorMsg.textContent = 'Usuário não encontrado. Crie sua conta na aba "Criar Conta"!';
-                                authErrorMsg.classList.remove('hidden');
-                            }
-                            if (authSubmitBtn) {
-                                authSubmitBtn.disabled = false;
-                                authSubmitBtn.innerHTML = originalBtnHtml;
-                            }
-                            return;
-                        }
+                        showToast(`⚔️ Bem-vindo de volta, <strong>${data.user.name}</strong>!`, 'success');
                     }
 
                     if (passwordInput) passwordInput.value = '';
@@ -836,47 +798,31 @@ export function Sons() {
 
         window.handleGoogleLoginResponse = async function(response) {
             try {
-                var googleUser = null;
-                if (response && response.credential) {
-                    var token = response.credential;
-                    var payload = JSON.parse(atob(token.split('.')[1]));
-                    googleUser = {
-                        id: payload.sub,
-                        email: payload.email,
-                        name: payload.name || 'Mestre de RPG',
-                        avatarUrl: payload.picture || '',
-                        isGoogle: true
-                    };
-                }
+                if (!response || !response.credential) return;
 
-                if (!googleUser) return;
-
-                saveRegisteredUser(googleUser);
-
-                var serverData = null;
+                var resp = null;
+                var data = {};
                 try {
-                    var resp = await fetch('/api/gm-profiles?action=google_login', {
+                    resp = await fetch('/api/gm-profiles?action=google_login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            googleId: googleUser.id,
-                            email: googleUser.email,
-                            name: googleUser.name,
-                            avatarUrl: googleUser.avatarUrl
-                        })
+                        credentials: 'same-origin',
+                        // O servidor valida a assinatura do Google e descobre quem é o mestre
+                        body: JSON.stringify({ credential: response.credential })
                     });
-                    if (resp.ok) {
-                        serverData = await resp.json();
-                    }
-                } catch(err) {
-                    console.log('Google API sync warning:', err);
+                    data = await resp.json().catch(() => ({}));
+                } catch (netErr) {
+                    console.warn('Falha de rede no login com Google:', netErr);
                 }
 
-                var finalUser = serverData?.user || googleUser;
-                var finalProfiles = serverData?.profiles || null;
-                applyUserData(finalUser, finalProfiles);
-                showToast(`✨ Conectado com o Google como <strong>${finalUser.name}</strong>!`, 'success');
+                if (!resp || !resp.ok || !data.success || !data.user) {
+                    showToast((data && data.error) || 'Não foi possível entrar com o Google agora. Tente novamente.', 'error');
+                    return;
+                }
 
+                saveRegisteredUser(data.user);
+                applyUserData(data.user, data.profiles);
+                showToast(`✨ Conectado com o Google como <strong>${data.user.name}</strong>!`, 'success');
             } catch (err) {
                 console.error('Google login error:', err);
                 showToast('Erro ao autenticar com o Google.', 'error');
@@ -2343,7 +2289,50 @@ export function Sons() {
             renderActiveTracksHeaderPanel();
             renderScenesUI();
             restoreActiveState(getActiveProfile()?.active_state);
+            refreshFromServer();
         });
+
+        // Ao abrir a página logado, busca as mesas e sons deste mestre no servidor
+        // (assim cada mestre vê as próprias mesas em qualquer aparelho).
+        async function refreshFromServer() {
+            if (!currentUser) return;
+            try {
+                var resp = await fetch('/api/gm-profiles?action=me', { credentials: 'same-origin' });
+                if (resp.status === 401) { onSessionExpired(); return; }
+                if (!resp.ok) return;
+                var data = await resp.json();
+                if (!data.success || !data.user) return;
+
+                currentUser = { ...currentUser, ...data.user };
+                localStorage.setItem('st_user', JSON.stringify(currentUser));
+
+                if (Array.isArray(data.user.customAmbients)) {
+                    customAmbients = data.user.customAmbients;
+                    localStorage.setItem(`st_custom_ambients_${currentUser.id}`, JSON.stringify(customAmbients));
+                }
+                if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+                    tableProfiles = data.profiles.map(p => ({ ...p, scenes: p.scenes || [] }));
+                    if (!tableProfiles.some(p => p.id === activeProfileId)) activeProfileId = tableProfiles[0].id;
+                    var p = getActiveProfile();
+                    favoriteSounds = p.favorites || [];
+                    favoriteAmbients = p.favoriteAmbients || p.favorite_ambients || [];
+                    quickSlots = p.quick_slots || {};
+                    tableScenes = p.scenes || [];
+                    localStorage.setItem('st_table_profiles', JSON.stringify(tableProfiles));
+                    localStorage.setItem('st_active_profile', activeProfileId);
+                    localStorage.setItem(`st_profiles_${currentUser.id}`, JSON.stringify(tableProfiles));
+                }
+                updateAuthUI();
+                renderTableProfilesUI();
+                renderQuickSlots();
+                renderFavorites();
+                renderSFXCatalog();
+                renderAmbients();
+                renderScenesUI();
+            } catch (e) {
+                console.warn('Não foi possível atualizar as mesas do servidor:', e);
+            }
+        }
     
 
       (window as any).getAmbientData = getAmbientData;
