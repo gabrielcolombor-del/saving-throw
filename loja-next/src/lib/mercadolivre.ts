@@ -52,6 +52,40 @@ export async function getMLToken(): Promise<string | null> {
   }
 }
 
+/** Preço anunciado no ML: miniatura vai pelo preço sem pintura; o resto, pelo preço cheio. */
+export function mlPriceFor(productData: MLProductData): number | null {
+  const priceUnpainted = productData.priceUnpainted ?? productData.price_unpainted;
+  let finalPrice: string | number | null | undefined = productData.price;
+  if (productData.type === 'miniatura' && priceUnpainted) finalPrice = priceUnpainted;
+  const priceNum = parseFloat(String(finalPrice));
+  return finalPrice && !isNaN(priceNum) ? priceNum : null;
+}
+
+/**
+ * Atualiza o preço de um anúncio já publicado. Antes só existia a criação de anúncios,
+ * então mudanças de preço no site nunca chegavam ao Mercado Livre.
+ */
+export async function updateMLPrice(externalId: string, price: number) {
+  const token = await getMLToken();
+  if (!token) throw new Error('Mercado Livre não está conectado ou token expirou.');
+
+  const current = await fetch(`https://api.mercadolibre.com/items/${encodeURIComponent(externalId)}?attributes=price`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((r) => (r.ok ? r.json() : null));
+  if (current && Number(current.price) === price) return { changed: false };
+
+  const res = await fetch(`https://api.mercadolibre.com/items/${encodeURIComponent(externalId)}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ price }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data?.message || `HTTP ${res.status}`);
+  }
+  return { changed: true };
+}
+
 export async function publishProductToML(productData: MLProductData, imageFiles: MLImage[]) {
   const token = await getMLToken();
   if (!token) throw new Error('Mercado Livre não está conectado ou token expirou.');
@@ -98,11 +132,7 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
     console.warn('Não foi possível verificar tags do usuário ML, assumindo user_product_seller:', (e as Error).message);
   }
 
-  const priceUnpainted = productData.priceUnpainted ?? productData.price_unpainted;
-  let finalPrice: string | number | null | undefined = productData.price;
-  if (productData.type === 'miniatura' && priceUnpainted) finalPrice = priceUnpainted;
-  let priceNum = parseFloat(String(finalPrice));
-  if (!finalPrice || isNaN(priceNum)) priceNum = 29.9;
+  const priceNum = mlPriceFor(productData) ?? 29.9;
 
   const titleText = `Miniatura ${productData.name} RPG D&D Resina`.substring(0, 60);
 

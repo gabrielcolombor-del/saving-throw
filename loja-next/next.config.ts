@@ -11,6 +11,22 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname),
   },
 
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Microfone/câmera ficam bloqueados; o site não usa. (Sem COOP: quebraria o popup do login do Google.)
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+        ],
+      },
+    ];
+  },
+
   async redirects() {
     return [
       // Um único domínio canônico: www respondia 200 com o mesmo conteúdo (conteúdo duplicado no Google).

@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
@@ -23,7 +24,17 @@ export function adminConfigured(): boolean {
 
 export function checkAdminCredentials(username: unknown, password: unknown): boolean {
   if (!adminConfigured()) return false;
-  return username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS;
+  // Comparação em tempo constante: não revela pelo tempo de resposta quantos caracteres acertou.
+  const userOk = safeEqual(username, process.env.ADMIN_USER!);
+  const passOk = safeEqual(password, process.env.ADMIN_PASS!);
+  return userOk && passOk;
+}
+
+function safeEqual(input: unknown, expected: string): boolean {
+  if (typeof input !== 'string') return false;
+  const a = createHash('sha256').update(input).digest();
+  const b = createHash('sha256').update(expected).digest();
+  return timingSafeEqual(a, b);
 }
 
 export function signAdminToken(): string {
