@@ -1,3 +1,6 @@
+import { preload } from 'react-dom';
+import { CategoryIntro, FaqSection } from '@/components/SeoContent';
+import { ARSENAL_INTRO, ARSENAL_FAQ } from '@/lib/seo-content';
 import React from 'react';
 import Link from 'next/link';
 import { fetchProducts } from '@/lib/api';
@@ -12,9 +15,9 @@ export async function generateMetadata(props: Props) {
     {
       title: 'Arsenal de RPG: Escudo do Mestre e Acessórios em MDF',
       description:
-        'Escudo do mestre personalizado, torres e bandejas de dados e acessórios de RPG em MDF com corte a laser de alta precisão. Mais imersão para a sua mesa.',
+        'Escudo do mestre personalizado em MDF com corte a laser de alta precisão, com presilhas para folhas de consulta e acabamento envernizado. Mais imersão para a sua mesa.',
       path: '/arsenal',
-      image: '/assets/imagens/escudo_mestre.png',
+      image: '/assets/imagens/escudo_mestre.webp',
       imageAlt: 'Escudo do Mestre Personalizado em MDF',
     },
     await props.searchParams,
@@ -22,6 +25,8 @@ export async function generateMetadata(props: Props) {
 }
 
 export default async function ArsenalPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  // Fundo do topo é o maior elemento da primeira tela (LCP): baixa antes do CSS pedir.
+  preload('/assets/imagens/arsenal_wallpaper.webp', { as: 'image', fetchPriority: 'high' });
   const searchParams = await props.searchParams;
   const page = Number(searchParams?.page) || 1;
   const search = typeof searchParams?.search === 'string' ? searchParams.search : '';
@@ -43,7 +48,7 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
 
   return (
     <div className="font-sans">
-        <section className="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/arsenal_wallpaper.jpg')" }}>
+        <section className="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/arsenal_wallpaper.webp')" }}>
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Arsenal de RPG</h1>
@@ -59,7 +64,7 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
                     {/* Escudo do Mestre Personalizado */}
                     <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between mb-20">
                         <div className="relative w-full h-80 group overflow-hidden bg-zinc-100">
-                            <img src="/assets/imagens/escudo_mestre.png" alt="Escudo do Mestre Personalizado" className="w-full h-full object-cover" />
+                            <img src="/assets/imagens/escudo_mestre.webp" alt="Escudo do Mestre Personalizado" className="w-full h-full object-cover" />
                         </div>
                         <div className="p-6 flex flex-col justify-between flex-grow">
                             <div className="mb-6">
@@ -103,7 +108,7 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
                                 return (
                                     <Link href={`/produto/${p.id}`} key={p.id} className="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                                         <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100" style={{ aspectRatio: '4/5' }}>
-                                            <img src={firstImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <img loading="lazy" decoding="async" src={firstImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                         </div>
                                         <div className="p-4 flex flex-col flex-1 justify-between">
                                             <div>
@@ -143,6 +148,8 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
                 </div>
             </div>
         </section>
+      <CategoryIntro {...ARSENAL_INTRO} />
+      <FaqSection items={ARSENAL_FAQ} />
     </div>
   );
 }

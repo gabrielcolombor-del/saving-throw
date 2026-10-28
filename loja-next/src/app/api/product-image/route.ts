@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
-const FALLBACK = '/assets/imagens/minis.png';
+const FALLBACK = '/assets/imagens/minis.webp';
 const IMMUTABLE = 'public, max-age=86400, s-maxage=31536000, stale-while-revalidate=86400, immutable';
 
 export async function GET(request: Request) {

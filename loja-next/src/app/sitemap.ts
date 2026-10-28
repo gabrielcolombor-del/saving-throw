@@ -41,9 +41,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: r.priority,
   }));
 
+  const dbProducts = await allProducts();
+  // Produto fixo que também foi cadastrado no banco: só a versão do banco entra (é a canônica).
+  const dbNames = new Set(dbProducts.map((p) => String(p.name || '').toLowerCase()));
+  const specials = Object.values(SPECIAL_PRODUCTS).filter((p) => !dbNames.has(String(p.name).toLowerCase()));
+
   const seen = new Set<string>();
   const productEntries: MetadataRoute.Sitemap = [];
-  for (const p of [...Object.values(SPECIAL_PRODUCTS), ...(await allProducts())]) {
+  for (const p of [...specials, ...dbProducts]) {
     const id = String(p.id);
     if (seen.has(id)) continue;
     seen.add(id);

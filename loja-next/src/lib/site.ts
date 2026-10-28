@@ -10,7 +10,9 @@ export const SITE_NAME = 'Saving Throw';
 export const SITE_TAGLINE = 'Miniaturas de RPG, Arsenal e Kits de Aventura';
 export const SITE_DESCRIPTION =
   'Boutique de RPG de mesa: miniaturas em resina 3D com pintura artística, escudo do mestre e acessórios em MDF, kits de aventura One Shot e o Sistema Saving Throw. Envio para todo o Brasil.';
-export const DEFAULT_OG_IMAGE = '/assets/imagens/banner.png';
+/** Card de compartilhamento padrão (1200x630, gerado por scripts/optimize-images.mjs). */
+export const DEFAULT_OG_IMAGE = '/assets/og/banner.jpg';
+export const OG_SIZE = { width: 1200, height: 630 };
 export const LOGO_PATH = '/assets/imagens/logo quadrada.png';
 
 export const INSTAGRAM_URL = 'https://instagram.com/savingthrowrpg';
@@ -32,7 +34,7 @@ type PageMetaInput = {
  * (sem este helper, siteName, locale e imagem padrão se perderiam).
  */
 export function pageMetadata({ title, description, path, image, imageAlt, type = 'website', noindex }: PageMetaInput): Metadata {
-  const img = encodePath(image || DEFAULT_OG_IMAGE);
+  const img = encodePath(ogImage(image));
   return {
     title,
     description,
@@ -44,7 +46,7 @@ export function pageMetadata({ title, description, path, image, imageAlt, type =
       title: `${title} | ${SITE_NAME}`,
       description,
       url: path,
-      images: [{ url: img, alt: imageAlt || title }],
+      images: [{ url: img, alt: imageAlt || title, ...(img.startsWith('/assets/og/') ? OG_SIZE : {}) }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -71,6 +73,17 @@ export function listingMetadata(base: PageMetaInput, searchParams: SearchParams)
     return pageMetadata({ ...base, title: `${base.title} — Página ${page}`, path: `${base.path}?page=${page}` });
   }
   return pageMetadata(base);
+}
+
+/**
+ * Imagem para Open Graph/Twitter: imagens do site (/assets/imagens/x.webp|png|jpg) viram o
+ * recorte 1200x630 em /assets/og/x.jpg (JPG leve, aceito por WhatsApp, Facebook e X).
+ * Imagens externas ou do banco passam direto.
+ */
+export function ogImage(image?: string): string {
+  if (!image) return DEFAULT_OG_IMAGE;
+  const m = image.match(/^\/assets\/imagens\/(.+)\.(png|jpe?g|webp)$/i);
+  return m ? `/assets/og/${m[1]}.jpg` : image;
 }
 
 /** Codifica só os espaços dos nomes de arquivo (ex.: "one shots.jpg"); não mexe em query strings já codificadas. */

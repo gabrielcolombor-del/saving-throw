@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
+import { preconnect, preload } from 'react-dom';
 import './globals.css';
-import { DEFAULT_OG_IMAGE, encodePath, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site';
+import { DEFAULT_OG_IMAGE, OG_SIZE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site';
 
 /*
  * Layout raiz: só o que é comum à loja e ao admin (html, CSS global, metadata padrão).
@@ -27,7 +28,6 @@ export const metadata: Metadata = {
     'Dungeons & Dragons',
     'Saving Throw',
   ],
-  icons: { icon: '/assets/imagens/favicon.png', apple: '/assets/imagens/favicon.png' },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
     url: '/',
-    images: [{ url: encodePath(DEFAULT_OG_IMAGE), alt: `${SITE_NAME} — ${SITE_TAGLINE}` }],
+    images: [{ url: DEFAULT_OG_IMAGE, alt: `${SITE_NAME} — ${SITE_TAGLINE}`, ...OG_SIZE }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
-    images: [encodePath(DEFAULT_OG_IMAGE)],
+    images: [DEFAULT_OG_IMAGE],
   },
   robots: {
     index: true,
@@ -58,6 +58,12 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Abre a conexão com o CDN dos ícones antes do CSS ser descoberto (ganha uma ida e volta).
+  preconnect('https://cdnjs.cloudflare.com', { crossOrigin: 'anonymous' });
+  // Fontes do texto e dos títulos: baixam junto com o HTML, então a troca (font-display: swap)
+  // acontece antes da primeira pintura e o layout não "pula" (CLS).
+  preload('/assets/Alsina.TTF', { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' });
+  preload('/assets/ShindlerFont.ttf', { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' });
   return (
     <html lang="pt-BR">
       <head>

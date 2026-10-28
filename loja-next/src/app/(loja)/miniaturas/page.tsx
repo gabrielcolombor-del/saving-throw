@@ -1,3 +1,6 @@
+import { preload } from 'react-dom';
+import { CategoryIntro, FaqSection } from '@/components/SeoContent';
+import { MINIATURAS_INTRO, MINIATURAS_FAQ } from '@/lib/seo-content';
 import React from 'react';
 import Link from 'next/link';
 import { fetchProducts } from '@/lib/api';
@@ -13,7 +16,7 @@ export async function generateMetadata(props: Props) {
       description:
         'Miniaturas de RPG impressas em resina 3D 8K/12K, com ou sem pintura artística: heróis, monstros, NPCs e miniaturas personalizadas do seu personagem. Envio para todo o Brasil.',
       path: '/miniaturas',
-      image: '/assets/imagens/minis.png',
+      image: '/assets/imagens/minis.webp',
       imageAlt: 'Miniaturas de RPG em resina pintadas',
     },
     await props.searchParams,
@@ -21,6 +24,8 @@ export async function generateMetadata(props: Props) {
 }
 
 export default async function MiniaturasPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  // Fundo do topo é o maior elemento da primeira tela (LCP): baixa antes do CSS pedir.
+  preload('/assets/imagens/minis.webp', { as: 'image', fetchPriority: 'high' });
   const searchParams = await props.searchParams;
   const page = Number(searchParams?.page) || 1;
   const category = typeof searchParams?.category === 'string' ? searchParams.category : '';
@@ -39,7 +44,7 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
 
   return (
     <div className="font-sans">
-      <section className="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/minis.png')", backgroundPosition: "center" }}>
+      <section className="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/minis.webp')", backgroundPosition: "center" }}>
           <div className="absolute inset-0 bg-black/60"></div>
           <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
               <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas & Bestiário</h1>
@@ -55,8 +60,8 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
               <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20">
                   <div className="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
                   <div className="w-full lg:w-1/2 relative overflow-hidden flex justify-center bg-zinc-900 group">
-                      <img src="/assets/imagens/capapersonagem1.png" alt="Miniatura Personalizada - Imagem 1" className="relative w-full h-auto object-cover transition-opacity duration-1000 ease-in-out opacity-100 group-hover:opacity-0 z-0 block" />
-                      <img src="/assets/imagens/capapersonagem2.png" alt="Miniatura Personalizada - Imagem 2" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 group-hover:opacity-100 pointer-events-none z-0" />
+                      <img loading="lazy" decoding="async" src="/assets/imagens/capapersonagem1.webp" width={1296} height={1620} alt="Miniatura personalizada de RPG pintada à mão" className="relative w-full h-auto object-cover transition-opacity duration-1000 ease-in-out opacity-100 group-hover:opacity-0 z-0 block" />
+                      <img loading="lazy" decoding="async" src="/assets/imagens/capapersonagem2.webp" width={1296} height={1620} alt="Caixa de MDF gravada a laser com miniatura personalizada" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0 group-hover:opacity-100 pointer-events-none z-0" />
                   </div>
                   <div className="p-8 flex flex-col justify-between lg:w-1/2">
                       <div>
@@ -137,7 +142,7 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                               return (
                                   <Link href={`/produto/${p.id}`} key={p.id} className="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                                       <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100" style={{ aspectRatio: '4/5' }}>
-                                          <img src={firstImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                          <img loading="lazy" decoding="async" src={firstImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                           <span className="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-1 rounded shadow-sm">{p.category}</span>
                                       </div>
                                       <div className="p-4 flex flex-col flex-1 justify-between">
@@ -197,6 +202,8 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
               </div>
           </div>
       </section>
+      <CategoryIntro {...MINIATURAS_INTRO} />
+      <FaqSection items={MINIATURAS_FAQ} />
     </div>
   );
 }

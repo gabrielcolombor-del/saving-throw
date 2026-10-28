@@ -1,3 +1,6 @@
+import { preload } from 'react-dom';
+import { FaqSection } from '@/components/SeoContent';
+import { HOME_FAQ } from '@/lib/seo-content';
 import Link from 'next/link';
 import { HeroSlides } from '@/components/home/HeroSlides';
 import { CustomOrderPicker } from '@/components/home/CustomOrderPicker';
@@ -10,6 +13,8 @@ export const metadata = {
 };
 
 export default function Home() {
+  // Fundo do topo é o maior elemento da primeira tela (LCP): baixa antes do CSS pedir.
+  preload('/assets/imagens/banner.webp', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <div className="hidden md:block bg-amber-600 text-black text-xs md:text-sm font-bold text-center py-2 px-4 uppercase tracking-wider">
@@ -17,14 +22,14 @@ export default function Home() {
       </div>
       <section 
         className="relative w-full max-w-[1920px] mx-auto min-h-[680px] py-12 md:py-0 md:h-[850px] bg-cover bg-center overflow-hidden border-b border-zinc-800 flex items-center justify-center" 
-        style={{ backgroundImage: "url('/assets/imagens/banner.png')" }}
+        style={{ backgroundImage: "url('/assets/imagens/banner.webp')" }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center max-w-4xl">
           <span className="text-[#EBE3CB] text-xs font-black tracking-widest uppercase mb-6 px-3 py-1 bg-zinc-900 rounded-full border border-zinc-800">
             Boutique Premium de RPG
           </span>
-          <img src="/assets/imagens/logo quadrada2.png" alt="Saving Throw Logo" className="w-32 md:w-40 h-auto mb-6 drop-shadow-2xl" />
+          <img src="/assets/imagens/logo quadrada2.webp" width={783} height={776} alt="Saving Throw — miniaturas e acessórios de RPG" className="w-32 md:w-40 h-auto mb-6 drop-shadow-2xl" />
           <h1 className="text-4xl md:text-6xl uppercase tracking-tight leading-none mb-6 text-white font-title">
             Leve a imersão da sua mesa para o próximo nível
           </h1>
@@ -83,7 +88,7 @@ export default function Home() {
             <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div>
                 <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden relative group">
-                  <img src="/assets/imagens/one shots.jpg" alt="Kit Aventura" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src="/assets/imagens/one shots.webp" alt="Kit de aventura One Shot com miniaturas de RPG" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                     <span className="text-white text-xs font-bold tracking-widest uppercase border border-white px-3 py-1 rounded">Ver Detalhes</span>
                   </div>
@@ -104,7 +109,7 @@ export default function Home() {
             <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div>
                 <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden group">
-                  <img src="/assets/imagens/minis.png" alt="Miniaturas Pintadas" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src="/assets/imagens/minis.webp" alt="Miniaturas de RPG em resina pintadas à mão" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">Bestiário & Heróis Avulsos</span>
                 <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Miniaturas de Resina</h3>
@@ -122,12 +127,12 @@ export default function Home() {
             <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div>
                 <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden group">
-                  <img src="/assets/imagens/escudo_mestre.png" alt="Arsenal de RPG" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src="/assets/imagens/escudo_mestre.webp" alt="Escudo do mestre em MDF com corte a laser" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">Arsenal de RPG</span>
                 <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Artefatos & Suportes</h3>
                 <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-                  Escudos do mestre, torres de dados e bandejas personalizadas em MDF de alta precisão para enriquecer suas sessões.
+                  Escudo do mestre personalizado em MDF com corte a laser de alta precisão para enriquecer suas sessões.
                 </p>
               </div>
               <div className="border-t border-zinc-200 pt-4 mt-4">
@@ -140,6 +145,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <FaqSection items={HOME_FAQ} />
     </>
   );
 }

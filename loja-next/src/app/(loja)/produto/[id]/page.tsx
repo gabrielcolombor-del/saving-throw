@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { fetchProductById, fetchProducts } from '@/lib/api';
+import { findDuplicateProductId } from '@/lib/products';
 import { getProductProfile } from '@/lib/product-profile';
 import ProductInteractive from './ProductInteractive';
 import { notFound } from 'next/navigation';
@@ -17,8 +18,27 @@ function productImages(product: any): string[] {
     return [];
 }
 
+// Texto padrão que o admin usa em quase todas as miniaturas: como meta description gera
+// dezenas de descrições idênticas (o Google trata como conteúdo duplicado).
+const GENERIC_MINI_DESC = /^Miniatura impressa em resina de alta definição/i;
+
 function productDescription(product: any): string {
-    return truncate(product.description || `${product.name} — peça do catálogo ${SITE_NAME}, produzida sob encomenda com acabamento premium. Envio para todo o Brasil.`);
+    const desc: string = product.description || '';
+    if (desc && !GENERIC_MINI_DESC.test(desc)) return truncate(desc);
+
+    if (product.type === 'miniatura' || GENERIC_MINI_DESC.test(desc)) {
+        const height = desc.match(/Altura aproximada:\s*(\d+\s*mm)/i)?.[1];
+        const kind = /monstro/i.test(product.category || '') ? 'monstro' : 'herói/NPC';
+        return truncate(
+            `Miniatura de RPG ${product.name} (${kind}) impressa em resina 3D de alta definição, com ou sem pintura artística${height ? `. Altura aproximada: ${height}` : ''}. Envio para todo o Brasil.`,
+        );
+    }
+    return truncate(`${product.name} — peça do catálogo ${SITE_NAME}, produzida sob encomenda com acabamento premium. Envio para todo o Brasil.`);
+}
+
+/** URL canônica do produto: produtos fixos que também existem no banco apontam para a versão do banco. */
+async function canonicalId(product: any): Promise<string> {
+    return (await findDuplicateProductId(product)) ?? String(product.id);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -27,9 +47,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!product) return { title: 'Produto não encontrado', robots: { index: false, follow: true } };
 
   return pageMetadata({
-    title: product.name,
+    title: product.type === 'miniatura' ? `Miniatura ${product.name}` : product.name,
     description: productDescription(product),
-    path: `/produto/${encodeURIComponent(product.id)}`,
+    path: `/produto/${encodeURIComponent(await canonicalId(product))}`,
     image: productImages(product)[0],
     imageAlt: product.name,
   });
@@ -88,7 +108,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
 
     let rawImages = productImages(product);
     if (!rawImages || rawImages.length === 0) {
-        rawImages = ['/assets/imagens/minis.png'];
+        rawImages = ['/assets/imagens/minis.webp'];
     }
 
     // Fetch related products
@@ -224,7 +244,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                                 <Link href={`/produto/${item.id}`} key={item.id} className="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
                                     <div>
                                         <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-                                            <img src={firstImg} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <img loading="lazy" decoding="async" src={firstImg} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             <span className="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[9px] font-bold uppercase px-2 py-0.5 rounded">{item.category || 'Destaque'}</span>
                                         </div>
                                         <div className="p-3">

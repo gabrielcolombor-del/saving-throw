@@ -1,3 +1,6 @@
+import { preload } from 'react-dom';
+import { CategoryIntro, FaqSection } from '@/components/SeoContent';
+import { ONESHOTS_INTRO, ONESHOTS_FAQ } from '@/lib/seo-content';
 import { KitPicker } from './KitPicker';
 import { pageMetadata } from '@/lib/site';
 
@@ -6,16 +9,18 @@ export const metadata = pageMetadata({
   description:
     'Aventuras One Shot prontas para jogar: história impressa, mapas e miniaturas em resina dos heróis e monstros. O kit completo para a sua próxima sessão de RPG.',
   path: '/oneshots',
-  image: '/assets/imagens/one shots.jpg',
+  image: '/assets/imagens/one shots.webp',
   imageAlt: 'Kit de Aventura One Shot com miniaturas',
 });
 
 export default function OneshotsPage() {
+  // Fundo do topo é o maior elemento da primeira tela (LCP): baixa antes do CSS pedir.
+  preload('/assets/imagens/one shots.webp', { as: 'image', fetchPriority: 'high' });
   return (
     <div className="font-sans">
       <section
         className="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center"
-        style={{ backgroundImage: "url('/assets/imagens/one shots.jpg')", backgroundPosition: 'center 70%' }}
+        style={{ backgroundImage: "url('/assets/imagens/one shots.webp')", backgroundPosition: 'center 70%' }}
       >
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
@@ -30,8 +35,10 @@ export default function OneshotsPage() {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex flex-col md:flex-row gap-12 items-center">
             <div className="w-full md:w-1/2">
-              <img
-                src="/assets/imagens/preco_herdeiro.png"
+              <img loading="lazy" decoding="async"
+                src="/assets/imagens/preco_herdeiro.webp"
+                width={1122}
+                height={1402}
                 className="w-full rounded-xl shadow-xl border border-zinc-200"
                 alt="Capa da Aventura O Preço do Herdeiro"
               />
@@ -58,6 +65,8 @@ export default function OneshotsPage() {
           </div>
         </div>
       </section>
+      <CategoryIntro {...ONESHOTS_INTRO} />
+      <FaqSection items={ONESHOTS_FAQ} />
     </div>
   );
 }

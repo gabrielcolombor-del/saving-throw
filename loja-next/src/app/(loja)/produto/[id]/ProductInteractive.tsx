@@ -112,7 +112,7 @@ export default function ProductInteractive({ product, images }: { product: any, 
               )}
 
               {/* IMAGEM PRINCIPAL */}
-              <img src={images[currentSlide]} alt={`${product.name} - ${currentSlide + 1}`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+              <img fetchPriority="high" src={images[currentSlide]} alt={`${product.name} - ${currentSlide + 1}`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
               
               {/* Bolinhas */}
               {images.length > 1 && (
@@ -129,7 +129,7 @@ export default function ProductInteractive({ product, images }: { product: any, 
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center md:justify-start">
                   {images.map((imgSrc, i) => (
                       <button key={i} onClick={() => setCurrentSlide(i)} className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${i === currentSlide ? 'border-amber-600 scale-105 shadow-md ring-2 ring-amber-500/30' : 'border-zinc-200 opacity-60 hover:opacity-100'}`}>
-                          <img src={imgSrc} alt={`Thumb ${i + 1}`} className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={imgSrc} alt={`${product.name} — foto ${i + 1}`} className="w-full h-full object-cover" />
                       </button>
                   ))}
               </div>

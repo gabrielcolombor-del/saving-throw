@@ -23,7 +23,7 @@ export function Sistema() {
                 <div onclick="playVideo(${index})" class="group cursor-pointer flex flex-col gap-2">
                     <div class="aspect-video w-full rounded-lg border-2 ${index === currentIndex ? 'border-amber-500' : 'border-zinc-800'} overflow-hidden relative shadow-lg transition-all">
                         <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10 ${index === currentIndex ? 'bg-black/0' : ''}"></div>
-                        <img src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" class="w-full h-full object-cover">
+                        <img src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Videoaula: ${vid.title}" loading="lazy" width="320" height="180" class="w-full h-full object-cover">
                         ${index === currentIndex 
                             ? `<div class="absolute inset-0 flex items-center justify-center z-20"><i class="fa-solid fa-play text-amber-500 text-3xl drop-shadow-lg opacity-80"></i></div>` 
                             : `<div class="absolute inset-0 flex items-center justify-center z-20"><i class="fa-solid fa-play text-white text-2xl opacity-50 group-hover:opacity-100 transition-opacity"></i></div>`
@@ -116,7 +116,7 @@ export function Sistema() {
     }
   }, []);return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/banner_st.png');">
+        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/banner_st.webp');">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>

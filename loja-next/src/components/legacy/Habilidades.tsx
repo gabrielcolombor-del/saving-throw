@@ -498,7 +498,7 @@ export function Habilidades() {
     <div className="font-sans">
       
         {/*  Banner da Seção  */}
-        <section className="relative bg-cover bg-center text-white py-16 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{backgroundImage: 'url(\'/assets/imagens/banner_st.png\')'}}>
+        <section className="relative bg-cover bg-center text-white py-16 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{backgroundImage: 'url(\'/assets/imagens/banner_st.webp\')'}}>
             <div className="absolute inset-0 bg-black/75"></div>
             <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-4">Habilidades & Feitiços</h1>

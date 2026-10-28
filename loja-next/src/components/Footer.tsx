@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between items-center gap-6">
         <div className="flex items-center shrink-0">
           <Link href="/">
-            <img src="/assets/imagens/logo retangular.png" alt="Saving Throw Logo" className="h-10 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm" />
+            <img loading="lazy" decoding="async" src="/assets/imagens/logo retangular.webp" alt="Saving Throw Logo" className="h-10 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm" />
           </Link>
         </div>
         
