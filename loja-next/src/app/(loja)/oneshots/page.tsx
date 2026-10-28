@@ -1,10 +1,14 @@
-import type { Metadata } from 'next';
 import { KitPicker } from './KitPicker';
+import { pageMetadata } from '@/lib/site';
 
-export const metadata: Metadata = {
-  title: 'Kits de Aventura | Saving Throw',
-  description: 'Módulos One Shot prontos para jogar, com história impressa, mapas e miniaturas em resina.',
-};
+export const metadata = pageMetadata({
+  title: 'Kits de Aventura One Shot para RPG',
+  description:
+    'Aventuras One Shot prontas para jogar: história impressa, mapas e miniaturas em resina dos heróis e monstros. O kit completo para a sua próxima sessão de RPG.',
+  path: '/oneshots',
+  image: '/assets/imagens/one shots.jpg',
+  imageAlt: 'Kit de Aventura One Shot com miniaturas',
+});
 
 export default function OneshotsPage() {
   return (

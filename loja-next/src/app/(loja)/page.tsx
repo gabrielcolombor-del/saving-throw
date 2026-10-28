@@ -1,6 +1,13 @@
 import Link from 'next/link';
 import { HeroSlides } from '@/components/home/HeroSlides';
 import { CustomOrderPicker } from '@/components/home/CustomOrderPicker';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, pageMetadata } from '@/lib/site';
+
+export const metadata = {
+  ...pageMetadata({ title: SITE_TAGLINE, description: SITE_DESCRIPTION, path: '/' }),
+  // Na home o nome da marca vem primeiro (o template do layout colocaria no fim).
+  title: { absolute: `${SITE_NAME} | ${SITE_TAGLINE}` },
+};
 
 export default function Home() {
   return (

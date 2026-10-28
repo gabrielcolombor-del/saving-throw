@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // Um único domínio canônico: www respondia 200 com o mesmo conteúdo (conteúdo duplicado no Google).
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.savingthrow.com.br' }],
+        destination: 'https://savingthrow.com.br/:path*',
+        permanent: true,
+      },
       // Links antigos do site em Vite (Instagram, WhatsApp, Mercado Livre): /produto?id=xxx → /produto/xxx
       {
         source: '/produto',

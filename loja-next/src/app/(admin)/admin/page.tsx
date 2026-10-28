@@ -3,8 +3,7 @@ import Script from 'next/script';
 import { Admin } from '@/components/legacy/Admin';
 
 export const metadata: Metadata = {
-  title: 'Painel Admin | Saving Throw',
-  robots: { index: false, follow: false },
+  title: 'Painel Admin',
 };
 
 export default function Page() {

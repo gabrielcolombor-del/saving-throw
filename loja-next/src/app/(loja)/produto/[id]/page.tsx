@@ -4,16 +4,74 @@ import { fetchProductById, fetchProducts } from '@/lib/api';
 import { getProductProfile } from '@/lib/product-profile';
 import ProductInteractive from './ProductInteractive';
 import { notFound } from 'next/navigation';
+import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, pageMetadata, truncate } from '@/lib/site';
+
+function productImages(product: any): string[] {
+    if (Array.isArray(product.images) && product.images.length > 0) return product.images;
+    if (typeof product.image_url === 'string' && product.image_url) {
+        if (product.image_url.startsWith('[')) {
+            try { return JSON.parse(product.image_url); } catch { return []; }
+        }
+        return [product.image_url];
+    }
+    return [];
+}
+
+function productDescription(product: any): string {
+    return truncate(product.description || `${product.name} — peça do catálogo ${SITE_NAME}, produzida sob encomenda com acabamento premium. Envio para todo o Brasil.`);
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const product = await fetchProductById(resolvedParams.id);
-  if (!product) return { title: 'Produto Não Encontrado | Saving Throw' };
-  
-  return {
-    title: `${product.name} | Saving Throw`,
-    description: product.description || 'Produto do catálogo Saving Throw',
-  };
+  if (!product) return { title: 'Produto não encontrado', robots: { index: false, follow: true } };
+
+  return pageMetadata({
+    title: product.name,
+    description: productDescription(product),
+    path: `/produto/${encodeURIComponent(product.id)}`,
+    image: productImages(product)[0],
+    imageAlt: product.name,
+  });
+}
+
+/** Product + BreadcrumbList (schema.org) para rich results de preço no Google. */
+function productJsonLd(product: any, images: string[], breadcrumb: { name: string; href: string }) {
+    const url = `${SITE_URL}/produto/${encodeURIComponent(product.id)}`;
+    const prices = [product.price, product.price_unpainted, product.price_painted, product.price_painted_box]
+        .map(Number)
+        .filter((n) => Number.isFinite(n) && n > 0);
+    const availability = 'https://schema.org/MadeToOrder';
+    const offers = prices.length === 0 ? undefined
+        : prices.length === 1
+            ? { '@type': 'Offer', url, priceCurrency: 'BRL', price: prices[0].toFixed(2), availability, seller: { '@id': `${SITE_URL}/#organization` } }
+            : { '@type': 'AggregateOffer', url, priceCurrency: 'BRL', lowPrice: Math.min(...prices).toFixed(2), highPrice: Math.max(...prices).toFixed(2), offerCount: prices.length, availability };
+
+    return {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'Product',
+                '@id': `${url}#product`,
+                name: product.name,
+                description: productDescription(product),
+                image: images.map(absoluteUrl),
+                sku: String(product.id),
+                category: product.category || undefined,
+                brand: { '@type': 'Brand', name: SITE_NAME },
+                url,
+                ...(offers ? { offers } : {}),
+            },
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
+                    { '@type': 'ListItem', position: 2, name: breadcrumb.name, item: absoluteUrl(breadcrumb.href) },
+                    { '@type': 'ListItem', position: 3, name: product.name, item: url },
+                ],
+            },
+        ],
+    };
 }
 
 function formatPrice(val: any) {
@@ -28,16 +86,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
 
     const profile = getProductProfile(product);
 
-    let rawImages: string[] = [];
-    if (product.images && Array.isArray(product.images)) {
-        rawImages = product.images;
-    } else if (product.image_url) {
-        if (typeof product.image_url === 'string' && product.image_url.startsWith('[')) {
-            try { rawImages = JSON.parse(product.image_url); } catch(e) {}
-        } else {
-            rawImages = [product.image_url];
-        }
-    }
+    let rawImages = productImages(product);
     if (!rawImages || rawImages.length === 0) {
         rawImages = ['/assets/imagens/minis.png'];
     }
@@ -49,7 +98,11 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
 
     return (
         <div className="font-sans min-h-screen flex flex-col bg-zinc-50 pt-24 pb-12">
-            <main className="container mx-auto px-4 max-w-6xl">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: jsonLd(productJsonLd(product, rawImages, { name: profile.breadcrumbCategory, href: profile.breadcrumbHref })) }}
+            />
+            <div className="container mx-auto px-4 max-w-6xl">
                 
                 {/* BREADCRUMBS */}
                 <nav className="flex text-[10px] sm:text-xs text-zinc-500 font-bold uppercase tracking-wider mb-6 flex-wrap gap-2" aria-label="Breadcrumb">
@@ -123,7 +176,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
 
             {/* FAIXA SEPARADORA */}
             <div className="w-full h-px bg-zinc-200 my-16 max-w-6xl mx-auto"></div>

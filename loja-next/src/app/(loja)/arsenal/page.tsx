@@ -3,10 +3,23 @@ import Link from 'next/link';
 import { fetchProducts } from '@/lib/api';
 import ArsenalFilters from './ArsenalFilters';
 
-export const metadata = {
-  title: 'Arsenal de RPG | Saving Throw',
-  description: 'Acessórios em MDF de alta precisão desenhados para elevar a imersão de suas sessões de jogo.',
-};
+import { listingMetadata } from '@/lib/site';
+
+type Props = { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> };
+
+export async function generateMetadata(props: Props) {
+  return listingMetadata(
+    {
+      title: 'Arsenal de RPG: Escudo do Mestre e Acessórios em MDF',
+      description:
+        'Escudo do mestre personalizado, torres e bandejas de dados e acessórios de RPG em MDF com corte a laser de alta precisão. Mais imersão para a sua mesa.',
+      path: '/arsenal',
+      image: '/assets/imagens/escudo_mestre.png',
+      imageAlt: 'Escudo do Mestre Personalizado em MDF',
+    },
+    await props.searchParams,
+  );
+}
 
 export default async function ArsenalPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;

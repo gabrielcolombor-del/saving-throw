@@ -2,11 +2,23 @@ import React from 'react';
 import Link from 'next/link';
 import { fetchProducts } from '@/lib/api';
 import MiniaturasFilters from './MiniaturasFilters';
+import { listingMetadata } from '@/lib/site';
 
-export const metadata = {
-  title: 'Miniaturas & Bestiário | Saving Throw',
-  description: 'Catálogo de miniaturas impressas em resina 3D 8K/12K para RPG de mesa.',
-};
+type Props = { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> };
+
+export async function generateMetadata(props: Props) {
+  return listingMetadata(
+    {
+      title: 'Miniaturas de RPG em Resina',
+      description:
+        'Miniaturas de RPG impressas em resina 3D 8K/12K, com ou sem pintura artística: heróis, monstros, NPCs e miniaturas personalizadas do seu personagem. Envio para todo o Brasil.',
+      path: '/miniaturas',
+      image: '/assets/imagens/minis.png',
+      imageAlt: 'Miniaturas de RPG em resina pintadas',
+    },
+    await props.searchParams,
+  );
+}
 
 export default async function MiniaturasPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
