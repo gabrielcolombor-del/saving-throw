@@ -4,6 +4,7 @@ import { pool, ensureProductsTable } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { publishProductToML, type MLImage } from '@/lib/mercadolivre';
 import { PRODUCTS_TAG } from '@/lib/products';
+import { ensureProductBucket, storageConfigured, uploadProductImage } from '@/lib/storage';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB por imagem (igual ao legado)
 
@@ -28,6 +29,20 @@ async function readImages(form: FormData): Promise<{ dataUrls: string[]; files: 
     files.push({ buffer, filename: entry.name || 'image.jpg', contentType: mime });
   }
   return { dataUrls, files };
+}
+
+/**
+ * Guarda as imagens novas: no Supabase Storage (WebP otimizado, URL pública) quando configurado;
+ * senão, como antes, em base64 no próprio banco.
+ */
+async function storeImages(
+  productId: string,
+  images: { dataUrls: string[]; files: MLImage[] },
+  startIndex: number,
+): Promise<string[]> {
+  if (!storageConfigured() || images.files.length === 0) return images.dataUrls;
+  await ensureProductBucket();
+  return Promise.all(images.files.map((f, i) => uploadProductImage(productId, startIndex + i, f.buffer)));
 }
 
 function slugify(text: string) {
@@ -142,6 +157,7 @@ export async function POST(request: Request) {
     const existingIds = new Set(existingRows.map((r: { id: string }) => r.id));
     let counter = 1;
     while (existingIds.has(productId)) productId = `${baseSlug}-${counter++}`;
+    const storedImages = await storeImages(productId, images, 0);
 
     const { rows } = await pool!.query(
       `INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original)
@@ -157,7 +173,7 @@ export async function POST(request: Request) {
         num(pricePainted),
         num(pricePaintedBox),
         description,
-        JSON.stringify(images.dataUrls),
+        JSON.stringify(storedImages),
         bundleItems || null,
         num(priceOriginal),
       ],
@@ -221,7 +237,7 @@ export async function PUT(request: Request) {
     imageUrls = await resolveKeptImages(id, imageUrls);
     const images = await readImages(form);
     if ('error' in images) return NextResponse.json({ error: images.error }, { status: 413 });
-    imageUrls.push(...images.dataUrls);
+    imageUrls.push(...(await storeImages(id, images, imageUrls.length)));
 
     const { rows } = await pool!.query(
       `UPDATE st_products
