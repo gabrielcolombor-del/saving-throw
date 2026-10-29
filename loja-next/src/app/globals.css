@@ -13,14 +13,17 @@
   @font-face {
     font-family: 'Shindler';
     src: url('/assets/ShindlerFont.ttf') format('truetype');
+    font-display: swap;
   }
   @font-face {
     font-family: 'Alsina';
     src: url('/assets/Alsina.TTF') format('truetype');
+    font-display: swap;
   }
   @font-face {
     font-family: 'Louis George Cafe';
     src: url('/assets/LouisGeorgeCafe.ttf') format('truetype');
+    font-display: swap;
   }
 
   body {

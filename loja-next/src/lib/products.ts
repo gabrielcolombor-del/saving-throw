@@ -35,8 +35,8 @@ export const SPECIAL_PRODUCTS: Record<string, Product> = {
     price_painted: null,
     description:
       'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
-    image_url: '/assets/imagens/escudo_mestre.png',
-    images: ['/assets/imagens/escudo_mestre.png', '/assets/imagens/escudo_mestre2.png'],
+    image_url: '/assets/imagens/escudo_mestre.webp',
+    images: ['/assets/imagens/escudo_mestre.webp', '/assets/imagens/escudo_mestre2.webp'],
   },
   personalizada: {
     id: 'personalizada',
@@ -48,8 +48,8 @@ export const SPECIAL_PRODUCTS: Record<string, Product> = {
     price_painted: 139.9,
     description:
       'Não jogue com modelos genéricos. Envie a referência do seu personagem e nós cuidamos do resto: escolha do modelo ideal, impressão em Resina Premium de altíssima definição e pintura artística profissional. Acompanha uma Caixa de MDF de Luxo gravada a laser com o nome, classe e símbolos do seu herói.',
-    image_url: '/assets/imagens/capapersonagem1.png',
-    images: ['/assets/imagens/capapersonagem1.png', '/assets/imagens/capapersonagem2.png'],
+    image_url: '/assets/imagens/capapersonagem1.webp',
+    images: ['/assets/imagens/capapersonagem1.webp', '/assets/imagens/capapersonagem2.webp'],
   },
   'preco-herdeiro': {
     id: 'preco-herdeiro',
@@ -61,8 +61,8 @@ export const SPECIAL_PRODUCTS: Record<string, Product> = {
     price_painted: 349.9,
     description:
       'Uma trama sombria de traição e espionagem. Este kit inclui o folheto físico impresso da aventura contendo os mapas e a história completa, além das miniaturas em resina dos monstros/NPCs da campanha e dos heróis para o seu tabuleiro.',
-    image_url: '/assets/imagens/preco_herdeiro.png',
-    images: ['/assets/imagens/preco_herdeiro.png'],
+    image_url: '/assets/imagens/preco_herdeiro.webp',
+    images: ['/assets/imagens/preco_herdeiro.webp'],
   },
 };
 
@@ -191,7 +191,7 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
              price_original, bundle_items, description,
              CASE
                WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
-               ELSE COALESCE(image_url, '/assets/imagens/minis.png')
+               ELSE COALESCE(image_url, '/assets/imagens/minis.webp')
              END AS image_url,
              created_at
       FROM st_products
@@ -203,6 +203,30 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
   );
 
   return { products: rows, total, page, limit, totalPages: Math.ceil(total / limit) };
+}
+
+/**
+ * Se um produto fixo (SPECIAL_PRODUCTS) também foi cadastrado no banco com o mesmo nome,
+ * devolve o id do banco — é a URL canônica (evita duas páginas iguais no Google).
+ */
+async function findDuplicateProductIdUncached(id: string, name: string): Promise<string | null> {
+  if (!pool || !SPECIAL_PRODUCTS[id]) return null;
+  await ensureProductsTable();
+  const { rows } = await pool.query('SELECT id FROM st_products WHERE lower(name) = lower($1) AND id <> $2 LIMIT 1', [name, id]);
+  return rows[0]?.id ?? null;
+}
+
+const findDuplicateCached = unstable_cache(findDuplicateProductIdUncached, ['st-product-duplicate'], {
+  revalidate: 300,
+  tags: [PRODUCTS_TAG],
+});
+
+export async function findDuplicateProductId(product: Product): Promise<string | null> {
+  try {
+    return await findDuplicateCached(String(product.id), String(product.name || ''));
+  } catch {
+    return null;
+  }
 }
 
 /** Versões com cache (5 min) para as páginas renderizadas no servidor. */

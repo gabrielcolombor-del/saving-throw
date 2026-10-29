@@ -114,7 +114,6 @@ export function Modelador() {
       
       {/* HEADER SECTION */}
       <section className="relative pt-20 pb-12 overflow-hidden border-b border-zinc-900">
-        <div className="absolute inset-0 bg-[url('/assets/imagens/texture-dark.png')] opacity-20 mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-amber-900/10 to-transparent"></div>
         
         <div className="container mx-auto px-4 relative z-10 text-center">

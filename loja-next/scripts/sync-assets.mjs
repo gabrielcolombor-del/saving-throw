@@ -15,5 +15,7 @@ if (!existsSync(src)) {
 }
 
 mkdirSync(dest, { recursive: true });
-cpSync(src, dest, { recursive: true, force: true });
+// Fora do site: material de terceiros com direitos autorais (usado só por scripts/parse-phb*.js localmente).
+const EXCLUDE = [/Livro do Jogador/i];
+cpSync(src, dest, { recursive: true, force: true, filter: (p) => !EXCLUDE.some((re) => re.test(path.basename(p))) });
 console.log(`[sync-assets] assets copiados de ${src}`);

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
-import { publishProductToML, type MLImage } from '@/lib/mercadolivre';
+import { getMLToken, mlPriceFor, publishProductToML, updateMLPrice, type MLImage } from '@/lib/mercadolivre';
 
 // Upload de imagens + criação de anúncios pode demorar
 export const maxDuration = 60;
@@ -12,7 +12,46 @@ export async function POST(request: Request) {
   if (!pool) return NextResponse.json({ error: 'Banco de dados não conectado.' }, { status: 500 });
 
   try {
-    // Produtos ainda não sincronizados com o Mercado Livre (3 por vez)
+    // Sem token válido nada funciona: diz isso logo, em vez de uma falha por produto.
+    if (!(await getMLToken())) {
+      return NextResponse.json(
+        {
+          error:
+            'Token do Mercado Livre expirado e a renovação falhou. Clique em "Conectar Mercado Livre" no painel para autorizar de novo.',
+        },
+        { status: 409 },
+      );
+    }
+
+    // 1. Preços dos anúncios já publicados (antes nunca eram atualizados)
+    const { rows: synced } = await pool.query(`
+      SELECT p.*, pi.external_id
+      FROM st_products p
+      JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
+      WHERE pi.external_id IS NOT NULL
+    `);
+    let pricesChanged = 0;
+    const priceErrors: string[] = [];
+    for (const product of synced) {
+      const price = mlPriceFor(product);
+      if (price === null) continue;
+      try {
+        const r = await updateMLPrice(product.external_id, price);
+        if (r.changed) pricesChanged++;
+        await pool.query(
+          `UPDATE st_product_integrations SET sync_status = 'synced', last_sync = CURRENT_TIMESTAMP
+            WHERE product_id = $1 AND platform = 'mercadolivre'`,
+          [product.id],
+        );
+      } catch (e) {
+        priceErrors.push(`${product.name}: ${(e as Error).message}`);
+      }
+    }
+    const priceSummary =
+      `Preços atualizados: ${pricesChanged} de ${synced.length} anúncios.` +
+      (priceErrors.length ? ` Falhas de preço: ${priceErrors.join('; ')}.` : '');
+
+    // 2. Produtos ainda não sincronizados com o Mercado Livre (3 por vez)
     const { rows: products } = await pool.query(`
       SELECT p.*
       FROM st_products p
@@ -26,9 +65,9 @@ export async function POST(request: Request) {
       const checkAny = await pool.query(`SELECT 1 FROM st_products WHERE image_url IS NOT NULL LIMIT 1`);
       return NextResponse.json({
         message:
-          checkAny.rows.length === 0
+          (checkAny.rows.length === 0
             ? 'Nenhum produto cadastrado com imagem para sincronizar.'
-            : 'Todos os produtos já estão sincronizados com o Mercado Livre!',
+            : 'Todos os produtos já estão publicados no Mercado Livre.') + ` ${priceSummary}`,
       });
     }
 
@@ -76,7 +115,7 @@ export async function POST(request: Request) {
       }
     }
 
-    let message = `Sincronização processada. Sucesso: ${successCount}. Falhas: ${failCount}.`;
+    let message = `${priceSummary} Novos anúncios — sucesso: ${successCount}. Falhas: ${failCount}.`;
     if (errors.length > 0) message += ` Detalhes: ${errors.join('; ')}`;
     return NextResponse.json({ message });
   } catch (e) {

@@ -881,7 +881,7 @@ export function Admin() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-                alert(data.message || 'Sincronização iniciada.');
+                alert(data.message || data.error || 'Sincronização iniciada.');
             } catch (e) {
                 alert('Erro ao iniciar sincronização.');
             } finally {

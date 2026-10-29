@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Saving Throw — app Next.js (loja + admin)
 
-## Getting Started
+App único que serve o site público (savingthrow.com.br) e o painel administrativo.
+Substitui o app Vite em `../frontend` e as funções em `../api`.
 
-First, run the development server:
+## Estrutura
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+src/app/
+  layout.tsx            raiz: <html>, CSS global, metadata padrão de SEO
+  (loja)/               site público (o grupo não aparece na URL)
+    layout.tsx          Header, Footer e JSON-LD da organização
+    page.tsx            home
+    miniaturas/ arsenal/ oneshots/ produto/[id]/
+    sistema/ habilidades/ sons/ modelador/ instrucoes-mesa/
+  (admin)/              painel (custos, produtos, clientes, integrações)
+    layout.tsx          sem Header/Footer, sempre noindex
+    admin/page.tsx      /admin
+  api/                  rotas de API (produtos, admin, Mercado Livre, Shopee, ...)
+  sitemap.ts            /sitemap.xml (páginas fixas + todos os produtos, regerado a cada hora)
+  robots.ts             /robots.txt (bloqueia /admin e /api)
+  not-found.tsx         404
+src/components/         Header, Footer, home/, legacy/ (páginas portadas do Vite)
+src/lib/
+  site.ts               URL, nome, textos e helpers de SEO (pageMetadata, listingMetadata, jsonLd)
+  products.ts api.ts    acesso ao catálogo (Postgres, cache de 5 min)
+  auth.ts gm-auth.ts    login do admin e dos mestres
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## SEO
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Toda página pública exporta metadata com `pageMetadata()` (title, description,
+  canonical, Open Graph e Twitter). Para uma página nova, copie o padrão de `(loja)/sons/page.tsx`.
+- Catálogos usam `listingMetadata()`: buscas e filtros ficam `noindex`; páginas 2+ têm canonical próprio.
+- Página de produto gera JSON-LD `Product` (preço em BRL) e `BreadcrumbList`.
+- Scripts de terceiros só carregam onde são usados (YouTube em Sons/Sistema, model-viewer no Modelador).
+- `www.savingthrow.com.br` redireciona (301) para `savingthrow.com.br` (`next.config.ts`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Rodando
 
-## Learn More
+```bash
+cp .env.example .env.local   # preencha DATABASE_URL, ADMIN_*, JWT_SECRET...
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+As imagens/sons ficam em `../frontend/public/assets` e são copiados para `public/` pelo
+`scripts/sync-assets.mjs` (roda antes de `dev` e `build`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Colocar em produção (troca do Vite pelo Next)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Na Vercel, projeto `saving-throw` → Settings → Build: **Root Directory = `loja-next`**,
+   Framework = Next.js, e remova o Output Directory `frontend/dist`.
+2. Copie as variáveis de ambiente de `.env.example` para o projeto.
+3. Faça o deploy de um preview, teste loja, `/admin` e login do Mercado Livre, e então promova.
+4. No Google Search Console: verifique o domínio e envie `https://savingthrow.com.br/sitemap.xml`.
+5. Depois de estável, apague `../frontend/src`, `../api`, `../vercel.json` e `../package.json` da raiz
+   e mova `../frontend/public/assets` para `public/assets` (removendo o `sync-assets`).

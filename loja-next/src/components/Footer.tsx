@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between items-center gap-6">
         <div className="flex items-center shrink-0">
           <Link href="/">
-            <img src="/assets/imagens/logo retangular.png" alt="Saving Throw Logo" className="h-10 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm" />
+            <img loading="lazy" decoding="async" src="/assets/imagens/logo retangular.webp" alt="Saving Throw Logo" className="h-10 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm" />
           </Link>
         </div>
         
@@ -17,10 +17,10 @@ export function Footer() {
         </div>
 
         <div className="flex gap-4 shrink-0">
-          <a href="https://instagram.com/savingthrowrpg" target="_blank" rel="noreferrer" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+          <a href="https://instagram.com/savingthrowrpg" target="_blank" rel="noreferrer" aria-label="Instagram da Saving Throw" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
             <i className="fa-brands fa-instagram text-lg"></i>
           </a>
-          <a href="https://wa.me/5527997947604" target="_blank" rel="noreferrer" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
+          <a href="https://wa.me/5527997947604" target="_blank" rel="noreferrer" aria-label="Fale com a Saving Throw no WhatsApp" className="w-10 h-10 bg-black text-[#EBE3CB] rounded-full flex items-center justify-center hover:bg-zinc-800 transition-all hover:-translate-y-1">
             <i className="fa-brands fa-whatsapp text-lg"></i>
           </a>
         </div>

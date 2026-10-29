@@ -12,6 +12,9 @@ import {
   verifyGoogleCredential,
   verifyPassword,
 } from '@/lib/gm-auth';
+import { clearFailures, clientIp, isBlocked, recordFailure } from '@/lib/rate-limit';
+
+const GM_LIMIT = { max: 10, windowMinutes: 15 };
 
 /*
  * Mesas do mestre (página Efeitos Sonoros): cada mestre loga (Google ou e-mail), cria as próprias
@@ -164,14 +167,24 @@ async function handle(request: Request) {
       const { email, password } = body;
       if (!email || !password) return err('E-mail e senha são obrigatórios.', 400);
 
+      const ip = clientIp(request);
+      if (await isBlocked('gm', ip, GM_LIMIT)) return err('Muitas tentativas. Aguarde 15 minutos e tente de novo.', 429);
+
       const user: Row | undefined = (
         await pool.query('SELECT * FROM users WHERE email = $1', [String(email).toLowerCase().trim()])
       ).rows[0];
-      if (!user) return err('Usuário não encontrado. Crie sua conta na aba "Criar Conta"!', 401);
+      if (!user) {
+        await recordFailure('gm', ip);
+        return err('Usuário não encontrado. Crie sua conta na aba "Criar Conta"!', 401);
+      }
       if (!user.password_hash) return err('Esta conta usa o login com Google. Clique em "Entrar com Google".', 401);
 
       const check = verifyPassword(String(password), user.password_hash);
-      if (!check.ok) return err('Senha incorreta.', 401);
+      if (!check.ok) {
+        await recordFailure('gm', ip);
+        return err('Senha incorreta.', 401);
+      }
+      await clearFailures('gm', ip);
       if (check.legacy) {
         await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashPassword(String(password)), user.id]);
       }
