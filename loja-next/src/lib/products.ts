@@ -67,17 +67,29 @@ export const SPECIAL_PRODUCTS: Record<string, Product> = {
   },
 };
 
-function parseImageList(imageUrl: unknown): string[] {
+/**
+ * Corrige caminhos locais gravados pelo admin antigo: "./assets/..." é relativo e quebra dentro de
+ * /produto/..., e os PNG/JPG de /assets/imagens chegam a 16 MB — a versão WebP é gerada por
+ * scripts/optimize-images.mjs.
+ */
+function normalizeImageUrl(url: string): string {
+  let u = url.replace(/^\.?\/?assets\//, '/assets/');
+  if (u.startsWith('/assets/imagens/')) u = u.replace(/\.(png|jpe?g)$/i, '.webp');
+  return u;
+}
+
+export function parseImageList(imageUrl: unknown): string[] {
   if (!imageUrl || typeof imageUrl !== 'string') return [];
+  let list: unknown[] = [imageUrl];
   if (imageUrl.startsWith('[')) {
     try {
       const parsed = JSON.parse(imageUrl);
-      return Array.isArray(parsed) ? parsed : [];
+      list = Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }
   }
-  return [imageUrl];
+  return list.filter((u): u is string => typeof u === 'string' && u.length > 0).map((u) => (u.startsWith('data:') ? u : normalizeImageUrl(u)));
 }
 
 /** Lê um produto do banco (ou dos produtos fixos). Imagens base64 viram URLs de /api/product-image. */
@@ -234,6 +246,17 @@ export async function findDuplicateProductId(product: Product): Promise<string |
   } catch {
     return null;
   }
+}
+
+/** Todos os produtos do banco com a lista completa de imagens (feed do Google Shopping). */
+export async function listAllProductsWithImages(): Promise<Product[]> {
+  if (!pool) return [];
+  await ensureProductsTable();
+  const { rows } = await pool.query(
+    `SELECT id, name, type, category, price, price_unpainted, price_painted, description, image_url, created_at
+       FROM st_products ORDER BY created_at DESC`,
+  );
+  return rows.map((r: Product) => ({ ...r, images: parseImageList(r.image_url).filter((u) => !u.startsWith('data:')) }));
 }
 
 /** Versões com cache (5 min) para as páginas renderizadas no servidor. */

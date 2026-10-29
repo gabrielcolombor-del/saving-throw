@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { fetchProductById, fetchProducts } from '@/lib/api';
 import { findDuplicateProductId } from '@/lib/products';
 import { getProductProfile } from '@/lib/product-profile';
+import { categoryByDb } from '@/lib/categories';
 import ProductInteractive from './ProductInteractive';
 import { notFound } from 'next/navigation';
 import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, pageMetadata, truncate } from '@/lib/site';
@@ -105,6 +106,12 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
     if (!product) notFound();
 
     const profile = getProductProfile(product);
+    // Miniatura de categoria com página própria: o breadcrumb aponta para ela (link interno mais específico).
+    const miniCat = product.type === 'miniatura' ? categoryByDb(product.category) : undefined;
+    if (miniCat) {
+        profile.breadcrumbCategory = miniCat.label;
+        profile.breadcrumbHref = `/miniaturas/${miniCat.slug}`;
+    }
 
     let rawImages = productImages(product);
     if (!rawImages || rawImages.length === 0) {
