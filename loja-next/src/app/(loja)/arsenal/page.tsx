@@ -39,11 +39,13 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
   });
 
   // Fetch specific product for showcase (Escudo do Mestre)
-  const escudoData = await fetchProducts({ id: 'escudo-mestre' });
-  const escudo = escudoData?.product || { price: 299.90 };
+  const ESCUDO_ID = 'escudo-do-mestre-personalizado';
+  const escudoData = await fetchProducts({ id: ESCUDO_ID });
+  const escudo = escudoData?.product;
+  const escudoFrom = escudo ? Math.min(...[escudo.price_unpainted, escudo.price].map(Number).filter((n) => n > 0)) : null;
 
   // Filter out the showcase item from the grid
-  const products = (data.products || []).filter((p: any) => p.id !== 'escudo-mestre');
+  const products = (data.products || []).filter((p: any) => p.id !== ESCUDO_ID);
   const totalPages = data.totalPages || 0;
 
   return (
@@ -73,8 +75,8 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
                                 <p className="text-zinc-600 text-sm mb-6 leading-relaxed">O centro de comando definitivo para o mestre. Estrutura de madeira entalhada em corte a laser de altíssima precisão, com tiras de elástico na parte de trás para prender suas folhas de consulta rápida.</p>
                             </div>
                             <div>
-                                <span className="font-black text-xl block mb-3">R$ {Number(escudo.price).toFixed(2).replace('.', ',')}</span>
-                                <Link href="/produto/escudo-mestre" className="w-full bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all py-3 rounded text-center block text-xs font-bold uppercase tracking-wider shadow-sm">
+                                {escudoFrom && Number.isFinite(escudoFrom) ? <span className="font-black text-xl block mb-3"><span className="text-xs font-bold uppercase text-zinc-500 mr-2">A partir de</span>R$ {escudoFrom.toFixed(2).replace('.', ',')}</span> : null}
+                                <Link href={`/produto/${ESCUDO_ID}`} className="w-full bg-black text-[#EBE3CB] hover:bg-zinc-800 transition-all py-3 rounded text-center block text-xs font-bold uppercase tracking-wider shadow-sm">
                                     Saiba Mais
                                 </Link>
                             </div>
