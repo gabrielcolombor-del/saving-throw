@@ -44,6 +44,8 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: '/produto', destination: '/miniaturas', permanent: false },
+      // O escudo fixo no código foi unificado com o cadastrado no banco (preço e página únicos).
+      { source: '/produto/escudo-mestre', destination: '/produto/escudo-do-mestre-personalizado', permanent: true },
       // Antigo formato do roteador do admin
       { source: '/index.html', destination: '/', permanent: true },
     ];

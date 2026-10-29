@@ -17,6 +17,11 @@ export default function ProductInteractive({ product, images }: { product: any, 
   const hasTriPrice = product.price_painted_box !== undefined && product.price_painted_box !== null;
   const hasDualPrice = product.price_unpainted !== undefined && product.price_unpainted !== null && product.price_painted !== undefined && product.price_painted !== null;
   const isBundle = product.type === 'pacote' || product.type === 'bundle';
+  // Mesmo par de preços (price_unpainted / price_painted), rótulos diferentes por tipo de produto.
+  const isArsenal = product.type === 'arsenal' || product.type === 'escudo';
+  const OPTION_LABELS = isArsenal
+    ? { heading: 'Escolha a Versão:', unpainted: ['Sem Personalização', 'Modelo padrão', 'Sem Personalização'], painted: ['Com Personalização', 'Feito para a sua mesa', 'Com Personalização'] }
+    : { heading: 'Escolha a Finalização:', unpainted: ['Sem Pintura', 'Resina Cinza Premium', 'Sem Pintura (Resina Cinza)'], painted: ['Com Pintura', 'Pintura Artística', 'Com Pintura Artística Feita à Mão'] };
   
   const frameRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
@@ -68,7 +73,7 @@ export default function ProductInteractive({ product, images }: { product: any, 
   const selectedTitle = isBundle 
     ? 'PACOTE ESPECIAL' 
     : hasDualPrice 
-        ? (selectedOption === 'unpainted' ? 'Sem Pintura (Resina Cinza)' : 'Com Pintura Artística Feita à Mão')
+        ? (selectedOption === 'unpainted' ? OPTION_LABELS.unpainted[2] : OPTION_LABELS.painted[2])
         : '';
 
   const getWhatsAppLink = () => {
@@ -146,23 +151,23 @@ export default function ProductInteractive({ product, images }: { product: any, 
                   <div className="flex-1">
                       {hasDualPrice && !isBundle && (
                           <div className="mb-6">
-                              <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">Escolha a Finalização:</label>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">{OPTION_LABELS.heading}</label>
                               <div className="flex flex-col sm:flex-row gap-3">
                                   <button onClick={() => handleOptionChange('unpainted')} className={`flex-1 border-2 rounded-xl p-3 text-left transition-all cursor-pointer relative overflow-hidden group ${selectedOption === 'unpainted' ? 'border-zinc-400 bg-zinc-50' : 'border-zinc-200 bg-white hover:border-zinc-300'}`}>
                                       <div className="flex justify-between items-center mb-1">
-                                          <span className="font-bold text-sm text-zinc-900">Sem Pintura</span>
+                                          <span className="font-bold text-sm text-zinc-900">{OPTION_LABELS.unpainted[0]}</span>
                                           <i className={`fa-solid fa-circle-check text-amber-500 transition-opacity ${selectedOption === 'unpainted' ? 'opacity-100' : 'opacity-0'}`}></i>
                                       </div>
-                                      <span className="text-xs text-zinc-500 block mb-2">Resina Cinza Premium</span>
+                                      <span className="text-xs text-zinc-500 block mb-2">{OPTION_LABELS.unpainted[1]}</span>
                                       <span className="inline-block bg-zinc-100 text-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded">R$ {formatPrice(product.price_unpainted)}</span>
                                   </button>
                                   
                                   <button onClick={() => handleOptionChange('painted')} className={`flex-1 border-2 rounded-xl p-3 text-left transition-all cursor-pointer relative overflow-hidden group ${selectedOption === 'painted' ? 'border-zinc-400 bg-zinc-50' : 'border-zinc-200 bg-white hover:border-zinc-300'}`}>
                                       <div className="flex justify-between items-center mb-1">
-                                          <span className="font-bold text-sm text-zinc-900">Com Pintura</span>
+                                          <span className="font-bold text-sm text-zinc-900">{OPTION_LABELS.painted[0]}</span>
                                           <i className={`fa-solid fa-circle-check text-amber-500 transition-opacity ${selectedOption === 'painted' ? 'opacity-100' : 'opacity-0'}`}></i>
                                       </div>
-                                      <span className="text-xs text-zinc-500 block mb-2">Pintura Artística</span>
+                                      <span className="text-xs text-zinc-500 block mb-2">{OPTION_LABELS.painted[1]}</span>
                                       <span className="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">R$ {formatPrice(product.price_painted)}</span>
                                   </button>
                               </div>

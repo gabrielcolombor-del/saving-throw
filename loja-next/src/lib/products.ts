@@ -26,19 +26,6 @@ export const PRODUCTS_TAG = 'products';
 
 /** Produtos fixos que não vivem no banco (mesmos do api/products.js legado). */
 export const SPECIAL_PRODUCTS: Record<string, Product> = {
-  'escudo-mestre': {
-    id: 'escudo-mestre',
-    type: 'arsenal',
-    category: 'Arsenal de RPG',
-    name: 'Escudo do Mestre Personalizado',
-    price: 299.9,
-    price_unpainted: null,
-    price_painted: null,
-    description:
-      'O centro de comando definitivo para o mestre. Estrutura de madeira nobre entalhada em corte a laser de altíssima precisão, com presilhas na parte de trás para folhas de consulta rápida e acabamento envernizado artesanal.',
-    image_url: '/assets/imagens/escudo_mestre.webp',
-    images: ['/assets/imagens/escudo_mestre.webp', '/assets/imagens/escudo_mestre2.webp'],
-  },
   personalizada: {
     id: 'personalizada',
     type: 'miniatura',
