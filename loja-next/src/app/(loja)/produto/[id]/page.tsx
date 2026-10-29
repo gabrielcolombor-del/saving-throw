@@ -59,9 +59,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 /** Product + BreadcrumbList (schema.org) para rich results de preço no Google. */
 function productJsonLd(product: any, images: string[], breadcrumb: { name: string; href: string }) {
     const url = `${SITE_URL}/produto/${encodeURIComponent(product.id)}`;
-    const prices = [product.price, product.price_unpainted, product.price_painted, product.price_painted_box]
+    // Preços distintos: price costuma repetir price_unpainted (evita offerCount inflado).
+    const prices = [...new Set([product.price, product.price_unpainted, product.price_painted, product.price_painted_box]
         .map(Number)
-        .filter((n) => Number.isFinite(n) && n > 0);
+        .filter((n) => Number.isFinite(n) && n > 0))];
     const availability = 'https://schema.org/MadeToOrder';
     const offers = prices.length === 0 ? undefined
         : prices.length === 1
