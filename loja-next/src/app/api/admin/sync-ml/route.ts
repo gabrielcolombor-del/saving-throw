@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import sharp from 'sharp';
 import { pool } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { getMLToken, mlPriceFor, publishProductToML, updateMLPrice, type MLImage } from '@/lib/mercadolivre';
@@ -84,12 +85,25 @@ export async function POST(request: Request) {
       }
 
       const imageFiles: MLImage[] = [];
-      urls.forEach((url, i) => {
-        if (typeof url === 'string' && url.startsWith('data:image')) {
+      for (const [i, url] of urls.entries()) {
+        if (typeof url !== 'string') continue;
+        if (url.startsWith('data:image')) {
           const m = url.match(/^data:(image\/\w+);base64,(.*)$/);
           if (m) imageFiles.push({ buffer: Buffer.from(m[2], 'base64'), filename: `image${i}.jpg`, contentType: m[1] });
+        } else if (/^https?:\/\//.test(url)) {
+          // Imagens no Supabase Storage (ver lib/storage.ts): baixa o arquivo para reenviar ao ML.
+          try {
+            const res = await fetch(url);
+            if (res.ok) {
+              // O Storage guarda WebP; o ML recebe JPEG, formato aceito em qualquer cenário.
+              const jpeg = await sharp(Buffer.from(await res.arrayBuffer())).jpeg({ quality: 90 }).toBuffer();
+              imageFiles.push({ buffer: jpeg, filename: `image${i}.jpg`, contentType: 'image/jpeg' });
+            }
+          } catch (e) {
+            console.error(`Falha ao baixar imagem ${url}:`, (e as Error).message);
+          }
         }
-      });
+      }
 
       if (imageFiles.length === 0) {
         failCount++;

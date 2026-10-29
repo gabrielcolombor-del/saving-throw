@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { pool, ensureProductsTable } from '@/lib/db';
+import { thumbUrl } from '@/lib/storage';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Product = Record<string, any>;
@@ -201,6 +202,12 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
     `,
     values,
   );
+
+  // Cards só precisam da primeira foto, na versão miniatura quando ela está no Storage.
+  for (const row of rows) {
+    const first = parseImageList(row.image_url)[0];
+    if (first) row.image_url = thumbUrl(first);
+  }
 
   return { products: rows, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
