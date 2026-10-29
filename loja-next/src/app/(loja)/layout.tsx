@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { INSTAGRAM_URL, LOGO_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, jsonLd } from '@/lib/site';
@@ -40,6 +42,9 @@ export default function LojaLayout({ children }: Readonly<{ children: React.Reac
       <Header />
       <main className="flex-grow">{children}</main>
       <Footer />
+      {/* Visitas e velocidade real dos visitantes (painel da Vercel → Analytics / Speed Insights). Só na loja, não no admin. */}
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }

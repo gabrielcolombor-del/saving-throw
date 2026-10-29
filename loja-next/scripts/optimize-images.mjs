@@ -1,7 +1,7 @@
 // Gera versões leves das imagens do site (os originais chegam a 16 MB e derrubam a velocidade/SEO):
 //   assets/imagens/<nome>.webp   até 1600px de largura, para exibir no site
 //   assets/og/<nome>.jpg         1200x630, para cards de compartilhamento (Open Graph/Twitter)
-// Os originais ficam intactos (o site Vite ainda usa). Rode de novo ao adicionar imagens:
+// Os originais ficam intactos. Rode de novo ao adicionar imagens:
 //   npm run optimize-images
 import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const assets = path.resolve(here, '../../frontend/public/assets');
+const assets = path.resolve(here, '../public/assets');
 const srcDir = path.join(assets, 'imagens');
 const ogDir = path.join(assets, 'og');
 mkdirSync(ogDir, { recursive: true });

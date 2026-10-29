@@ -1,4 +1,4 @@
-const { pool } = require('../../_lib/db');
+const { pool } = require('./db');
 
 async function getMLToken() {
     const { rows } = await pool.query("SELECT * FROM st_integrations WHERE platform = 'mercadolivre'");

@@ -41,5 +41,3 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# assets copiados de ../frontend/public no build (ver scripts/sync-assets.mjs)
-/public/assets/
