@@ -15,7 +15,6 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: 'daily' 
   { path: '/sistema', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/habilidades', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/sons', priority: 0.6, changeFrequency: 'monthly' },
-  { path: '/modelador', priority: 0.4, changeFrequency: 'monthly' },
   { path: '/instrucoes-mesa', priority: 0.3, changeFrequency: 'monthly' },
 ];
 

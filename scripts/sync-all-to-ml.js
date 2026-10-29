@@ -1,6 +1,6 @@
 require('dotenv').config({ path: './.env' });
-const { pool } = require('../api/_lib/db');
-const { publishProductToML } = require('../api/integrations/mercadolivre/_ml-service');
+const { pool } = require('./lib/db');
+const { publishProductToML } = require('./lib/ml-service');
 
 async function syncAllToML() {
     console.log("Iniciando sincronização retroativa para o Mercado Livre...");

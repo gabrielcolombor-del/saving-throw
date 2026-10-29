@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '.env.local' });
-const { pool } = require('../api/_lib/db');
+const { pool } = require('./lib/db');
 
 function slugify(text) {
     return text.toString().toLowerCase()

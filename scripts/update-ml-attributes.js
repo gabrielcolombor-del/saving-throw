@@ -1,5 +1,5 @@
 require('dotenv').config({ path: './.env' });
-const { getMLToken } = require('../api/integrations/mercadolivre/_ml-service');
+const { getMLToken } = require('./lib/ml-service');
 
 async function updateAllMLItems() {
     console.log("Iniciando atualização de atributos em todos os anúncios de Miniaturas do Mercado Livre...");
