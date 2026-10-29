@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { listProducts, SPECIAL_PRODUCTS, type Product } from '@/lib/products';
 import { SITE_URL } from '@/lib/site';
+import { MINI_CATEGORIES } from '@/lib/categories';
 
 // Regera o sitemap a cada hora para incluir produtos novos do admin.
 export const revalidate = 3600;
@@ -8,6 +9,7 @@ export const revalidate = 3600;
 const STATIC_ROUTES: { path: string; priority: number; changeFrequency: 'daily' | 'weekly' | 'monthly' }[] = [
   { path: '', priority: 1, changeFrequency: 'weekly' },
   { path: '/miniaturas', priority: 0.9, changeFrequency: 'daily' },
+  ...MINI_CATEGORIES.map((c) => ({ path: `/miniaturas/${c.slug}`, priority: 0.85, changeFrequency: 'daily' as const })),
   { path: '/arsenal', priority: 0.9, changeFrequency: 'daily' },
   { path: '/oneshots', priority: 0.9, changeFrequency: 'weekly' },
   { path: '/sistema', priority: 0.7, changeFrequency: 'monthly' },
