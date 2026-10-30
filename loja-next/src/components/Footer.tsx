@@ -14,6 +14,8 @@ export function Footer() {
           <p>&copy; 2026 Saving Throw. Todos os direitos reservados.</p>
           <span className="hidden sm:block text-black/20">•</span>
           <p>Forjado de RPGista para RPGista.</p>
+          <span className="hidden sm:block text-black/20">•</span>
+          <Link href="/politica-de-devolucao" className="underline hover:text-black">Trocas e Devoluções</Link>
         </div>
 
         <div className="flex gap-4 shrink-0">

@@ -16,6 +16,17 @@ const organizationLd = {
       logo: absoluteUrl(LOGO_PATH),
       description: SITE_DESCRIPTION,
       sameAs: [INSTAGRAM_URL],
+      // Mesmas regras da página /politica-de-devolucao (Google usa para Shopping e resultados de produto).
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'BR',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 7,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn',
+        refundType: 'https://schema.org/FullRefund',
+        merchantReturnLink: `${SITE_URL}/politica-de-devolucao`,
+      },
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer service',
