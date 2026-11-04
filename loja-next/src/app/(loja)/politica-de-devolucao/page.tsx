@@ -3,11 +3,13 @@ import { WHATSAPP_URL, pageMetadata } from '@/lib/site';
 
 /*
  * Política de trocas e devoluções (exigida pelo Google Merchant Center).
- * Baseada no Código de Defesa do Consumidor (arts. 18, 26 e 49). Ao mudar prazos aqui,
- * atualize também a configuração de devolução no Merchant Center e o JSON-LD em (loja)/layout.tsx.
+ * Decisão do dono da loja: oferecer o mínimo legal, nem acima nem abaixo. Baseada no CDC (arts. 18, 26 e 49)
+ * e no Decreto 7.962/2013 (art. 5º). Direitos do CDC não podem ser reduzidos (arts. 25 e 51), então não
+ * encurte prazos nem condicione o reembolso. Ao mudar prazos aqui, atualize também o Merchant Center e o
+ * JSON-LD em (loja)/layout.tsx.
  */
 
-const UPDATED_AT = '30 de outubro de 2026';
+const UPDATED_AT = '4 de novembro de 2026';
 const RETURN_WINDOW_DAYS = 7;
 
 export const metadata = pageMetadata({
@@ -44,9 +46,9 @@ export default function PoliticaDevolucaoPage() {
           <p className="font-bold mb-2">Resumo</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>{RETURN_WINDOW_DAYS} dias</strong> após o recebimento para desistir da compra, sem precisar justificar.</li>
-            <li><strong>90 dias</strong> após o recebimento para avisar sobre defeitos de fabricação.</li>
-            <li><strong>Frete da devolução por nossa conta</strong> nos dois casos.</li>
-            <li><strong>Reembolso integral</strong> (produto + frete pago) em até 7 dias úteis após recebermos a peça.</li>
+            <li><strong>90 dias</strong> para reclamar de defeitos, contados do recebimento ou, se o defeito for oculto, da data em que ele aparecer.</li>
+            <li><strong>Custo da devolução por nossa conta</strong> nos dois casos.</li>
+            <li><strong>Na desistência, reembolso imediato</strong> de todos os valores pagos, incluindo o frete, com atualização monetária.</li>
           </ul>
         </div>
 
@@ -57,20 +59,23 @@ export default function PoliticaDevolucaoPage() {
             produtos, inclusive miniaturas personalizadas e o Escudo do Mestre com personalização.
           </p>
           <p>
-            Para que a devolução seja aceita, a peça deve voltar sem sinais de uso, sem ter sido pintada, modificada ou
-            danificada, e com todos os itens que a acompanham (caixa, folhetos e acessórios).
+            Você pode abrir a embalagem e conferir o produto. Devolva a peça com os itens que a acompanham (caixa,
+            folhetos e acessórios) e sem uso além do necessário para essa conferência. Danos causados por uso indevido,
+            pintura ou modificação são avaliados caso a caso.
           </p>
         </Section>
 
         <Section title="Defeitos e avarias no transporte (90 dias)">
           <p>
             Se o produto chegar quebrado, com defeito de impressão, pintura ou montagem, ou diferente do que foi
-            pedido, avise em até 90 dias após o recebimento (art. 26 do CDC). Para agilizar, envie fotos da peça e da
-            embalagem assim que notar o problema — de preferência no mesmo dia em que receber.
+            pedido, avise em até 90 dias após o recebimento. Se o defeito for oculto, ou seja, só aparecer depois, os
+            90 dias contam da data em que ele ficar evidente (art. 26 do CDC). Para agilizar, envie fotos da peça e da
+            embalagem assim que notar o problema.
           </p>
           <p>
-            Depois de analisar o caso, refazemos ou reparamos a peça em até 30 dias. Se não for possível, você escolhe
-            entre a troca por outro produto, o reembolso integral ou um abatimento proporcional no preço (art. 18 do CDC).
+            Temos até 30 dias para resolver o defeito. Se ele não for resolvido nesse prazo, você escolhe entre a
+            substituição por um produto da mesma espécie, em perfeitas condições, a devolução imediata do valor pago,
+            com atualização monetária, ou um abatimento proporcional no preço (art. 18 do CDC).
           </p>
           <p>
             Pequenas variações naturais do processo artesanal (tons de pintura, textura da resina, marcas mínimas de
@@ -85,17 +90,17 @@ export default function PoliticaDevolucaoPage() {
               <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="text-amber-700 font-bold underline">WhatsApp (27) 99794-7604</a>{' '}
               informando o nome usado no pedido, o produto e o motivo (desistência ou defeito, com fotos).
             </li>
-            <li>Enviamos as instruções e o código de postagem dos Correios para a devolução, sem custo para você.</li>
-            <li>Embale a peça com cuidado, de preferência na embalagem original, e poste dentro do prazo informado.</li>
-            <li>Quando a peça chegar, conferimos e confirmamos a troca ou o reembolso pelo mesmo canal.</li>
+            <li>Combinamos com você a forma de devolução, sem custo para você.</li>
+            <li>Embale a peça com cuidado, de preferência na embalagem original, e envie conforme combinado.</li>
+            <li>Confirmamos o reembolso ou a solução do defeito pelo mesmo canal.</li>
           </ol>
         </Section>
 
         <Section title="Reembolso">
           <p>
-            O reembolso é integral — valor do produto mais o frete pago no envio — e é feito pelo mesmo meio de
-            pagamento usado na compra, em até 7 dias úteis após recebermos a peça. Em compras no cartão de crédito,
-            o estorno pode aparecer em até duas faturas, conforme a operadora.
+            Na desistência, devolvemos de imediato todos os valores pagos, incluindo o frete, com atualização monetária,
+            pelo mesmo meio de pagamento usado na compra (art. 49 do CDC). Em compras no cartão de crédito, avisamos a
+            operadora de imediato para fazer o estorno, e a data em que ele aparece na fatura depende dela.
           </p>
         </Section>
 
