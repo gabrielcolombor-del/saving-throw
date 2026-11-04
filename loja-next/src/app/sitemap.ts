@@ -16,6 +16,7 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: 'daily' 
   { path: '/habilidades', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/sons', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/instrucoes-mesa', priority: 0.3, changeFrequency: 'monthly' },
+  { path: '/politica-de-devolucao', priority: 0.3, changeFrequency: 'monthly' },
 ];
 
 async function allProducts(): Promise<Product[]> {
