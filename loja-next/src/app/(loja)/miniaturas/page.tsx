@@ -62,6 +62,20 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
 
       <section className="py-20 bg-white text-black">
           <div className="container mx-auto px-4 max-w-6xl">
+              {/* Catálogo de Impressões 3D */}
+              <div id="catalogo" className="mb-20">
+                  <div className="text-center mb-10">
+                      <span className="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
+                      <h2 className="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
+                      <p className="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                          Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
+                      </p>
+                  </div>
+
+                  <MiniaturasFilters />
+                  <MiniaturasGrid products={products} page={page} totalPages={totalPages} basePath="/miniaturas" search={search} />
+              </div>
+
               {/* Destaque Principal: Miniatura Personalizada */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row relative mb-20">
                   <div className="absolute top-4 right-4 bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">Destaque Premium</div>
@@ -120,20 +134,6 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                           <i className="fa-solid fa-comments text-base"></i> Encomendar Meu Kit via WhatsApp
                       </a>
                   </div>
-              </div>
-
-              {/* Nova Seção: Catálogo de Impressões 3D */}
-              <div id="catalogo" className="mt-20">
-                  <div className="text-center mb-10">
-                      <span className="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
-                      <h2 className="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
-                      <p className="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-                          Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
-                      </p>
-                  </div>
-
-                  <MiniaturasFilters />
-                  <MiniaturasGrid products={products} page={page} totalPages={totalPages} basePath="/miniaturas" search={search} />
               </div>
           </div>
       </section>

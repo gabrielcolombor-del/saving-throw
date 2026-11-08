@@ -4,6 +4,10 @@ import Link from 'next/link';
 
 const brl = (v: unknown) => Number(v || 0).toFixed(2).replace('.', ',');
 
+const PAGES_PER_BLOCK = 6;
+const pageBtn = 'w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors';
+const pageIdle = 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300';
+
 export function MiniaturasGrid({
   products,
   page,
@@ -18,6 +22,16 @@ export function MiniaturasGrid({
   basePath: string;
   search?: string;
 }) {
+  // Paginação em blocos de 6 (1–6, 7–12…); as reticências levam ao bloco vizinho.
+  const blockStart = Math.floor((Math.max(page, 1) - 1) / PAGES_PER_BLOCK) * PAGES_PER_BLOCK + 1;
+  const blockEnd = Math.min(blockStart + PAGES_PER_BLOCK - 1, totalPages);
+  const pageHref = (pageNum: number) => {
+    const qs = new URLSearchParams();
+    if (pageNum > 1) qs.set('page', String(pageNum));
+    if (search) qs.set('search', search);
+    return qs.toString() ? `${basePath}?${qs}` : basePath;
+  };
+
   return (
     <>
       {products.length === 0 ? (
@@ -81,23 +95,27 @@ export function MiniaturasGrid({
 
       {totalPages > 1 && (
         <nav className="flex justify-center gap-2 mt-12" aria-label="Paginação">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
-            const qs = new URLSearchParams();
-            if (pageNum > 1) qs.set('page', String(pageNum));
-            if (search) qs.set('search', search);
-            const href = qs.toString() ? `${basePath}?${qs}` : basePath;
-            return (
-              <Link
-                key={pageNum}
-                href={href}
-                scroll={false}
-                aria-current={pageNum === page ? 'page' : undefined}
-                className={`w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors ${pageNum === page ? 'bg-amber-600 text-white' : 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300'}`}
-              >
-                {pageNum}
-              </Link>
-            );
-          })}
+          {blockStart > 1 && (
+            <Link href={pageHref(blockStart - 1)} scroll={false} aria-label="Páginas anteriores" className={`${pageBtn} ${pageIdle}`}>
+              …
+            </Link>
+          )}
+          {Array.from({ length: blockEnd - blockStart + 1 }, (_, i) => blockStart + i).map((pageNum) => (
+            <Link
+              key={pageNum}
+              href={pageHref(pageNum)}
+              scroll={false}
+              aria-current={pageNum === page ? 'page' : undefined}
+              className={`${pageBtn} ${pageNum === page ? 'bg-amber-600 text-white' : pageIdle}`}
+            >
+              {pageNum}
+            </Link>
+          ))}
+          {blockEnd < totalPages && (
+            <Link href={pageHref(blockEnd + 1)} scroll={false} aria-label="Próximas páginas" className={`${pageBtn} ${pageIdle}`}>
+              …
+            </Link>
+          )}
         </nav>
       )}
     </>
