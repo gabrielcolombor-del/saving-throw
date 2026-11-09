@@ -87,7 +87,8 @@ export function Admin() {
             if (tab === 'mkt') loadMarketplaceData();
         }
 
-        async function loadMarketplaceData() {
+        async function loadMarketplaceData(page = 1) {
+            var pagerProds = document.getElementById('mkt-products-pager');
             var tbodyProds = document.getElementById('tbody-mkt-products');
             var tbodySales = document.getElementById('tbody-mkt-sales');
             
@@ -95,7 +96,7 @@ export function Admin() {
             if (tbodySales) tbodySales.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-zinc-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando dados...</td></tr>';
 
             try {
-                var res = await fetch('/api/admin/marketplace', {
+                var res = await fetch(`/api/admin/marketplace?page=${page}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.status === 401) { logout(); return; }
@@ -120,6 +121,15 @@ export function Admin() {
                     `).join('');
                 } else {
                     tbodyProds.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-zinc-400">Nenhum produto sincronizado.</td></tr>';
+                }
+
+                if (pagerProds) {
+                    pagerProds.innerHTML = data.totalPages > 1
+                        ? `<span class="text-[11px] text-zinc-500">${data.totalProducts} anúncios</span>
+                           <div class="flex flex-wrap gap-1">${Array.from({ length: data.totalPages }, (_, i) => i + 1).map(n => `
+                               <button onclick="loadMarketplaceData(${n})" ${n === data.page ? 'aria-current="page"' : ''} class="w-7 h-7 rounded text-[11px] font-bold transition-colors cursor-pointer ${n === data.page ? 'bg-amber-600 text-white' : 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300'}">${n}</button>
+                           `).join('')}</div>`
+                        : '';
                 }
 
                 if (data.sales && data.sales.length > 0) {
@@ -1399,6 +1409,7 @@ export function Admin() {
                                 </tbody>
                             </table>
                         </div>
+                        <div id="mkt-products-pager" class="flex flex-wrap items-center justify-between gap-2 mt-4"></div>
                     </div>
 
                     <!-- ULTIMAS VENDAS MARKETPLACE -->
