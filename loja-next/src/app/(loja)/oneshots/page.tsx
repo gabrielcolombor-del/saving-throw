@@ -19,7 +19,7 @@ export default function OneshotsPage() {
   return (
     <div className="font-sans">
       <section
-        className="relative bg-cover text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center"
+        className="relative bg-cover text-white h-[329px] md:h-80 border-b border-zinc-800 overflow-hidden flex items-center justify-center"
         style={{ backgroundImage: "url('/assets/imagens/one shots.webp')", backgroundPosition: 'center 70%' }}
       >
         <div className="absolute inset-0 bg-black/60"></div>

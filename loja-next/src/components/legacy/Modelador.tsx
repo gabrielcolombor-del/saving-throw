@@ -113,7 +113,7 @@ export function Modelador() {
     <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-amber-500 selection:text-black pb-20">
       
       {/* HEADER SECTION */}
-      <section className="relative pt-20 pb-12 overflow-hidden border-b border-zinc-900">
+      <section className="relative h-[329px] md:h-80 flex items-center overflow-hidden border-b border-zinc-900">
         <div className="absolute inset-0 bg-gradient-to-b from-amber-900/10 to-transparent"></div>
         
         <div className="container mx-auto px-4 relative z-10 text-center">

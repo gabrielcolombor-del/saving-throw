@@ -80,7 +80,7 @@ export default async function CategoriaPage(props: Props) {
     <div className="font-sans">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(ld) }} />
 
-      <section className="bg-zinc-950 text-white pt-12 pb-10 border-b border-zinc-800">
+      <section className="bg-zinc-950 text-white h-[329px] md:h-80 flex items-center overflow-hidden border-b border-zinc-800">
         <div className="container mx-auto px-4 max-w-6xl">
           <nav className="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider mb-6" aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2">
@@ -92,7 +92,7 @@ export default async function CategoriaPage(props: Props) {
             </ol>
           </nav>
           <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-4">{cat.h1}</h1>
-          <p className="text-[#EBE3CB]/80 text-base md:text-lg max-w-3xl leading-relaxed">{cat.intro[0]}</p>
+          <p className="text-[#EBE3CB]/80 text-base md:text-lg max-w-3xl leading-relaxed line-clamp-4 md:line-clamp-none">{cat.intro[0]}</p>
         </div>
       </section>
 
