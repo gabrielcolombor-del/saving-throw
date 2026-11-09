@@ -134,10 +134,12 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
 
   const priceNum = mlPriceFor(productData) ?? 29.9;
 
-  const titleText = `Miniatura ${productData.name} RPG D&D Resina`.substring(0, 60);
+  // Arsenal (ex.: Escudo do Mestre) não é miniatura: vai em Jogos de Tabuleiro e Cartas, com os campos dessa categoria.
+  const isArsenal = productData.type === 'arsenal';
+  const titleText = (isArsenal ? `${productData.name} RPG D&D` : `Miniatura ${productData.name} RPG D&D Resina`).substring(0, 60);
 
   const itemBody: Record<string, unknown> = {
-    category_id: 'MLB457877',
+    category_id: isArsenal ? 'MLB6883' : 'MLB457877',
     price: priceNum,
     currency_id: 'BRL',
     available_quantity: 10,
@@ -146,7 +148,12 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
     condition: 'new',
     pictures: mlPictureIds,
     shipping: { mode: 'me2', local_pick_up: false, free_shipping: priceNum >= 79.0 },
-    attributes: [
+    attributes: isArsenal ? [
+      { id: 'BRAND', value_name: 'Saving Throw' },
+      { id: 'BOARD_GAME_NAME', value_name: productData.name.substring(0, 60) },
+      { id: 'UNITS_PER_PACK', value_name: '1' },
+      { id: 'EMPTY_GTIN_REASON', value_id: '17055158' },
+    ] : [
       { id: 'BRAND', value_name: 'Saving Throw' },
       { id: 'MODEL', value_name: `Miniatura RPG ${productData.name}`.substring(0, 30) },
       { id: 'MANUFACTURER', value_name: 'Saving Throw' },
@@ -200,7 +207,7 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
     throw new Error(`Erro ML: ${errorMsg}`);
   }
 
-  const fullDescription = `${productData.description || `Miniatura ${productData.name} - Saving Throw RPG`}\n\n🎲 ESPECIFICAÇÕES:\n- Material: Resina de Alta Resolução (8K/12K)\n- Escala: 32mm (padrão D&D / RPG de Mesa)\n- Peça curada, higienizada e pronta para mesa ou pintura.\n- Fabricante: Saving Throw\n\n🚚 DICA DE FRETE GRÁTIS NO MERCADO LIVRE:\nAdicione mais miniaturas da Saving Throw ao seu carrinho! Em compras a partir de R$ 79,00, o Mercado Livre oferece Frete Grátis ou desconto especial de envio para a sua região.`;
+  const fullDescription = isArsenal ? `${productData.description || `${productData.name} - Saving Throw RPG`}\n\nFabricante: Saving Throw` : `${productData.description || `Miniatura ${productData.name} - Saving Throw RPG`}\n\n🎲 ESPECIFICAÇÕES:\n- Material: Resina de Alta Resolução (8K/12K)\n- Escala: 32mm (padrão D&D / RPG de Mesa)\n- Peça curada, higienizada e pronta para mesa ou pintura.\n- Fabricante: Saving Throw\n\n🚚 DICA DE FRETE GRÁTIS NO MERCADO LIVRE:\nAdicione mais miniaturas da Saving Throw ao seu carrinho! Em compras a partir de R$ 79,00, o Mercado Livre oferece Frete Grátis ou desconto especial de envio para a sua região.`;
 
   try {
     await fetch(`https://api.mercadolibre.com/items/${result.id}/description`, {

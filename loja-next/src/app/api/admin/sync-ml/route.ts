@@ -3,9 +3,14 @@ import sharp from 'sharp';
 import { pool } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { getMLToken, mlPriceFor, publishProductToML, updateMLPrice, type MLImage } from '@/lib/mercadolivre';
+import { SITE_URL } from '@/lib/site';
 
 // Upload de imagens + criação de anúncios pode demorar
 export const maxDuration = 60;
+
+// Limites internos para responder antes dos 60s da função, deixando margem para o item em andamento.
+const PUBLISH_BUDGET_MS = 40_000;
+const TOTAL_BUDGET_MS = 50_000;
 
 export async function POST(request: Request) {
   // No legado esta rota não exigia login: qualquer pessoa podia disparar anúncios no ML.
@@ -24,59 +29,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Preços dos anúncios já publicados (antes nunca eram atualizados)
-    const { rows: synced } = await pool.query(`
-      SELECT p.*, pi.external_id
-      FROM st_products p
-      JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
-      WHERE pi.external_id IS NOT NULL
-    `);
-    let pricesChanged = 0;
-    const priceErrors: string[] = [];
-    for (const product of synced) {
-      const price = mlPriceFor(product);
-      if (price === null) continue;
-      try {
-        const r = await updateMLPrice(product.external_id, price);
-        if (r.changed) pricesChanged++;
-        await pool.query(
-          `UPDATE st_product_integrations SET sync_status = 'synced', last_sync = CURRENT_TIMESTAMP
-            WHERE product_id = $1 AND platform = 'mercadolivre'`,
-          [product.id],
-        );
-      } catch (e) {
-        priceErrors.push(`${product.name}: ${(e as Error).message}`);
-      }
-    }
-    const priceSummary =
-      `Preços atualizados: ${pricesChanged} de ${synced.length} anúncios.` +
-      (priceErrors.length ? ` Falhas de preço: ${priceErrors.join('; ')}.` : '');
+    const startedAt = Date.now();
+    const timeLeft = (limitMs: number) => Date.now() - startedAt < limitMs;
 
-    // 2. Produtos ainda não sincronizados com o Mercado Livre (3 por vez)
+    // 1. Produtos ainda não sincronizados: vêm antes dos preços e param por tempo, não por quantidade.
     const { rows: products } = await pool.query(`
       SELECT p.*
       FROM st_products p
       LEFT JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
       WHERE pi.id IS NULL AND p.image_url IS NOT NULL
       ORDER BY p.created_at DESC
-      LIMIT 3
     `);
-
-    if (products.length === 0) {
-      const checkAny = await pool.query(`SELECT 1 FROM st_products WHERE image_url IS NOT NULL LIMIT 1`);
-      return NextResponse.json({
-        message:
-          (checkAny.rows.length === 0
-            ? 'Nenhum produto cadastrado com imagem para sincronizar.'
-            : 'Todos os produtos já estão publicados no Mercado Livre.') + ` ${priceSummary}`,
-      });
-    }
 
     let successCount = 0;
     let failCount = 0;
     const errors: string[] = [];
 
     for (const product of products) {
+      if (!timeLeft(PUBLISH_BUDGET_MS)) break;
       let urls: string[] = [];
       try {
         urls = JSON.parse(product.image_url);
@@ -85,8 +55,10 @@ export async function POST(request: Request) {
       }
 
       const imageFiles: MLImage[] = [];
-      for (const [i, url] of urls.entries()) {
-        if (typeof url !== 'string') continue;
+      for (const [i, rawUrl] of urls.entries()) {
+        if (typeof rawUrl !== 'string') continue;
+        // Imagens do próprio site ficam gravadas como caminho relativo (/assets/...).
+        const url = rawUrl.startsWith('/') ? `${SITE_URL}${rawUrl}` : rawUrl;
         if (url.startsWith('data:image')) {
           const m = url.match(/^data:(image\/\w+);base64,(.*)$/);
           if (m) imageFiles.push({ buffer: Buffer.from(m[2], 'base64'), filename: `image${i}.jpg`, contentType: m[1] });
@@ -129,8 +101,43 @@ export async function POST(request: Request) {
       }
     }
 
-    let message = `${priceSummary} Novos anúncios — sucesso: ${successCount}. Falhas: ${failCount}.`;
-    if (errors.length > 0) message += ` Detalhes: ${errors.join('; ')}`;
+    // 2. Preços dos anúncios já publicados, começando pelos verificados há mais tempo
+    const { rows: synced } = await pool.query(`
+      SELECT p.*, pi.external_id
+      FROM st_products p
+      JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
+      WHERE pi.external_id IS NOT NULL
+      ORDER BY pi.last_sync ASC NULLS FIRST
+    `);
+    let pricesChanged = 0;
+    let pricesChecked = 0;
+    const priceErrors: string[] = [];
+    for (const product of synced) {
+      if (!timeLeft(TOTAL_BUDGET_MS)) break;
+      const price = mlPriceFor(product);
+      if (price === null) continue;
+      try {
+        const r = await updateMLPrice(product.external_id, price);
+        pricesChecked++;
+        if (r.changed) pricesChanged++;
+        await pool.query(
+          `UPDATE st_product_integrations SET sync_status = 'synced', last_sync = CURRENT_TIMESTAMP
+            WHERE product_id = $1 AND platform = 'mercadolivre'`,
+          [product.id],
+        );
+      } catch (e) {
+        priceErrors.push(`${product.name}: ${(e as Error).message}`);
+      }
+    }
+
+    const remaining = products.length - successCount - failCount;
+    let message =
+      products.length === 0
+        ? 'Todos os produtos já estão publicados no Mercado Livre.'
+        : `Novos anúncios — sucesso: ${successCount}. Falhas: ${failCount}. Ainda na fila: ${remaining}.`;
+    if (errors.length > 0) message += ` Detalhes: ${errors.join('; ')}.`;
+    message += ` Preços verificados: ${pricesChecked} de ${synced.length} (${pricesChanged} alterados).`;
+    if (priceErrors.length > 0) message += ` Falhas de preço: ${priceErrors.join('; ')}.`;
     return NextResponse.json({ message });
   } catch (e) {
     console.error('Erro geral na sincronização:', e);
