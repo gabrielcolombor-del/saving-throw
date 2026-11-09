@@ -32,18 +32,25 @@ export async function POST(request: Request) {
     const startedAt = Date.now();
     const timeLeft = (limitMs: number) => Date.now() - startedAt < limitMs;
 
-    // 1. Produtos ainda não sincronizados: vêm antes dos preços e param por tempo, não por quantidade.
-    const { rows: products } = await pool.query(`
-      SELECT p.*
-      FROM st_products p
-      LEFT JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
-      WHERE pi.id IS NULL AND p.image_url IS NOT NULL
-      ORDER BY p.created_at DESC
-    `);
+    // O painel repete a chamada até `done`, devolvendo estes dois campos: cada etapa cabe nos 60s da função.
+    const body = await request.json().catch(() => ({}));
+    const skipIds: string[] = Array.isArray(body?.skipIds) ? body.skipIds.filter((id: unknown) => typeof id === 'string') : [];
+    const priceOffset = Number.isInteger(body?.priceOffset) && body.priceOffset > 0 ? (body.priceOffset as number) : 0;
+
+    // 1. Produtos ainda não sincronizados; os que já falharam nesta rodada não são tentados de novo.
+    const { rows: products } = await pool.query(
+      `SELECT p.*
+       FROM st_products p
+       LEFT JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
+       WHERE pi.id IS NULL AND p.image_url IS NOT NULL AND NOT (p.id = ANY($1::text[]))
+       ORDER BY p.created_at DESC`,
+      [skipIds],
+    );
 
     let successCount = 0;
     let failCount = 0;
     const errors: string[] = [];
+    const failedIds: string[] = [];
 
     for (const product of products) {
       if (!timeLeft(PUBLISH_BUDGET_MS)) break;
@@ -79,6 +86,7 @@ export async function POST(request: Request) {
 
       if (imageFiles.length === 0) {
         failCount++;
+        failedIds.push(product.id);
         errors.push(`${product.name}: Nenhuma imagem em formato válido encontrada.`);
         continue;
       }
@@ -97,23 +105,27 @@ export async function POST(request: Request) {
       } catch (e) {
         console.error(`Erro ao sincronizar ${product.name}:`, e);
         failCount++;
+        failedIds.push(product.id);
         errors.push(`${product.name}: ${(e as Error).message}`);
       }
     }
 
-    // 2. Preços dos anúncios já publicados, começando pelos verificados há mais tempo
+    const remaining = products.length - successCount - failCount;
+
+    // 2. Preços dos anúncios: só com a fila vazia, para a lista não mudar enquanto o offset avança.
     const { rows: synced } = await pool.query(`
       SELECT p.*, pi.external_id
       FROM st_products p
       JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
       WHERE pi.external_id IS NOT NULL
-      ORDER BY pi.last_sync ASC NULLS FIRST
+      ORDER BY p.id
     `);
     let pricesChanged = 0;
     let pricesChecked = 0;
     const priceErrors: string[] = [];
-    for (const product of synced) {
-      if (!timeLeft(TOTAL_BUDGET_MS)) break;
+    let nextPriceOffset = priceOffset;
+    while (remaining === 0 && nextPriceOffset < synced.length && timeLeft(TOTAL_BUDGET_MS)) {
+      const product = synced[nextPriceOffset++];
       const price = mlPriceFor(product);
       if (price === null) continue;
       try {
@@ -130,15 +142,18 @@ export async function POST(request: Request) {
       }
     }
 
-    const remaining = products.length - successCount - failCount;
-    let message =
-      products.length === 0
-        ? 'Todos os produtos já estão publicados no Mercado Livre.'
-        : `Novos anúncios — sucesso: ${successCount}. Falhas: ${failCount}. Ainda na fila: ${remaining}.`;
-    if (errors.length > 0) message += ` Detalhes: ${errors.join('; ')}.`;
-    message += ` Preços verificados: ${pricesChecked} de ${synced.length} (${pricesChanged} alterados).`;
-    if (priceErrors.length > 0) message += ` Falhas de preço: ${priceErrors.join('; ')}.`;
-    return NextResponse.json({ message });
+    return NextResponse.json({
+      done: remaining === 0 && nextPriceOffset >= synced.length,
+      published: successCount,
+      remaining,
+      failedIds,
+      errors,
+      pricesChecked,
+      pricesChanged,
+      priceErrors,
+      priceOffset: nextPriceOffset,
+      priceTotal: synced.length,
+    });
   } catch (e) {
     console.error('Erro geral na sincronização:', e);
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });

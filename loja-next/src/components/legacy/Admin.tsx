@@ -871,20 +871,43 @@ export function Admin() {
 
 (window as any).logout = logout;
         async function syncMLCatalog() {
+            // O servidor trabalha em etapas de até 60s; repete até a lista inteira ter sido conferida.
+            const MAX_ROUNDS = 30;
+            let published = 0, pricesChecked = 0, pricesChanged = 0, priceOffset = 0, finished = false, fatal = '';
+            const skipIds: string[] = [];
+            const errors: string[] = [];
+            const priceErrors: string[] = [];
             try {
                 const btn = document.getElementById('btn-sync-ml');
-                if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
-                
                 const token = localStorage.getItem('adminToken');
-                const res = await fetch('/api/admin/sync-ml', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                alert(data.message || data.error || 'Sincronização iniciada.');
+                for (let round = 1; round <= MAX_ROUNDS && !finished; round++) {
+                    if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando (${published} novos, ${pricesChecked} preços)...`;
+                    const res = await fetch('/api/admin/sync-ml', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ skipIds, priceOffset })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) { fatal = data.error || `Erro ${res.status}`; break; }
+                    published += data.published;
+                    pricesChecked += data.pricesChecked;
+                    pricesChanged += data.pricesChanged;
+                    priceOffset = data.priceOffset;
+                    skipIds.push(...data.failedIds);
+                    errors.push(...data.errors);
+                    priceErrors.push(...data.priceErrors);
+                    finished = data.done;
+                }
             } catch (e) {
-                alert('Erro ao iniciar sincronização.');
+                fatal = 'A conexão caiu no meio da sincronização.';
             } finally {
+                let summary = `Novos anúncios: ${published}. Falhas: ${skipIds.length}. Preços verificados: ${pricesChecked} (${pricesChanged} alterados).`;
+                if (errors.length) summary += `\n\nFalhas ao publicar:\n${errors.join('\n')}`;
+                if (priceErrors.length) summary += `\n\nFalhas de preço:\n${priceErrors.join('\n')}`;
+                if (fatal) summary = `Sincronização interrompida: ${fatal}\nClique de novo para continuar.\n\n${summary}`;
+                else if (!finished) summary = `A sincronização não terminou. Clique de novo para continuar.\n\n${summary}`;
+                else summary = `Sincronização concluída.\n\n${summary}`;
+                alert(summary);
                 const btn = document.getElementById('btn-sync-ml');
                 if (btn) btn.innerHTML = '<i class="fa-solid fa-handshake"></i> Sincronizar Catálogo ML';
                 loadMarketplaceData();
