@@ -50,7 +50,7 @@ export default async function ArsenalPage(props: { searchParams?: Promise<{ [key
 
   return (
     <div className="font-sans">
-        <section className="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/arsenal_wallpaper.webp')" }}>
+        <section className="relative bg-cover bg-center text-white h-[329px] md:h-80 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style={{ backgroundImage: "url('/assets/imagens/arsenal_wallpaper.webp')" }}>
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Arsenal de RPG</h1>

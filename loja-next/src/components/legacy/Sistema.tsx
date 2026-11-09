@@ -116,7 +116,7 @@ export function Sistema() {
     }
   }, []);return (
     <div className="font-sans" dangerouslySetInnerHTML={{ __html: `
-        <section class="relative bg-cover bg-center text-white py-20 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/banner_st.webp');">
+        <section class="relative bg-cover bg-center text-white h-[329px] md:h-80 border-b border-zinc-800 overflow-hidden flex items-center justify-center" style="background-image: url('/assets/imagens/banner_st.webp');">
             <div class="absolute inset-0 bg-black/60"></div>
             <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                 <h1 class="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Aprenda a Jogar</h1>
