@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
+import { computeOrder, sanitizeOrder, estimateResinG, porteFromAltura, PORTES, DEFAULT_COSTS } from '@/lib/order-profit';
 
 export function Admin() {
   useEffect(() => {
@@ -172,6 +173,10 @@ export function Admin() {
                     document.getElementById('kpi-revenue').innerText = `R$ ${data.kpis.revenueTotal.toFixed(2).replace('.', ',')}`;
                     document.getElementById('kpi-expenses').innerText = `R$ ${data.kpis.expensesTotal.toFixed(2).replace('.', ',')}`;
                     document.getElementById('kpi-profit').innerText = `R$ ${data.kpis.netProfit.toFixed(2).replace('.', ',')}`;
+                    var ordersProfitEl = document.getElementById('kpi-orders-profit');
+                    if (ordersProfitEl) ordersProfitEl.innerText = `R$ ${(data.kpis.ordersProfit || 0).toFixed(2).replace('.', ',')}`;
+                    var ordersCountEl = document.getElementById('kpi-orders-count');
+                    if (ordersCountEl) ordersCountEl.innerText = `${data.kpis.ordersWithProfit || 0} ${data.kpis.ordersWithProfit === 1 ? 'pedido' : 'pedidos'} com custos`;
 
                     var margin = data.kpis.revenueTotal > 0 ? ((data.kpis.netProfit / data.kpis.revenueTotal) * 100).toFixed(1) : 0;
                     document.getElementById('summary-margin').innerText = `${margin}%`;
@@ -237,11 +242,42 @@ export function Admin() {
             } catch (err) { alert('Erro ao registrar gasto'); }
         });
 
-        // MODAL DE VENDA A PARTIR DO PRODUTO
-        function openSaleModal(productName, price) {
-            document.getElementById('modal-sale-product').value = productName;
+        // PEDIDO / VENDA COM CÁLCULO DE LUCRO (itens, impressão, embalagem, frete e taxa)
+        var saleItems = [];
+        var salePecasEdited = false;
+        var SALE_COSTS_KEY = 'st-sale-costs';
+        var SALE_SAVED_COSTS = ['resinaKg', 'embalagem', 'energiaPorImpressao', 'trabalhoPorImpressao', 'trabalhoPorPeca', 'taxaPct'];
+        var SALE_ALL_COSTS = SALE_SAVED_COSTS.concat(['frete', 'desconto', 'impressoes', 'pecasNasImpressoes']);
+        var brlFmt = (v) => `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`;
+        var escAttr = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+        function loadSaleCostDefaults() {
+            try { return { ...DEFAULT_COSTS, ...JSON.parse(localStorage.getItem(SALE_COSTS_KEY) || '{}') }; }
+            catch (e) { return { ...DEFAULT_COSTS }; }
+        }
+
+        function newSaleItem(nome, preco, altura) {
+            var h = Number(altura) || PORTES.medio.altura;
+            return { nome: nome || '', porte: porteFromAltura(h), alturaMm: h, resinaG: estimateResinG(h), resinaManual: false, quantidade: 1, precoUnit: Number(preco) || 0, extra: 0 };
+        }
+
+        function setSaleCost(k, v) { var el = document.getElementById('sale-cost-' + k); if (el) el.value = v; }
+        function readSaleCosts() {
+            var o = {};
+            SALE_ALL_COSTS.forEach(k => { o[k] = parseFloat(document.getElementById('sale-cost-' + k)?.value) || 0; });
+            return o;
+        }
+
+        function openSaleModal(productName, price, altura) {
+            saleItems = [newSaleItem(productName, price, altura)];
+            salePecasEdited = false;
             document.getElementById('modal-sale-client').value = '';
-            document.getElementById('modal-sale-price').value = price || '';
+            document.getElementById('modal-sale-canal').value = 'Site';
+            var c = loadSaleCostDefaults();
+            SALE_SAVED_COSTS.forEach(k => setSaleCost(k, c[k]));
+            setSaleCost('frete', 0); setSaleCost('desconto', 0); setSaleCost('impressoes', 1);
+            renderSaleItems();
+            updateSaleSummary();
             document.getElementById('modal-sale').classList.remove('hidden');
         }
 
@@ -249,29 +285,117 @@ export function Admin() {
             document.getElementById('modal-sale').classList.add('hidden');
         }
 
+        function addSaleItem() { saleItems.push(newSaleItem()); renderSaleItems(); updateSaleSummary(); }
+        function removeSaleItem(i) {
+            if (saleItems.length <= 1) return;
+            saleItems.splice(i, 1); renderSaleItems(); updateSaleSummary();
+        }
+
+        function renderSaleItems() {
+            var box = document.getElementById('sale-items');
+            var lbl = 'block text-[10px] font-bold uppercase text-zinc-500 mb-0.5';
+            var inp = 'w-full p-2 bg-white text-zinc-900 border border-zinc-300 rounded-md text-xs font-semibold focus:border-black focus:outline-none';
+            box.innerHTML = saleItems.map((it, i) => `
+                <div class="grid grid-cols-12 gap-2 items-end bg-zinc-50 border border-zinc-200 rounded-lg p-2.5">
+                    <div class="col-span-12 sm:col-span-5"><label class="${lbl}">Miniatura</label>
+                        <input type="text" value="${escAttr(it.nome)}" oninput="updateSaleItem(${i}, 'nome', this.value)" placeholder="Ex: Behir" class="${inp}" required></div>
+                    <div class="col-span-7 sm:col-span-4"><label class="${lbl}">Porte</label>
+                        <select onchange="updateSaleItem(${i}, 'porte', this.value)" class="${inp}">
+                            ${Object.entries(PORTES).map(([k, p]) => `<option value="${k}" ${k === it.porte ? 'selected' : ''}>${p.label}</option>`).join('')}
+                        </select></div>
+                    <div class="col-span-5 sm:col-span-3"><label class="${lbl}">Altura (mm)</label>
+                        <input type="number" min="0" step="1" id="sale-item-altura-${i}" value="${it.alturaMm}" oninput="updateSaleItem(${i}, 'alturaMm', this.value)" class="${inp}"></div>
+                    <div class="col-span-4 sm:col-span-3"><label class="${lbl}" title="Com suportes. Estimado pela altura; troque pelo peso do fatiador.">Resina (g)</label>
+                        <input type="number" min="0" step="0.1" id="sale-item-resina-${i}" value="${it.resinaG}" oninput="updateSaleItem(${i}, 'resinaG', this.value)" class="${inp}"></div>
+                    <div class="col-span-3 sm:col-span-2"><label class="${lbl}">Qtd</label>
+                        <input type="number" min="1" step="1" value="${it.quantidade}" oninput="updateSaleItem(${i}, 'quantidade', this.value)" class="${inp}"></div>
+                    <div class="col-span-5 sm:col-span-3"><label class="${lbl}">Preço un. (R$)</label>
+                        <input type="number" min="0" step="0.01" value="${it.precoUnit}" oninput="updateSaleItem(${i}, 'precoUnit', this.value)" class="${inp}"></div>
+                    <div class="col-span-9 sm:col-span-3"><label class="${lbl}" title="Pintura, caixa especial ou outro custo por peça">Extra/peça (R$)</label>
+                        <input type="number" min="0" step="0.01" value="${it.extra}" oninput="updateSaleItem(${i}, 'extra', this.value)" class="${inp}"></div>
+                    <div class="col-span-3 sm:col-span-1 flex justify-end">
+                        <button type="button" onclick="removeSaleItem(${i})" ${saleItems.length <= 1 ? 'disabled' : ''} class="w-8 h-8 rounded-md text-zinc-400 hover:text-red-600 hover:bg-white disabled:opacity-30 cursor-pointer" title="Remover item" aria-label="Remover item"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateSaleItem(i, field, value) {
+            var it = saleItems[i];
+            if (!it) return;
+            if (field === 'nome' || field === 'porte') it[field] = value;
+            else it[field] = parseFloat(value) || 0;
+
+            if (field === 'porte') {
+                // Porte novo: altura padrão do porte e, se a resina não foi digitada, nova estimativa.
+                it.alturaMm = PORTES[value].altura;
+                var altEl = document.getElementById('sale-item-altura-' + i);
+                if (altEl) altEl.value = it.alturaMm;
+            }
+            if (field === 'resinaG') it.resinaManual = true;
+            if ((field === 'porte' || field === 'alturaMm') && !it.resinaManual) {
+                it.resinaG = estimateResinG(it.alturaMm);
+                var resEl = document.getElementById('sale-item-resina-' + i);
+                if (resEl) resEl.value = it.resinaG;
+            }
+            updateSaleSummary();
+        }
+
+        function onSalePecasInput() { salePecasEdited = true; updateSaleSummary(); }
+
+        function updateSaleSummary() {
+            var pecasDoPedido = saleItems.reduce((s, it) => s + Math.max(1, Math.round(it.quantidade || 1)), 0);
+            var pecasEl = document.getElementById('sale-cost-pecasNasImpressoes');
+            // Sem edição manual, a mesa tem só as peças deste pedido; nunca menos que elas.
+            if (pecasEl && (!salePecasEdited || (parseFloat(pecasEl.value) || 0) < pecasDoPedido)) pecasEl.value = pecasDoPedido;
+
+            var { items, costs } = sanitizeOrder(saleItems, readSaleCosts());
+            var r = computeOrder(items, costs);
+            var row = (label, v, cls) => `<div class="flex justify-between ${cls || ''}"><span>${label}</span><span>${brlFmt(v)}</span></div>`;
+            document.getElementById('sale-summary').innerHTML = `
+                ${row(`Receita (${r.pecas} ${r.pecas === 1 ? 'peça' : 'peças'})`, r.receita, 'font-bold text-black')}
+                <div class="border-t border-zinc-200 my-1.5"></div>
+                ${row('Resina', r.custos.resina)}
+                ${row('Impressão (energia + trabalho da mesa)', r.custos.impressao)}
+                ${row('Trabalho por peça', r.custos.trabalhoPecas)}
+                ${r.custos.extras ? row('Extras (pintura etc.)', r.custos.extras) : ''}
+                ${row('Embalagem', r.custos.embalagem)}
+                ${row('Frete pago por você', r.custos.frete)}
+                ${r.custos.taxa ? row('Taxa do marketplace', r.custos.taxa) : ''}
+                ${row('Custo total', r.custoTotal, 'font-bold text-zinc-800 border-t border-zinc-200 pt-1.5 mt-1.5')}
+                <div class="flex justify-between items-baseline mt-2 text-sm font-black ${r.lucro >= 0 ? 'text-emerald-700' : 'text-red-600'}">
+                    <span>Lucro do pedido</span><span>${brlFmt(r.lucro)} <span class="text-[11px] font-bold">(${Math.round(r.margem * 100)}%)</span></span>
+                </div>`;
+            var hint = document.getElementById('sale-frete-hint');
+            if (hint) hint.classList.toggle('hidden', !r.freteGratis);
+        }
+
         document.getElementById('form-sale-modal').addEventListener('submit', async (e) => {
             e.preventDefault();
-            var produto = document.getElementById('modal-sale-product').value;
-            var cliente = document.getElementById('modal-sale-client').value;
-            var valor = document.getElementById('modal-sale-price').value;
-
+            var cliente = document.getElementById('modal-sale-client').value.trim();
+            var canal = document.getElementById('modal-sale-canal').value;
+            var custos = readSaleCosts();
+            var btn = e.submitter;
             try {
+                // Guarda os custos que costumam se repetir para a próxima venda.
+                var keep = {}; SALE_SAVED_COSTS.forEach(k => { keep[k] = custos[k]; });
+                try { localStorage.setItem(SALE_COSTS_KEY, JSON.stringify(keep)); } catch (err) {}
+
+                if (btn) btn.disabled = true;
                 var res = await fetch('/api/admin/finance', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ action: 'venda', cliente, produto, valor })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ action: 'venda', cliente, pedido: { canal, itens: saleItems, custos } })
                 });
-                if (res.ok) {
-                    alert(`Venda do produto "${produto}" para "${cliente}" registrada com sucesso no Supabase!`);
-                    closeSaleModal();
-                    loadDashboardData();
-                } else {
-                    alert('Erro ao registrar venda');
-                }
+                if (res.status === 401) { logout(); return; }
+                var data = await res.json().catch(() => ({}));
+                if (!res.ok) { alert(`Erro ao registrar venda: ${data.error || 'erro ' + res.status}`); return; }
+                alert(`Venda para "${cliente}" registrada.\n\nReceita: ${brlFmt(data.valor)}\nCusto: ${brlFmt(data.custo_total)}\nLucro: ${brlFmt(data.lucro)}`);
+                closeSaleModal();
+                loadDashboardData();
+                if (!document.getElementById('sec-fin')?.classList.contains('hidden')) loadFinance();
             } catch (err) { alert('Erro de conexão ao registrar venda'); }
+            finally { if (btn) btn.disabled = false; }
         });
 
         // TAB PRODUTOS (Miniaturas / Arsenal)
@@ -528,7 +652,7 @@ export function Admin() {
                                 </div>
                                 <div class="mt-3 pt-2.5 border-t border-zinc-100 flex justify-between items-center">
                                     ${priceHtml}
-                                    <button onclick="openSaleModal('${p.name.replace(/'/g, "\\'")}', '${mainPrice}')" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer shadow-xs">
+                                    <button onclick="openSaleModal('${p.name.replace(/'/g, "\\'")}', '${mainPrice}', '${((p.description || '').match(/Altura aproximada:\s*(\d+)/) || [])[1] || ''}')" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-[10px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer shadow-xs">
                                         <i class="fa-solid fa-cart-shopping text-amber-500"></i> Registrar Venda
                                     </button>
                                 </div>
@@ -787,7 +911,7 @@ export function Admin() {
         async function loadFinance() {
             var tbody = document.getElementById('tbody-finance');
             var type = document.getElementById('fin-filter-type').value;
-            tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>';
             try {
                 var res = await fetch(`/api/admin/finance?type=${type}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -808,6 +932,9 @@ export function Admin() {
                             <td class="p-3.5 font-medium text-zinc-900">${r.descricao}</td>
                             <td class="p-3.5"><span class="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-[10px] uppercase font-bold text-zinc-600">${r.categoria}</span></td>
                             <td class="p-3.5 font-bold text-black">R$ ${Number(r.valor).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3.5 font-bold ${r.lucro == null ? 'text-zinc-300' : Number(r.lucro) >= 0 ? 'text-emerald-700' : 'text-red-600'}" title="${r.detalhes?.resultado ? `Custo total: R$ ${Number(r.custo_total).toFixed(2).replace('.', ',')} · Canal: ${escAttr(r.detalhes.canal || '')}` : ''}">
+                                ${r.lucro == null ? '—' : `R$ ${Number(r.lucro).toFixed(2).replace('.', ',')}${Number(r.valor) > 0 ? ` <span class="text-[10px] font-semibold text-zinc-500">(${Math.round(Number(r.lucro) / Number(r.valor) * 100)}%)</span>` : ''}`}
+                            </td>
                             <td class="p-3.5 text-center flex items-center justify-center gap-2">
                                 <button onclick="openEditFinModal('${r.id}')" class="text-zinc-600 hover:text-black p-1 cursor-pointer" title="Editar este registro"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button onclick="deleteFinance('${r.id}')" class="text-zinc-400 hover:text-black p-1 cursor-pointer" title="Excluir lançamento"><i class="fa-solid fa-trash"></i></button>
@@ -815,7 +942,7 @@ export function Admin() {
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-zinc-400">Nenhum lançamento no livro.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-zinc-400">Nenhum lançamento no livro.</td></tr>';
                 }
             } catch(e) { console.error(e); }
         }
@@ -996,6 +1123,11 @@ export function Admin() {
 (window as any).renderChart = renderChart;
 (window as any).openSaleModal = openSaleModal;
 (window as any).closeSaleModal = closeSaleModal;
+(window as any).addSaleItem = addSaleItem;
+(window as any).removeSaleItem = removeSaleItem;
+(window as any).updateSaleItem = updateSaleItem;
+(window as any).updateSaleSummary = updateSaleSummary;
+(window as any).onSalePecasInput = onSalePecasInput;
 (window as any).switchTab = switchTab;
 (window as any).loadProducts = loadProducts;
 (window as any).openEditProductModal = openEditProductModal;
@@ -1086,7 +1218,7 @@ export function Admin() {
             <!-- TAB 1: PAINEL GERAL / DASHBOARD (SOMENTE GRÁFICOS E INFORMAÇÕES GERAIS) -->
             <div id="sec-dash" class="space-y-6">
                 <!-- KPIs CARDS -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     <!-- Receita -->
                     <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
@@ -1115,6 +1247,17 @@ export function Admin() {
                         <div>
                             <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Lucro Líquido</span>
                             <span id="kpi-profit" class="text-2xl font-black text-amber-700">R\$ 0,00</span>
+                        </div>
+                    </div>
+                    <!-- Lucro calculado por pedido -->
+                    <div class="bg-white/90 backdrop-blur-sm border border-black/10 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4" title="Soma do lucro calculado em cada venda: receita menos resina, impressão, trabalho, embalagem, frete e taxa">
+                        <div class="w-12 h-12 rounded-xl bg-black text-amber-500 flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                            <i class="fa-solid fa-sack-dollar text-amber-500"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-500 block">Lucro dos Pedidos</span>
+                            <span id="kpi-orders-profit" class="text-2xl font-black text-emerald-700">R\$ 0,00</span>
+                            <span id="kpi-orders-count" class="text-[10px] font-bold text-zinc-500 block">0 pedidos com custos</span>
                         </div>
                     </div>
                 </div>
@@ -1355,11 +1498,16 @@ export function Admin() {
                                 <p class="text-xs text-zinc-500">Histórico editável de entradas e saídas no Supabase</p>
                             </div>
                         </div>
+                        <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="openSaleModal()" class="bg-black hover:bg-zinc-800 text-[#EBE3CB] text-xs font-bold uppercase px-4 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer shadow-xs">
+                            <i class="fa-solid fa-cart-plus text-amber-500"></i> Registrar Venda
+                        </button>
                         <select id="fin-filter-type" onchange="loadFinance()" class="p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-bold focus:outline-none focus:border-black cursor-pointer">
                             <option value="all">Ver Todos os Lançamentos</option>
                             <option value="Venda">Apenas Entradas (Vendas)</option>
                             <option value="Custo">Apenas Saídas (Custos)</option>
                         </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-black/10">
                         <table class="w-full text-left text-xs">
@@ -1370,11 +1518,12 @@ export function Admin() {
                                     <th class="p-3.5">Descrição</th>
                                     <th class="p-3.5">Categoria</th>
                                     <th class="p-3.5">Valor Total</th>
+                                    <th class="p-3.5">Lucro</th>
                                     <th class="p-3.5 text-center">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-finance" class="divide-y divide-zinc-200 bg-white">
-                                <tr><td colspan="6" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>
+                                <tr><td colspan="7" class="p-8 text-center text-zinc-400">Carregando livro financeiro...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1517,29 +1666,83 @@ export function Admin() {
 
     <!-- MODAL 1: REGISTRAR VENDA A PARTIR DO CARD DE PRODUTO -->
     <div id="modal-sale" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full border border-black/10">
+        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-2xl max-w-3xl w-full border border-black/10 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-200">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg bg-black text-amber-500 flex items-center justify-center text-sm">
                         <i class="fa-solid fa-cart-shopping text-amber-500"></i>
                     </div>
-                    <h3 class="font-title text-xl text-black">Efetuar Venda de Produto</h3>
+                    <h3 class="font-title text-xl text-black">Registrar Venda</h3>
                 </div>
-                <button onclick="closeSaleModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
+                <button type="button" onclick="closeSaleModal()" class="text-zinc-400 hover:text-black text-lg p-1 cursor-pointer" aria-label="Fechar">&times;</button>
             </div>
-            <form id="form-sale-modal" class="space-y-3 text-left">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Produto</label>
-                    <input type="text" id="modal-sale-product" class="w-full p-2.5 bg-zinc-100 border border-zinc-300 rounded-lg text-xs font-bold text-zinc-800" readonly>
+            <form id="form-sale-modal" class="space-y-4 text-left">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome do Cliente *</label>
+                        <input type="text" id="modal-sale-client" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos Santos" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Canal</label>
+                        <select id="modal-sale-canal" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none">
+                            <option value="Site">Site / WhatsApp</option>
+                            <option value="Mercado Livre">Mercado Livre</option>
+                            <option value="Presencial">Presencial / Feira</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Nome do Cliente *</label>
-                    <input type="text" id="modal-sale-client" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" placeholder="Ex: Carlos Santos" required>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase text-zinc-600">Itens do pedido</span>
+                        <button type="button" onclick="addSaleItem()" class="text-[11px] font-bold uppercase text-amber-700 hover:text-amber-900 cursor-pointer"><i class="fa-solid fa-plus"></i> Adicionar item</button>
+                    </div>
+                    <div id="sale-items" class="space-y-2"></div>
+                    <p class="text-[10px] text-zinc-500 mt-1">A resina é estimada pela altura (o Remorhaz de 70 mm gastou 45 g). Se tiver o peso do fatiador com suportes, digite no lugar.</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-zinc-600 mb-1">Valor Final da Venda (R\$) *</label>
-                    <input type="number" step="0.01" id="modal-sale-price" class="w-full p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:outline-none" required>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3">
+                        <div>
+                            <span class="block text-xs font-bold uppercase text-zinc-600 mb-1">Impressão</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Impressões usadas
+                                    <input type="number" min="1" step="1" id="sale-cost-impressoes" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500" title="Inclua peças de outros pedidos que foram na mesma mesa: a energia e o trabalho da impressão são divididos entre elas">Peças nessas impressões
+                                    <input type="number" min="1" step="1" id="sale-cost-pecasNasImpressoes" oninput="onSalePecasInput()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                            </div>
+                            <p class="text-[10px] text-zinc-500 mt-1">Imprimiu junto com outros pedidos? Some todas as peças da mesa para dividir a energia e o trabalho.</p>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-bold uppercase text-zinc-600 mb-1">Custos</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Resina (R$/kg)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-resinaKg" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Embalagem (R$/pedido)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-embalagem" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Energia (R$/impressão)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-energiaPorImpressao" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500" title="Preparar a mesa, lavar e curar">Trabalho (R$/impressão)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-trabalhoPorImpressao" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500" title="Tirar suportes e acabamento">Trabalho (R$/peça)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-trabalhoPorPeca" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Frete pago por você (R$)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-frete" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500" title="Comissão do marketplace sobre o valor da venda">Taxa marketplace (%)
+                                    <input type="number" min="0" max="100" step="0.1" id="sale-cost-taxaPct" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                                <label class="text-[10px] font-bold uppercase text-zinc-500">Desconto (R$)
+                                    <input type="number" min="0" step="0.01" id="sale-cost-desconto" oninput="updateSaleSummary()" class="mt-0.5 w-full p-2 bg-zinc-50 border border-zinc-300 rounded-md text-xs font-semibold text-zinc-900 focus:border-black focus:outline-none"></label>
+                            </div>
+                            <p id="sale-frete-hint" class="hidden text-[10px] font-bold text-amber-700 mt-1"><i class="fa-solid fa-truck"></i> Pedido a partir de R$ 149: frete grátis, o envio é por sua conta. Preencha o frete pago.</p>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 text-xs text-zinc-600 self-start">
+                        <span class="block text-xs font-bold uppercase text-zinc-600 mb-2">Resumo do pedido</span>
+                        <div id="sale-summary" class="space-y-1"></div>
+                    </div>
                 </div>
+
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeSaleModal()" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold uppercase py-2.5 rounded-lg text-xs cursor-pointer">Cancelar</button>
                     <button type="submit" class="flex-1 bg-black hover:bg-zinc-800 text-[#EBE3CB] font-bold uppercase py-2.5 rounded-lg text-xs flex items-center justify-center gap-1 cursor-pointer">
