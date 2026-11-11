@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const brl = (v: unknown) => Number(v || 0).toFixed(2).replace('.', ',');
 
-const PAGES_PER_BLOCK = 6;
+const PAGES_VISIBLE = 6;
 const pageBtn = 'w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors';
 const pageIdle = 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300';
 
@@ -22,9 +22,9 @@ export function MiniaturasGrid({
   basePath: string;
   search?: string;
 }) {
-  // Paginação em blocos de 6 (1–6, 7–12…); as reticências levam ao bloco vizinho.
-  const blockStart = Math.floor((Math.max(page, 1) - 1) / PAGES_PER_BLOCK) * PAGES_PER_BLOCK + 1;
-  const blockEnd = Math.min(blockStart + PAGES_PER_BLOCK - 1, totalPages);
+  // Janela de 6 páginas que acompanha a atual (na 6, mostra 4–9); as reticências levam à página vizinha fora dela.
+  const blockStart = Math.max(1, Math.min(page - 2, totalPages - PAGES_VISIBLE + 1));
+  const blockEnd = Math.min(blockStart + PAGES_VISIBLE - 1, totalPages);
   const pageHref = (pageNum: number) => {
     const qs = new URLSearchParams();
     if (pageNum > 1) qs.set('page', String(pageNum));
