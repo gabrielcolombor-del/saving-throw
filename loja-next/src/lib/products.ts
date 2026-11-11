@@ -9,6 +9,8 @@ export type ProductListParams = {
   type?: string | null;
   category?: string | null;
   search?: string | null;
+  /** Busca só no nome (o painel); por padrão a busca também olha a descrição. */
+  searchNameOnly?: boolean;
   page?: number;
   limit?: number;
 };
@@ -170,7 +172,11 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
 
   if (search) {
     values.push(`%${search}%`);
-    whereClauses.push(`(name ILIKE $${values.length} OR description ILIKE $${values.length})`);
+    whereClauses.push(
+      params.searchNameOnly
+        ? `name ILIKE $${values.length}`
+        : `(name ILIKE $${values.length} OR description ILIKE $${values.length})`,
+    );
   }
 
   const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
