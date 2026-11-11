@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
+import { computeOrder, sanitizeOrder } from '@/lib/order-profit';
 
 function formatNow() {
   // Mantém o formato do legado (horário de Brasília, "YYYY-MM-DD HH:mm:ss")
@@ -34,7 +35,8 @@ export async function GET(request: Request) {
     const limitNum = Math.min(200, Math.max(1, parseInt(sp.get('limit') || '100', 10) || 100));
     const offset = (pageNum - 1) * limitNum;
 
-    let sql = 'SELECT id, data, tipo, descricao, valor, categoria, cliente, produto, created_at FROM st_finance';
+    let sql =
+      'SELECT id, data, tipo, descricao, valor, categoria, cliente, produto, custo_total, lucro, detalhes, created_at FROM st_finance';
     const params: unknown[] = [];
     if (type && type !== 'all') {
       sql += ' WHERE tipo = $1';
@@ -50,7 +52,9 @@ export async function GET(request: Request) {
           COALESCE(SUM(CASE WHEN tipo = 'Venda' THEN valor ELSE 0 END), 0) AS revenue_total,
           COALESCE(SUM(CASE WHEN tipo = 'Custo' THEN valor ELSE 0 END), 0) AS expenses_total,
           COUNT(CASE WHEN tipo = 'Venda' THEN 1 END) AS sales_count,
-          COUNT(CASE WHEN tipo = 'Custo' THEN 1 END) AS costs_count
+          COUNT(CASE WHEN tipo = 'Custo' THEN 1 END) AS costs_count,
+          COALESCE(SUM(CASE WHEN tipo = 'Venda' THEN lucro END), 0) AS orders_profit,
+          COUNT(CASE WHEN tipo = 'Venda' AND lucro IS NOT NULL THEN 1 END) AS orders_with_profit
         FROM st_finance
       `),
       pool!.query(`
@@ -81,6 +85,9 @@ export async function GET(request: Request) {
         netProfit: revenueTotal - expensesTotal,
         salesCount: parseInt(k.sales_count, 10) || 0,
         costsCount: parseInt(k.costs_count, 10) || 0,
+        // Lucro calculado por pedido (receita menos custos de produção, embalagem, frete e taxa).
+        ordersProfit: parseFloat(k.orders_profit) || 0,
+        ordersWithProfit: parseInt(k.orders_with_profit, 10) || 0,
       },
       charts: { costCategories, productRevenue },
     });
@@ -113,8 +120,27 @@ export async function POST(request: Request) {
 
     if (action === 'venda' || body.tipo === 'Venda') {
       const clienteNome = cliente || body.cliente_nome;
-      const produtoNome = produto || body.produto_nome;
-      const val = parseFloat(valor);
+      let produtoNome = produto || body.produto_nome;
+      let val = parseFloat(valor);
+
+      // Pedido com itens e custos: o servidor recalcula receita, custo e lucro a partir dos dados.
+      let custoTotal: number | null = null;
+      let lucro: number | null = null;
+      let detalhes: Record<string, unknown> | null = null;
+      if (body.pedido && typeof body.pedido === 'object') {
+        const { items, costs } = sanitizeOrder(body.pedido.itens, body.pedido.custos);
+        if (items.length === 0) {
+          return NextResponse.json({ error: 'Adicione pelo menos um item ao pedido.' }, { status: 400 });
+        }
+        const result = computeOrder(items, costs);
+        val = result.receita;
+        custoTotal = result.custoTotal;
+        lucro = result.lucro;
+        produtoNome = produtoNome || items.map((i) => `${i.quantidade}x ${i.nome || 'Miniatura'}`).join(', ');
+        const canal = typeof body.pedido.canal === 'string' ? body.pedido.canal.slice(0, 40) : 'Site';
+        detalhes = { canal, itens: items, custos: costs, resultado: result };
+      }
+
       if (!clienteNome || !produtoNome || isNaN(val)) {
         return NextResponse.json({ error: 'Cliente, produto e valor pago são obrigatórios.' }, { status: 400 });
       }
@@ -125,9 +151,12 @@ export async function POST(request: Request) {
       try {
         await client.query('BEGIN');
         const { rows } = await client.query(
-          `INSERT INTO st_finance (id, data, tipo, descricao, valor, categoria, cliente, produto)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-          [id, data, 'Venda', `Venda de ${produtoNome} para ${clienteNome}`, val, 'Receita Venda', clienteNome, produtoNome],
+          `INSERT INTO st_finance (id, data, tipo, descricao, valor, categoria, cliente, produto, custo_total, lucro, detalhes)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+          [
+            id, data, 'Venda', `Venda de ${produtoNome} para ${clienteNome}`, val, 'Receita Venda', clienteNome, produtoNome,
+            custoTotal, lucro, detalhes ? JSON.stringify(detalhes) : null,
+          ],
         );
         await client.query(
           `INSERT INTO st_sales (id, data, cliente, produto, valor_final) VALUES ($1, $2, $3, $4, $5)`,
@@ -162,7 +191,10 @@ export async function PUT(request: Request) {
     const { rows } = await pool!.query(
       `UPDATE st_finance
           SET data = COALESCE($1, data), tipo = COALESCE($2, tipo), descricao = COALESCE($3, descricao),
-              valor = $4, categoria = COALESCE($5, categoria), cliente = $6, produto = $7
+              valor = $4, categoria = COALESCE($5, categoria), cliente = $6, produto = $7,
+              -- Editar o valor de uma venda com custos recalcula o lucro; venda virou custo perde o lucro.
+              lucro = CASE WHEN $2 = 'Venda' AND custo_total IS NOT NULL THEN $4 - custo_total
+                           WHEN $2 = 'Venda' THEN lucro ELSE NULL END
         WHERE id = $8
         RETURNING *`,
       [data, tipo, descricao, val, categoria, cliente || null, produto || null, id],
