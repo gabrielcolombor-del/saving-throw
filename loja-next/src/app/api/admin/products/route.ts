@@ -3,7 +3,7 @@ import { revalidateTag } from 'next/cache';
 import { pool, ensureProductsTable } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { publishProductToML, type MLImage } from '@/lib/mercadolivre';
-import { PRODUCTS_TAG } from '@/lib/products';
+import { PRODUCTS_TAG, listProductsUncached } from '@/lib/products';
 import { ensureProductBucket, storageConfigured, uploadProductImage } from '@/lib/storage';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB por imagem (igual ao legado)
@@ -107,6 +107,31 @@ async function guard(request: Request) {
   return null;
 }
 
+/**
+ * Lista do painel: sem cache (a rota pública /api/products fica até 1h no CDN, e o painel
+ * mostrava produtos já excluídos), com busca pelo nome, categoria e paginação.
+ */
+export async function GET(request: Request) {
+  const blocked = await guard(request);
+  if (blocked) return blocked;
+
+  const sp = new URL(request.url).searchParams;
+  try {
+    const result = await listProductsUncached({
+      type: sp.get('type'),
+      category: sp.get('category') || null,
+      search: sp.get('search')?.trim() || null,
+      searchNameOnly: true,
+      page: parseInt(sp.get('page') || '1', 10),
+      limit: parseInt(sp.get('limit') || '12', 10),
+    });
+    return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   const blocked = await guard(request);
   if (blocked) return blocked;
@@ -115,9 +140,15 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: 'ID ausente' }, { status: 400 });
 
   try {
-    await pool!.query('DELETE FROM st_products WHERE id = $1', [id]);
+    const { rowCount } = await pool!.query('DELETE FROM st_products WHERE id = $1', [id]);
+    if (!rowCount) return NextResponse.json({ error: 'Produto não encontrado.' }, { status: 404 });
     revalidateTag(PRODUCTS_TAG, { expire: 0 }); // mudança do admin aparece já no próximo acesso
-    return NextResponse.json({ success: true });
+    // O anúncio no Mercado Livre não é encerrado aqui: o painel avisa para encerrar por lá.
+    const { rows } = await pool!.query(
+      `SELECT external_url FROM st_product_integrations WHERE product_id = $1 AND platform = 'mercadolivre'`,
+      [id],
+    );
+    return NextResponse.json({ success: true, mlListingUrl: rows[0]?.external_url ?? null });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }

@@ -13,6 +13,9 @@ export function Admin() {
         var cachedFinanceData = [];
         var currentEditImages = [];
         var cachedProductsList = [];
+        var productsPage = 1;
+        var productsPerPage = 12;
+        var productsSearchTimer = null;
         var financeCurrentPage = 1;
         var financeItemsPerPage = 15;
 
@@ -321,6 +324,27 @@ export function Admin() {
                 if(fieldCatArs) fieldCatArs.classList.remove('hidden');
                 if(fieldPriceArs) fieldPriceArs.classList.remove('hidden');
             }
+            // Filtros da lista: categorias da aba atual (as mesmas do formulário), busca limpa, página 1.
+            var filterCat = document.getElementById('prod-filter-category');
+            var sourceCat = document.getElementById(currentTab === 'arsenal' ? 'prod-category-arsenal' : 'prod-category');
+            if (filterCat) {
+                filterCat.innerHTML = '<option value="">Todas as categorias</option>' +
+                    (currentTab === 'pacotes' || !sourceCat ? '' : [...sourceCat.options].map(o => `<option value="${o.value}">${o.text}</option>`).join(''));
+                filterCat.classList.toggle('hidden', currentTab === 'pacotes');
+            }
+            var filterSearch = document.getElementById('prod-filter-search');
+            if (filterSearch) filterSearch.value = '';
+            productsPage = 1;
+            loadProducts();
+        }
+
+        function onProductsFilterChange(immediate) {
+            clearTimeout(productsSearchTimer);
+            productsSearchTimer = setTimeout(() => { productsPage = 1; loadProducts(); }, immediate ? 0 : 300);
+        }
+
+        function goToProductsPage(n) {
+            productsPage = n;
             loadProducts();
         }
 
@@ -428,13 +452,34 @@ export function Admin() {
         async function loadProducts() {
             var grid = document.getElementById('products-grid');
             var loader = document.getElementById('loading-products');
+            var pager = document.getElementById('products-pager');
             grid.classList.add('hidden'); loader.classList.remove('hidden');
-            
+
             try {
-                var res = await fetch(`/api/products?type=${currentTab}&limit=50`);
+                var qs = new URLSearchParams({ type: currentTab, page: String(productsPage), limit: String(productsPerPage) });
+                var search = (document.getElementById('prod-filter-search')?.value || '').trim();
+                var category = document.getElementById('prod-filter-category')?.value || '';
+                if (search) qs.set('search', search);
+                if (category) qs.set('category', category);
+                var res = await fetch(`/api/admin/products?${qs}`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    cache: 'no-store'
+                });
+                if (res.status === 401) { logout(); return; }
                 var data = await res.json();
+                if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+                // Página além do fim (ex.: depois de excluir): volta para a última que existe.
+                if (data.totalPages > 0 && productsPage > data.totalPages) { productsPage = data.totalPages; return loadProducts(); }
                 grid.innerHTML = '';
                 cachedProductsList = data.products || [];
+                if (pager) {
+                    pager.innerHTML = data.totalPages > 1
+                        ? `<span class="text-[11px] text-zinc-500">${data.total} itens</span>
+                           <div class="flex flex-wrap gap-1">${Array.from({ length: data.totalPages }, (_, i) => i + 1).map(n => `
+                               <button onclick="goToProductsPage(${n})" ${n === data.page ? 'aria-current="page"' : ''} class="w-7 h-7 rounded text-[11px] font-bold transition-colors cursor-pointer ${n === data.page ? 'bg-amber-600 text-white' : 'bg-zinc-200 text-zinc-700 hover:bg-zinc-300'}">${n}</button>
+                           `).join('')}</div>`
+                        : (data.total > 0 ? `<span class="text-[11px] text-zinc-500">${data.total} ${data.total === 1 ? 'item' : 'itens'}</span>` : '');
+                }
                 if(cachedProductsList.length > 0) {
                     cachedProductsList.forEach(p => {
                         var isMini = p.type === 'miniatura' || p.price_unpainted != null;
@@ -491,10 +536,16 @@ export function Admin() {
                         `;
                     });
                 } else {
-                    grid.innerHTML = '<div class="col-span-full text-center text-xs text-zinc-400 py-8">Nenhum produto cadastrado nesta categoria.</div>';
+                    grid.innerHTML = (search || category)
+                        ? '<div class="col-span-full text-center text-xs text-zinc-400 py-8">Nenhum produto encontrado com esses filtros.</div>'
+                        : '<div class="col-span-full text-center text-xs text-zinc-400 py-8">Nenhum produto cadastrado nesta categoria.</div>';
                 }
                 loader.classList.add('hidden'); grid.classList.remove('hidden');
-            } catch(e) { console.error(e); }
+            } catch(e) {
+                console.error(e);
+                grid.innerHTML = `<div class="col-span-full text-center text-xs text-red-500 py-8">Erro ao carregar produtos: ${e.message}</div>`;
+                loader.classList.add('hidden'); grid.classList.remove('hidden');
+            }
         }
 
         function openEditProductModal(id) {
@@ -712,10 +763,23 @@ export function Admin() {
 
         async function deleteProduct(id) {
             if(!confirm('Excluir este produto do site?')) return;
-            await fetch(`/api/admin/products?id=${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            try {
+                var res = await fetch(`/api/admin/products?id=${encodeURIComponent(id)}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.status === 401) { logout(); return; }
+                var data = await res.json().catch(() => ({}));
+                if (!res.ok) { alert(`Não foi possível excluir: ${data.error || 'erro ' + res.status}`); return; }
+                if (data.mlListingUrl) {
+                    alert(`Produto excluído do site.\n\nO anúncio no Mercado Livre continua ativo. Encerre por lá:\n${data.mlListingUrl}`);
+                }
+            } catch (e) {
+                alert('Erro de conexão ao excluir o produto.');
+                return;
+            }
+            // Se a página ficou vazia, volta uma.
+            if (cachedProductsList.length === 1 && productsPage > 1) productsPage--;
             loadProducts();
         }
 
@@ -938,6 +1002,8 @@ export function Admin() {
 (window as any).removeEditImage = removeEditImage;
 (window as any).closeEditProductModal = closeEditProductModal;
 (window as any).deleteProduct = deleteProduct;
+(window as any).onProductsFilterChange = onProductsFilterChange;
+(window as any).goToProductsPage = goToProductsPage;
 (window as any).loadFinance = loadFinance;
 (window as any).openEditFinModal = openEditFinModal;
 (window as any).closeEditFinModal = closeEditFinModal;
@@ -1214,11 +1280,24 @@ export function Admin() {
                                     <p class="text-[10px] uppercase font-bold text-zinc-400">Gerenciamento do Catálogo Ativo</p>
                                 </div>
                             </div>
+                            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                                <div class="relative flex-1">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                                    <input id="prod-filter-search" type="search" oninput="onProductsFilterChange(false)" placeholder="Buscar pelo nome..." aria-label="Buscar produto pelo nome" class="w-full pl-8 pr-3 py-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
+                                </div>
+                                <select id="prod-filter-category" onchange="onProductsFilterChange(true)" aria-label="Filtrar por categoria" class="sm:w-48 p-2.5 bg-zinc-50 text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-black focus:bg-white focus:outline-none">
+                                    <option value="">Todas as categorias</option>
+                                    <option value="npcs">NPCs</option>
+                                    <option value="monstros">Monstros</option>
+                                    <option value="cenario">Cenário</option>
+                                </select>
+                            </div>
                             <div id="loading-products" class="text-center py-12 text-zinc-500">
                                 <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-amber-500"></i>
                                 <p class="text-xs font-bold uppercase tracking-wider">Buscando itens no Supabase...</p>
                             </div>
                             <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
+                            <div id="products-pager" class="flex flex-wrap items-center justify-between gap-2 mt-4"></div>
                         </div>
                     </div>
                 </div>
