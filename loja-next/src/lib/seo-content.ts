@@ -18,7 +18,7 @@ const FAQ_PEDIDO: Faq = {
 export const HOME_FAQ: Faq[] = [
   {
     q: 'O que a Saving Throw vende?',
-    a: 'Miniaturas de RPG impressas em resina 3D (com ou sem pintura artística), miniaturas personalizadas do seu personagem, kits de aventura One Shot com história, mapas e miniaturas, e acessórios em MDF com corte a laser, como o escudo do mestre.',
+    a: 'Miniaturas de RPG impressas em resina 3D, prontas para pintar, miniaturas personalizadas do seu personagem, kits de aventura One Shot com história, mapas e miniaturas, e acessórios em MDF com corte a laser, como o escudo do mestre.',
   },
   FAQ_PEDIDO,
   FAQ_ENVIO,
@@ -32,15 +32,15 @@ export const MINIATURAS_INTRO = {
   title: 'Miniaturas de RPG em resina 3D',
   paragraphs: [
     'Nossas miniaturas de RPG são impressas em resina fotopolimerizável de alta tenacidade, em impressoras 3D 8K/12K. O resultado são microdetalhes nítidos e uma peça resistente para o manuseio na mesa de jogo, seja em Dungeons & Dragons, Tormenta, Pathfinder ou no seu sistema favorito.',
-    'Cada miniatura é entregue sem suportes, lavada e curada. Você escolhe a versão sem pintura (cinza, pronta para pintar) ou com pintura artística: primer de aderência, tintas acrílicas para modelismo e verniz fosco que protege contra marcas de dedos.',
+    'Cada miniatura é entregue sem suportes, lavada e curada, em resina cinza pronta para você pintar. A pintura artística fica reservada para peças especiais, como a miniatura personalizada.',
     'Além do bestiário com heróis, monstros e NPCs, fazemos a miniatura personalizada do seu personagem a partir de uma imagem de referência.',
   ],
 };
 
 export const MINIATURAS_FAQ: Faq[] = [
   {
-    q: 'Qual a diferença entre a miniatura sem pintura e com pintura?',
-    a: 'A versão sem pintura chega em resina cinza, pronta para você pintar. A versão com pintura artística recebe primer, tintas acrílicas para modelismo e verniz fosco de proteção, pronta para ir direto para o mapa de combate.',
+    q: 'As miniaturas vêm pintadas?',
+    a: 'Não. As miniaturas do catálogo são vendidas impressas em resina cinza, sem suportes, lavadas e curadas, prontas para você pintar. A pintura artística é oferecida apenas em peças especiais, como a miniatura personalizada do seu personagem.',
   },
   {
     q: 'Qual a qualidade de impressão das miniaturas?',

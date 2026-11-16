@@ -15,7 +15,9 @@ export default function ProductInteractive({ product, images }: { product: any, 
   const [isAnimatingPrice, setIsAnimatingPrice] = useState(false);
 
   const hasTriPrice = product.price_painted_box !== undefined && product.price_painted_box !== null;
-  const hasDualPrice = product.price_unpainted !== undefined && product.price_unpainted !== null && product.price_painted !== undefined && product.price_painted !== null;
+  // Miniaturas do catálogo são só impressão 3D; a pintura fica para peças especiais (a personalizada).
+  const isPrintOnlyMini = product.type === 'miniatura' && product.id !== 'personalizada';
+  const hasDualPrice = !isPrintOnlyMini && product.price_unpainted !== undefined && product.price_unpainted !== null && product.price_painted !== undefined && product.price_painted !== null;
   const isBundle = product.type === 'pacote' || product.type === 'bundle';
   // Mesmo par de preços (price_unpainted / price_painted), rótulos diferentes por tipo de produto.
   const isArsenal = product.type === 'arsenal' || product.type === 'escudo';
@@ -64,17 +66,21 @@ export default function ProductInteractive({ product, images }: { product: any, 
     }
   };
 
-  const currentPrice = isBundle 
+  const currentPrice = isBundle
     ? (product.price || 0)
-    : hasDualPrice 
-        ? (selectedOption === 'unpainted' ? (product.price_unpainted || product.price || 0) : (product.price_painted || 0))
-        : (product.price || product.price_unpainted || 0);
+    : isPrintOnlyMini
+        ? (product.price_unpainted || product.price || 0)
+        : hasDualPrice
+            ? (selectedOption === 'unpainted' ? (product.price_unpainted || product.price || 0) : (product.price_painted || 0))
+            : (product.price || product.price_unpainted || 0);
 
-  const selectedTitle = isBundle 
-    ? 'PACOTE ESPECIAL' 
-    : hasDualPrice 
-        ? (selectedOption === 'unpainted' ? OPTION_LABELS.unpainted[2] : OPTION_LABELS.painted[2])
-        : '';
+  const selectedTitle = isBundle
+    ? 'PACOTE ESPECIAL'
+    : isPrintOnlyMini
+        ? 'Impressão 3D em Resina (sem pintura)'
+        : hasDualPrice
+            ? (selectedOption === 'unpainted' ? OPTION_LABELS.unpainted[2] : OPTION_LABELS.painted[2])
+            : '';
 
   const getWhatsAppLink = () => {
     let message = `Olá Saving Throw! 🎲\n\nTenho interesse em encomendar o produto:\n*Item:* ${product.name}\n`;

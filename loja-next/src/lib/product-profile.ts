@@ -195,8 +195,8 @@ export function getProductProfile(p: any) {
           },
           {
               icon: 'fa-brush',
-              title: 'Pintura e Finalização',
-              text: 'Quando encomendada com pintura, cada peça recebe primer de aderência, tintas acrílicas para modelismo e camada de verniz fosco ultra-resistente para proteção contra marcas de dedos.'
+              title: 'Pronta para Pintar',
+              text: 'Entregue em resina cinza, sem suportes, lavada e curada. A superfície lisa aceita primer e tintas acrílicas de modelismo, para você pintar do seu jeito.'
           },
           {
               icon: 'fa-truck-fast',

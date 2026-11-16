@@ -9,7 +9,7 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://savingthro
 export const SITE_NAME = 'Saving Throw';
 export const SITE_TAGLINE = 'Miniaturas de RPG, Arsenal e Kits de Aventura';
 export const SITE_DESCRIPTION =
-  'Boutique de RPG de mesa: miniaturas em resina 3D com pintura artística, escudo do mestre e acessórios em MDF, kits de aventura One Shot e o Sistema Saving Throw. Envio para todo o Brasil.';
+  'Boutique de RPG de mesa: miniaturas impressas em resina 3D, escudo do mestre e acessórios em MDF, kits de aventura One Shot e o Sistema Saving Throw. Envio para todo o Brasil.';
 /** Card de compartilhamento padrão (1200x630, gerado por scripts/optimize-images.mjs). */
 export const DEFAULT_OG_IMAGE = '/assets/og/banner.jpg';
 export const OG_SIZE = { width: 1200, height: 630 };

@@ -5,7 +5,7 @@ import { SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
  * Feed de produtos para o Google Merchant Center (listagens gratuitas no Google Shopping):
  *   https://savingthrow.com.br/feed.xml
  * Formato RSS 2.0 com o namespace g: (https://support.google.com/merchants/answer/7052112).
- * O preço é o menor exibido na página do produto (versão sem pintura), como o Google exige.
+ * O preço é o menor exibido na página do produto (impressão sem pintura), como o Google exige.
  * Frete e prazo são configurados na conta do Merchant Center, não aqui.
  */
 
@@ -33,7 +33,7 @@ function title(p: Product): string {
 function description(p: Product): string {
   const base = String(p.description || '').trim();
   if (p.type === 'miniatura') {
-    return `${base ? `${base} ` : ''}Disponível sem pintura (pronta para pintar) ou com pintura artística feita à mão. Produção sob encomenda pela ${SITE_NAME}, com envio para todo o Brasil.`;
+    return `${base ? `${base} ` : ''}Impressa em resina 3D de alta definição, entregue sem pintura e pronta para pintar. Produção sob encomenda pela ${SITE_NAME}, com envio para todo o Brasil.`;
   }
   return base || `${p.name} — ${SITE_NAME}. Produção sob encomenda, envio para todo o Brasil.`;
 }

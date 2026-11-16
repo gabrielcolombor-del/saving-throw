@@ -17,10 +17,10 @@ export async function generateMetadata(props: Props) {
     {
       title: 'Miniaturas de RPG em Resina',
       description:
-        'Miniaturas de RPG impressas em resina 3D 8K/12K, com ou sem pintura artística: heróis, monstros, NPCs e miniaturas personalizadas do seu personagem. Envio para todo o Brasil.',
+        'Miniaturas de RPG impressas em resina 3D 8K/12K, prontas para pintar: heróis, monstros, NPCs e miniaturas personalizadas do seu personagem. Envio para todo o Brasil.',
       path: '/miniaturas',
       image: '/assets/imagens/minis.webp',
-      imageAlt: 'Miniaturas de RPG em resina pintadas',
+      imageAlt: 'Miniaturas de RPG impressas em resina 3D',
     },
     await props.searchParams,
   );
@@ -55,7 +55,7 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
           <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
               <h1 className="text-4xl md:text-6xl font-title uppercase tracking-tight mb-6">Miniaturas & Bestiário</h1>
               <p className="text-[#EBE3CB]/80 text-lg mb-4 max-w-2xl mx-auto leading-relaxed">
-                  Peças de Resina Premium, pintadas artisticamente à mão. Do menor goblin ao dragão mais imponente.
+                  Peças impressas em Resina Premium 3D de alta definição. Do menor goblin ao dragão mais imponente.
               </p>
           </div>
       </section>
@@ -68,7 +68,7 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                       <span className="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Acervo Completo</span>
                       <h2 className="font-title text-4xl mb-4 text-zinc-950">Catálogo de Impressões 3D</h2>
                       <p className="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-                          Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
+                          Explore nosso acervo completo de modelos, impressos em resina 3D e entregues prontos para pintar.
                       </p>
                       <p className="text-zinc-700 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mt-3">
                           Sentiu falta de alguma mini? Entre em contato comigo no{' '}
@@ -117,7 +117,7 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                   <div className="max-w-3xl mx-auto text-center mb-10">
                       <span className="text-amber-600 text-xs font-black tracking-widest uppercase mb-2 block">Totalmente sob Medida</span>
                       <h2 className="font-title text-4xl mb-4 text-zinc-950">Crie seu Kit Personalizado</h2>
-                      <h3 className="text-lg font-semibold text-zinc-700 mb-4">Kits sob demanda com e sem pintura</h3>
+                      <h3 className="text-lg font-semibold text-zinc-700 mb-4">Kits de miniaturas impressos sob demanda</h3>
                       <p className="text-zinc-600 text-sm md:text-base leading-relaxed">
                           Tem uma ideia de aventura pronta, uma lista de encontros da sua campanha ou já possui os arquivos 3D das miniaturas? Traga sua ideia ou arquivos prontos para nós! Nós cuidamos da fabricação sob demanda para você ter o seu kit físico completo pronto para o combate.
                       </p>
@@ -131,8 +131,8 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                       </div>
                       <div className="bg-white p-6 rounded-lg border border-zinc-100 shadow-xs">
                           <div className="text-3xl mb-4">🎨</div>
-                          <h4 className="font-bold text-lg mb-2">2. Com ou Sem Pintura</h4>
-                          <p className="text-xs leading-relaxed text-zinc-500">Fabricamos as miniaturas em Resina Premium na cor cinza (prontas para pintar) ou aplicamos nossa pintura artística manual profissional.</p>
+                          <h4 className="font-bold text-lg mb-2">2. Impressão em Resina</h4>
+                          <p className="text-xs leading-relaxed text-zinc-500">Imprimimos as miniaturas em Resina Premium 3D de alta definição, na cor cinza, sem suportes e prontas para você pintar.</p>
                       </div>
                       <div className="bg-white p-6 rounded-lg border border-zinc-100 shadow-xs">
                           <div className="text-3xl mb-4">📦</div>
