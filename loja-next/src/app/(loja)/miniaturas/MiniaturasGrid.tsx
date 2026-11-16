@@ -72,13 +72,9 @@ export function MiniaturasGrid({
                       </>
                     ) : (
                       <>
-                        <div className="flex justify-between items-baseline mb-1">
-                          <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Sem Pintura</span>
+                        <div className="flex justify-between items-baseline mb-3">
+                          <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Impressão 3D</span>
                           <span className="text-base font-black text-black">R$ {brl(p.price_unpainted || p.price)}</span>
-                        </div>
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="text-[10px] uppercase font-bold text-amber-700">Com Pintura</span>
-                          <span className="text-xs font-bold text-amber-700">{p.price_painted ? `R$ ${brl(p.price_painted)}` : 'Sob consulta'}</span>
                         </div>
                       </>
                     )}

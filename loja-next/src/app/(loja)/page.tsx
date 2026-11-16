@@ -34,7 +34,7 @@ export default function Home() {
             Leve a imersão da sua mesa para o próximo nível
           </h1>
           <p className="text-[#EBE3CB] text-base md:text-lg max-w-2xl mb-10 font-medium drop-shadow-md font-sans">
-            Miniaturas de resina com pintura artística profissional e artefatos de corte a laser esculpidos em alto relevo. Tudo pronto para ir direto para o seu mapa de combate.
+            Miniaturas impressas em resina 3D de alta definição e artefatos de corte a laser esculpidos em alto relevo. Tudo pronto para ir direto para o seu mapa de combate.
           </p>
           <div className="flex flex-wrap justify-center gap-4 font-sans">
             <a href="#loja" className="bg-[#EBE3CB] text-black font-bold uppercase text-sm tracking-wider px-8 py-4 rounded hover:bg-white transition-all shadow-lg hover:scale-105">
@@ -109,12 +109,12 @@ export default function Home() {
             <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div>
                 <div className="w-full h-56 bg-zinc-300 rounded-lg flex items-center justify-center text-zinc-500 mb-6 font-bold uppercase text-xs tracking-wider border border-zinc-400 overflow-hidden group">
-                  <img loading="lazy" decoding="async" src="/assets/imagens/minis.webp" alt="Miniaturas de RPG em resina pintadas à mão" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src="/assets/imagens/minis.webp" alt="Miniaturas de RPG impressas em resina 3D" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 block">Bestiário & Heróis Avulsos</span>
                 <h3 className="text-2xl font-black uppercase tracking-tight mb-2 font-title">Miniaturas de Resina</h3>
                 <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-                  Modelos impressos em resina de altíssima definição. Peças entregues sem suportes, totalmente curadas e finalizadas com pintura técnica e contrastes marcantes.
+                  Modelos impressos em resina de altíssima definição. Peças entregues sem suportes, lavadas e totalmente curadas, prontas para você pintar.
                 </p>
               </div>
               <div className="border-t border-zinc-200 pt-4 mt-4">

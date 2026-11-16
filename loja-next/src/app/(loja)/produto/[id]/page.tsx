@@ -31,7 +31,7 @@ function productDescription(product: any): string {
         const height = desc.match(/Altura aproximada:\s*(\d+\s*mm)/i)?.[1];
         const kind = /monstro/i.test(product.category || '') ? 'monstro' : 'herói/NPC';
         return truncate(
-            `Miniatura de RPG ${product.name} (${kind}) impressa em resina 3D de alta definição, com ou sem pintura artística${height ? `. Altura aproximada: ${height}` : ''}. Envio para todo o Brasil.`,
+            `Miniatura de RPG ${product.name} (${kind}) impressa em resina 3D de alta definição, pronta para pintar${height ? `. Altura aproximada: ${height}` : ''}. Envio para todo o Brasil.`,
         );
     }
     return truncate(`${product.name} — peça do catálogo ${SITE_NAME}, produzida sob encomenda com acabamento premium. Envio para todo o Brasil.`);
@@ -60,7 +60,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 function productJsonLd(product: any, images: string[], breadcrumb: { name: string; href: string }) {
     const url = `${SITE_URL}/produto/${encodeURIComponent(product.id)}`;
     // Preços distintos: price costuma repetir price_unpainted (evita offerCount inflado).
-    const prices = [...new Set([product.price, product.price_unpainted, product.price_painted, product.price_painted_box]
+    // Miniaturas do catálogo não oferecem pintura: o preço pintado não entra na oferta.
+    const printOnly = product.type === 'miniatura' && product.id !== 'personalizada';
+    const prices = [...new Set((printOnly ? [product.price, product.price_unpainted] : [product.price, product.price_unpainted, product.price_painted, product.price_painted_box])
         .map(Number)
         .filter((n) => Number.isFinite(n) && n > 0))];
     const availability = 'https://schema.org/MadeToOrder';
