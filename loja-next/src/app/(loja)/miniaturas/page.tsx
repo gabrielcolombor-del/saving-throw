@@ -70,6 +70,18 @@ export default async function MiniaturasPage(props: { searchParams?: Promise<{ [
                       <p className="text-zinc-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
                           Explore nosso acervo completo de modelos. Você pode encomendá-los físicos, com ou sem pintura.
                       </p>
+                      <p className="text-zinc-700 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mt-3">
+                          Sentiu falta de alguma mini? Entre em contato comigo no{' '}
+                          <a
+                              href="https://wa.me/5527997947604?text=Ol%C3%A1!%20N%C3%A3o%20encontrei%20uma%20miniatura%20no%20cat%C3%A1logo%20e%20gostaria%20de%20encomendar."
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-bold text-emerald-700 hover:text-emerald-800 underline underline-offset-2"
+                          >
+                              <i className="fa-brands fa-whatsapp mr-1"></i>WhatsApp
+                          </a>{' '}
+                          que eu produzo pra você! <span className="text-zinc-500">(Minis clássicas não têm custo de produção.)</span>
+                      </p>
                   </div>
 
                   <MiniaturasFilters />
