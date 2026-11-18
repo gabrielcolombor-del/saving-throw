@@ -26,6 +26,30 @@ export type ProductList = {
 /** Tag usada para invalidar o cache do catálogo quando o admin altera produtos. */
 export const PRODUCTS_TAG = 'products';
 
+export type CatalogEntry = { id: string; name: string; type: string; price: number | null; description: string };
+
+/**
+ * Todas as peças vendáveis (banco + produtos fixos), só com o necessário para escolher um item
+ * num pedido: é a lista que o registro de vendas aceita como nome de item.
+ */
+export async function listCatalogEntries(): Promise<CatalogEntry[]> {
+  const fixed = Object.values(SPECIAL_PRODUCTS).map((p) => ({
+    id: String(p.id),
+    name: String(p.name),
+    type: String(p.type),
+    price: Number(p.price_unpainted ?? p.price) || null,
+    description: String(p.description || ''),
+  }));
+  if (!pool) return fixed;
+  const { rows } = await pool.query(
+    `SELECT id, name, type, COALESCE(price_unpainted, price) AS price, COALESCE(description, '') AS description
+     FROM st_products ORDER BY name`,
+  );
+  const fromDb = rows.map((r: Product) => ({ ...r, price: r.price == null ? null : Number(r.price) })) as CatalogEntry[];
+  const names = new Set(fromDb.map((r) => r.name));
+  return [...fromDb, ...fixed.filter((f) => !names.has(f.name))];
+}
+
 /** Produtos fixos que não vivem no banco (mesmos do api/products.js legado). */
 export const SPECIAL_PRODUCTS: Record<string, Product> = {
   personalizada: {

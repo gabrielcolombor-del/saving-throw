@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { computeOrder, sanitizeOrder } from '@/lib/order-profit';
+import { listCatalogEntries } from '@/lib/products';
 
 function formatNow() {
   // Mantém o formato do legado (horário de Brasília, "YYYY-MM-DD HH:mm:ss")
@@ -132,6 +133,12 @@ export async function POST(request: Request) {
         if (items.length === 0) {
           return NextResponse.json({ error: 'Adicione pelo menos um item ao pedido.' }, { status: 400 });
         }
+        // Cada item precisa ser uma peça do site, com o nome exato.
+        const catalogNames = new Set((await listCatalogEntries()).map((c) => c.name));
+        const unknown = items.filter((i) => !catalogNames.has(i.nome)).map((i) => i.nome || '(sem nome)');
+        if (unknown.length > 0) {
+          return NextResponse.json({ error: `Itens fora do catálogo do site: ${unknown.join(', ')}.` }, { status: 400 });
+        }
         const result = computeOrder(items, costs);
         val = result.receita;
         custoTotal = result.custoTotal;
@@ -162,8 +169,32 @@ export async function POST(request: Request) {
           `INSERT INTO st_sales (id, data, cliente, produto, valor_final) VALUES ($1, $2, $3, $4, $5)`,
           [id, data, clienteNome, produtoNome, val],
         );
+
+        // Cliente da venda entra automaticamente em Clientes (sem duplicar pelo nome).
+        const telefone = typeof body.telefone === 'string' ? body.telefone.trim().slice(0, 40) : '';
+        const { rows: existing } = await client.query(
+          `SELECT id, telefone FROM st_customers WHERE lower(trim(nome)) = lower(trim($1)) LIMIT 1`,
+          [clienteNome],
+        );
+        let clienteNovo = false;
+        if (existing.length === 0) {
+          await client.query(
+            `INSERT INTO st_customers (id, nome, telefone, endereco, email, cpf, observacoes)
+             VALUES ($1, $2, $3, '', '', '', $4)`,
+            [
+              `cli_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+              String(clienteNome).trim(),
+              telefone,
+              `Cadastrado automaticamente pela venda de ${data}.`,
+            ],
+          );
+          clienteNovo = true;
+        } else if (telefone && !existing[0].telefone) {
+          await client.query(`UPDATE st_customers SET telefone = $1 WHERE id = $2`, [telefone, existing[0].id]);
+        }
+
         await client.query('COMMIT');
-        return NextResponse.json(rows[0], { status: 201 });
+        return NextResponse.json({ ...rows[0], clienteNovo }, { status: 201 });
       } catch (e) {
         await client.query('ROLLBACK');
         throw e;

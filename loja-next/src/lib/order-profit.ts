@@ -46,7 +46,8 @@ export const DEFAULT_COSTS: Omit<OrderCosts, 'impressoes' | 'pecasNasImpressoes'
   resinaKg: 150,
   embalagem: 3,
   energiaPorImpressao: 1,
-  trabalhoPorImpressao: 4,
+  // Impressão e acabamento somados ficam no custo por peça; o campo por impressão não é mais usado no painel.
+  trabalhoPorImpressao: 0,
   trabalhoPorPeca: 4,
   frete: 0,
   taxaPct: 0,
