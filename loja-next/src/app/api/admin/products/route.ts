@@ -3,7 +3,7 @@ import { revalidateTag } from 'next/cache';
 import { pool, ensureProductsTable } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
 import { publishProductToML, type MLImage } from '@/lib/mercadolivre';
-import { PRODUCTS_TAG, listProductsUncached } from '@/lib/products';
+import { PRODUCTS_TAG, listCatalogEntries, listProductsUncached } from '@/lib/products';
 import { ensureProductBucket, storageConfigured, uploadProductImage } from '@/lib/storage';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB por imagem (igual ao legado)
@@ -117,6 +117,10 @@ export async function GET(request: Request) {
 
   const sp = new URL(request.url).searchParams;
   try {
+    // Lista completa e enxuta para o seletor de itens do registro de vendas.
+    if (sp.get('catalog') === '1') {
+      return NextResponse.json({ catalog: await listCatalogEntries() }, { headers: { 'Cache-Control': 'no-store' } });
+    }
     const result = await listProductsUncached({
       type: sp.get('type'),
       category: sp.get('category') || null,
