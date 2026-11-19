@@ -52,6 +52,27 @@ export async function getMLToken(): Promise<string | null> {
   }
 }
 
+/**
+ * Abaixo deste preço o anúncio não dá lucro no Mercado Livre (comissão + frete): a sincronização
+ * pausa esses anúncios e não publica peças novas abaixo dele.
+ */
+export const ML_MIN_PRICE = 49.9;
+
+/** Pausa ou reativa um anúncio (pausar é reversível; encerrar no ML seria definitivo). */
+export async function setMLListingStatus(externalId: string, status: 'paused' | 'active') {
+  const token = await getMLToken();
+  if (!token) throw new Error('Mercado Livre não está conectado ou token expirou.');
+  const res = await fetch(`https://api.mercadolibre.com/items/${encodeURIComponent(externalId)}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data?.message || `HTTP ${res.status}`);
+  }
+}
+
 /** Preço anunciado no ML: miniatura vai pelo preço sem pintura; o resto, pelo preço cheio. */
 export function mlPriceFor(productData: MLProductData): number | null {
   const priceUnpainted = productData.priceUnpainted ?? productData.price_unpainted;

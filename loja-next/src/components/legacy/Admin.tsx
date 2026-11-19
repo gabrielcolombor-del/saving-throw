@@ -1129,7 +1129,7 @@ export function Admin() {
         async function syncMLCatalog() {
             // O servidor trabalha em etapas de até 60s; repete até a lista inteira ter sido conferida.
             const MAX_ROUNDS = 30;
-            let published = 0, pricesChecked = 0, pricesChanged = 0, priceOffset = 0, finished = false, fatal = '';
+            let published = 0, paused = 0, activated = 0, pricesChecked = 0, pricesChanged = 0, priceOffset = 0, finished = false, fatal = '';
             const skipIds: string[] = [];
             const errors: string[] = [];
             const priceErrors: string[] = [];
@@ -1137,7 +1137,7 @@ export function Admin() {
                 const btn = document.getElementById('btn-sync-ml');
                 const token = localStorage.getItem('adminToken');
                 for (let round = 1; round <= MAX_ROUNDS && !finished; round++) {
-                    if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando (${published} novos, ${pricesChecked} preços)...`;
+                    if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando (${paused} pausados, ${published} novos, ${pricesChecked} preços)...`;
                     const res = await fetch('/api/admin/sync-ml', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -1146,6 +1146,8 @@ export function Admin() {
                     const data = await res.json();
                     if (!res.ok) { fatal = data.error || `Erro ${res.status}`; break; }
                     published += data.published;
+                    paused += data.paused || 0;
+                    activated += data.activated || 0;
                     pricesChecked += data.pricesChecked;
                     pricesChanged += data.pricesChanged;
                     priceOffset = data.priceOffset;
@@ -1157,7 +1159,7 @@ export function Admin() {
             } catch (e) {
                 fatal = 'A conexão caiu no meio da sincronização.';
             } finally {
-                let summary = `Novos anúncios: ${published}. Falhas: ${skipIds.length}. Preços verificados: ${pricesChecked} (${pricesChanged} alterados).`;
+                let summary = `Novos anúncios: ${published}. Pausados (abaixo de R$ 49,90): ${paused}.${activated ? ` Reativados: ${activated}.` : ''} Falhas: ${skipIds.length}. Preços verificados: ${pricesChecked} (${pricesChanged} alterados).`;
                 if (errors.length) summary += `\n\nFalhas ao publicar:\n${errors.join('\n')}`;
                 if (priceErrors.length) summary += `\n\nFalhas de preço:\n${priceErrors.join('\n')}`;
                 if (fatal) summary = `Sincronização interrompida: ${fatal}\nClique de novo para continuar.\n\n${summary}`;
