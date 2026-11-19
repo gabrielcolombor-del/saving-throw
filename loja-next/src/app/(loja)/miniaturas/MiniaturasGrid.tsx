@@ -50,7 +50,9 @@ export function MiniaturasGrid({
             return (
               <Link href={`/produto/${p.id}`} key={p.id} className="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full cursor-pointer hover:-translate-y-1">
                 <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100" style={{ aspectRatio: '4/5' }}>
-                  <img loading="lazy" decoding="async" src={firstImg} alt={`Miniatura de RPG ${p.name}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {/* Foto inteira (sem cortar a miniatura); as sobras levam a própria foto desfocada. */}
+                  <img loading="lazy" decoding="async" src={firstImg} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70" />
+                  <img loading="lazy" decoding="async" src={firstImg} alt={`Miniatura de RPG ${p.name}`} className="relative w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                   <span className="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-1 rounded shadow-sm">{p.category}</span>
                 </div>
                 <div className="p-4 flex flex-col flex-1 justify-between">

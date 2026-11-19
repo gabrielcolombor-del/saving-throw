@@ -123,7 +123,9 @@ export default function ProductInteractive({ product, images }: { product: any, 
               )}
 
               {/* IMAGEM PRINCIPAL */}
-              <img fetchPriority="high" src={images[currentSlide]} alt={`${product.name} - ${currentSlide + 1}`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+              {/* Foto inteira (sem cortar a miniatura); as sobras levam a própria foto desfocada. */}
+              <img src={images[currentSlide]} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-70" />
+              <img fetchPriority="high" src={images[currentSlide]} alt={`${product.name} - ${currentSlide + 1}`} className="absolute inset-0 w-full h-full object-contain transition-opacity duration-300" />
               
               {/* Bolinhas */}
               {images.length > 1 && (
