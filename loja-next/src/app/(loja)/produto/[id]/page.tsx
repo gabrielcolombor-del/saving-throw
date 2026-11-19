@@ -5,6 +5,7 @@ import { findDuplicateProductId } from '@/lib/products';
 import { getProductProfile } from '@/lib/product-profile';
 import { categoryByDb } from '@/lib/categories';
 import ProductInteractive from './ProductInteractive';
+import { EdgeFill } from '@/components/EdgeFill';
 import { notFound } from 'next/navigation';
 import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, pageMetadata, truncate } from '@/lib/site';
 
@@ -254,7 +255,7 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                                 <Link href={`/produto/${item.id}`} key={item.id} className="bg-white border border-zinc-200 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
                                     <div>
                                         <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-                                            <img loading="lazy" decoding="async" src={firstImg} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70" />
+                                            <EdgeFill src={firstImg} />
                                             <img loading="lazy" decoding="async" src={firstImg} alt={item.name} className="relative w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                                             <span className="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[9px] font-bold uppercase px-2 py-0.5 rounded">{item.category || 'Destaque'}</span>
                                         </div>

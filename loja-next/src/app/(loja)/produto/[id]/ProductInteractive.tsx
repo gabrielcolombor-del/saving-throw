@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { EdgeFill } from '@/components/EdgeFill';
 
 function formatPrice(val: any) {
   return Number(val || 0).toFixed(2).replace('.', ',');
@@ -123,8 +124,8 @@ export default function ProductInteractive({ product, images }: { product: any, 
               )}
 
               {/* IMAGEM PRINCIPAL */}
-              {/* Foto inteira (sem cortar a miniatura); as sobras levam a própria foto desfocada. */}
-              <img src={images[currentSlide]} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-70" />
+              {/* Foto inteira (sem cortar a miniatura); as sobras repetem a borda da própria foto. */}
+              <EdgeFill src={images[currentSlide]} />
               <img fetchPriority="high" src={images[currentSlide]} alt={`${product.name} - ${currentSlide + 1}`} className="absolute inset-0 w-full h-full object-contain transition-opacity duration-300" />
               
               {/* Bolinhas */}
