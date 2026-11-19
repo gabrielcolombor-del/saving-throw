@@ -542,10 +542,12 @@ export function Admin() {
 
         
         var allMiniaturesForBundle = [];
+        // Busca sem acentos/hífen: "anao" acha "Anão".
+        var foldText = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
         window.filterBundleMiniatures = function(val) {
             var items = document.querySelectorAll('#bundle-miniatures-list label');
             items.forEach(el => {
-                if(el.textContent.toLowerCase().includes(val.toLowerCase())) {
+                if(foldText(el.textContent).includes(foldText(val))) {
                     el.style.display = 'flex';
                 } else {
                     el.style.display = 'none';
@@ -590,7 +592,7 @@ export function Admin() {
         window.filterEditBundleMiniatures = function(val) {
             var items = document.querySelectorAll('#edit-bundle-miniatures-list label');
             items.forEach(el => {
-                if(el.textContent.toLowerCase().includes(val.toLowerCase())) {
+                if(foldText(el.textContent).includes(foldText(val))) {
                     el.style.display = 'flex';
                 } else {
                     el.style.display = 'none';

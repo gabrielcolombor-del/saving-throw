@@ -165,6 +165,23 @@ export async function getProductByIdUncached(id: string): Promise<Product | null
   return product;
 }
 
+const FOLD_FROM = 'áàâãäåéèêëíìîïóòôõöúùûüçñ-';
+const FOLD_TO = 'aaaaaaeeeeiiiiooooouuuucn ';
+
+/** Texto da busca sem acentos, cedilha e hífen, em minúsculas. */
+export function foldSearch(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Mesma normalização do foldSearch, do lado do banco (sem depender da extensão unaccent). */
+const foldSql = (column: string) => `translate(lower(COALESCE(${column}, '')), '${FOLD_FROM}', '${FOLD_TO}')`;
+
 export async function listProductsUncached(params: ProductListParams): Promise<ProductList> {
   const page = Math.max(1, Number(params.page) || 1);
   const limit = Math.min(100, Math.max(1, Number(params.limit) || 8));
@@ -195,11 +212,13 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
   }
 
   if (search) {
-    values.push(`%${search}%`);
+    // Busca sem diferenciar acentos, cedilha e hífen: "anao" acha "Anão", "homem rato" acha "Homem-Rato".
+    values.push(`%${foldSearch(search)}%`);
+    const p = `$${values.length}`;
     whereClauses.push(
       params.searchNameOnly
-        ? `name ILIKE $${values.length}`
-        : `(name ILIKE $${values.length} OR description ILIKE $${values.length})`,
+        ? `${foldSql('name')} LIKE ${p}`
+        : `(${foldSql('name')} LIKE ${p} OR ${foldSql('description')} LIKE ${p})`,
     );
   }
 
