@@ -9,6 +9,8 @@ import {
   publishProductToML,
   setMLListingStatus,
   updateMLPrice,
+  mlTitleFor,
+  addMLFaqPicture,
   type MLImage,
 } from '@/lib/mercadolivre';
 import { SITE_URL } from '@/lib/site';
@@ -52,7 +54,7 @@ export async function POST(request: Request) {
 
     // 0. Anúncios abaixo do preço mínimo são pausados; os que voltaram a ficar acima dele são reativados.
     const listingsQuery = `
-      SELECT p.*, pi.external_id, pi.sync_status
+      SELECT p.*, pi.external_id, pi.sync_status, pi.faq_image
       FROM st_products p
       JOIN st_product_integrations pi ON p.id = pi.product_id AND pi.platform = 'mercadolivre'
       WHERE pi.external_id IS NOT NULL
@@ -150,11 +152,11 @@ export async function POST(request: Request) {
       try {
         const ml = await publishProductToML(product, imageFiles);
         await pool.query(
-          `INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync)
-           VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP)
+          `INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync, faq_image)
+           VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP, true)
            ON CONFLICT (product_id, platform)
            DO UPDATE SET external_id = EXCLUDED.external_id, external_url = EXCLUDED.external_url,
-                         sync_status = EXCLUDED.sync_status, last_sync = CURRENT_TIMESTAMP`,
+                         sync_status = EXCLUDED.sync_status, last_sync = CURRENT_TIMESTAMP, faq_image = true`,
           [product.id, ml.id, ml.permalink],
         );
         successCount++;
@@ -176,6 +178,8 @@ export async function POST(request: Request) {
       : [];
     let pricesChanged = 0;
     let pricesChecked = 0;
+    let titlesChanged = 0;
+    let faqAdded = 0;
     const priceErrors: string[] = [];
     let nextPriceOffset = priceOffset;
     while (queuesDone && nextPriceOffset < synced.length && timeLeft(TOTAL_BUDGET_MS)) {
@@ -183,9 +187,23 @@ export async function POST(request: Request) {
       const price = mlPriceFor(product);
       if (price === null) continue;
       try {
-        const r = await updateMLPrice(product.external_id, price);
+        const r = await updateMLPrice(product.external_id, price, mlTitleFor(product));
         pricesChecked++;
         if (r.changed) pricesChanged++;
+        if (r.titleChanged) titlesChanged++;
+        if (r.titleError) priceErrors.push(`${product.name} (título): ${r.titleError}`);
+        if (!product.faq_image) {
+          try {
+            await addMLFaqPicture(product.external_id);
+            await pool.query(
+              `UPDATE st_product_integrations SET faq_image = true WHERE product_id = $1 AND platform = 'mercadolivre'`,
+              [product.id],
+            );
+            faqAdded++;
+          } catch (e) {
+            priceErrors.push(`${product.name} (imagem FAQ): ${(e as Error).message}`);
+          }
+        }
         await pool.query(
           `UPDATE st_product_integrations SET sync_status = 'synced', last_sync = CURRENT_TIMESTAMP
             WHERE product_id = $1 AND platform = 'mercadolivre'`,
@@ -206,6 +224,8 @@ export async function POST(request: Request) {
       errors,
       pricesChecked,
       pricesChanged,
+      titlesChanged,
+      faqAdded,
       priceErrors,
       priceOffset: nextPriceOffset,
       priceTotal: synced.length,
