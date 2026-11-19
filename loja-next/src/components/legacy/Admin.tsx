@@ -1133,7 +1133,7 @@ export function Admin() {
         async function syncMLCatalog() {
             // O servidor trabalha em etapas de até 60s; repete até a lista inteira ter sido conferida.
             const MAX_ROUNDS = 30;
-            let published = 0, paused = 0, activated = 0, pricesChecked = 0, pricesChanged = 0, priceOffset = 0, finished = false, fatal = '';
+            let published = 0, paused = 0, activated = 0, pricesChecked = 0, pricesChanged = 0, titlesChanged = 0, faqAdded = 0, priceOffset = 0, finished = false, fatal = '';
             const skipIds: string[] = [];
             const errors: string[] = [];
             const priceErrors: string[] = [];
@@ -1154,6 +1154,8 @@ export function Admin() {
                     activated += data.activated || 0;
                     pricesChecked += data.pricesChecked;
                     pricesChanged += data.pricesChanged;
+                    titlesChanged += data.titlesChanged || 0;
+                    faqAdded += data.faqAdded || 0;
                     priceOffset = data.priceOffset;
                     skipIds.push(...data.failedIds);
                     errors.push(...data.errors);
@@ -1163,7 +1165,7 @@ export function Admin() {
             } catch (e) {
                 fatal = 'A conexão caiu no meio da sincronização.';
             } finally {
-                let summary = `Novos anúncios: ${published}. Pausados (abaixo de R$ 49,90): ${paused}.${activated ? ` Reativados: ${activated}.` : ''} Falhas: ${skipIds.length}. Preços verificados: ${pricesChecked} (${pricesChanged} alterados).`;
+                let summary = `Novos anúncios: ${published}. Pausados (abaixo de R$ 49,90): ${paused}.${activated ? ` Reativados: ${activated}.` : ''} Falhas: ${skipIds.length}. Preços verificados: ${pricesChecked} (${pricesChanged} alterados).${titlesChanged ? ` Títulos sem "D&D": ${titlesChanged}.` : ''}${faqAdded ? ` Imagem de FAQ adicionada: ${faqAdded}.` : ''}`;
                 if (errors.length) summary += `\n\nFalhas ao publicar:\n${errors.join('\n')}`;
                 if (priceErrors.length) summary += `\n\nFalhas de preço:\n${priceErrors.join('\n')}`;
                 if (fatal) summary = `Sincronização interrompida: ${fatal}\nClique de novo para continuar.\n\n${summary}`;

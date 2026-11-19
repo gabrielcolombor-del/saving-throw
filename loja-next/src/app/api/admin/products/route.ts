@@ -246,11 +246,11 @@ export async function POST(request: Request) {
             images.files,
           );
           await pool!.query(
-            `INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync)
-             VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP)
+            `INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync, faq_image)
+             VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP, true)
              ON CONFLICT (product_id, platform)
              DO UPDATE SET external_id = EXCLUDED.external_id, external_url = EXCLUDED.external_url,
-                           sync_status = EXCLUDED.sync_status, last_sync = CURRENT_TIMESTAMP`,
+                           sync_status = EXCLUDED.sync_status, last_sync = CURRENT_TIMESTAMP, faq_image = true`,
             [created.id, ml.id, ml.permalink],
           );
           console.log('Produto enviado ao ML com sucesso:', ml.id);
