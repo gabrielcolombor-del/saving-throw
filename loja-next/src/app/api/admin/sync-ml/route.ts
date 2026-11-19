@@ -65,12 +65,21 @@ export async function POST(request: Request) {
       return cheap ? l.sync_status !== 'paused' : l.sync_status === 'paused';
     };
     const { rows: allListings } = await pool.query(listingsQuery);
-    const statusQueue = allListings.filter(needsStatusChange);
+    // Anúncios de produtos excluídos do site continuavam ativos no ML: também são pausados.
+    const { rows: orphans } = await pool.query(
+      `SELECT pi.product_id AS id, pi.product_id AS name, pi.external_id, pi.sync_status, true AS orphan
+       FROM st_product_integrations pi
+       LEFT JOIN st_products p ON p.id = pi.product_id
+       WHERE pi.platform = 'mercadolivre' AND pi.external_id IS NOT NULL AND p.id IS NULL
+         AND COALESCE(pi.sync_status, '') <> 'paused' AND NOT (pi.product_id = ANY($1::text[]))`,
+      [skipIds],
+    );
+    const statusQueue = [...allListings.filter(needsStatusChange), ...orphans];
     let paused = 0;
     let activated = 0;
     for (const l of statusQueue) {
       if (!timeLeft(PUBLISH_BUDGET_MS)) break;
-      const target = l.sync_status === 'paused' ? 'active' : 'paused';
+      const target = l.orphan || l.sync_status !== 'paused' ? 'paused' : 'active';
       try {
         await setMLListingStatus(l.external_id, target);
         await pool.query(

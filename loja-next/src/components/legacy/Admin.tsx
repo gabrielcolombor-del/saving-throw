@@ -950,8 +950,10 @@ export function Admin() {
                 if (res.status === 401) { logout(); return; }
                 var data = await res.json().catch(() => ({}));
                 if (!res.ok) { alert(`Não foi possível excluir: ${data.error || 'erro ' + res.status}`); return; }
-                if (data.mlListingUrl) {
-                    alert(`Produto excluído do site.\n\nO anúncio no Mercado Livre continua ativo. Encerre por lá:\n${data.mlListingUrl}`);
+                if (data.mlListingUrl && data.mlPaused) {
+                    alert('Produto excluído do site. O anúncio no Mercado Livre foi pausado.');
+                } else if (data.mlListingUrl) {
+                    alert(`Produto excluído do site.\n\nNão foi possível pausar o anúncio no Mercado Livre. Pause por lá ou clique em "Sincronizar Catálogo ML":\n${data.mlListingUrl}`);
                 }
             } catch (e) {
                 alert('Erro de conexão ao excluir o produto.');

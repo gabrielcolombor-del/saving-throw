@@ -2,7 +2,7 @@ import { NextResponse, after } from 'next/server';
 import { revalidateTag } from 'next/cache';
 import { pool, ensureProductsTable } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
-import { ML_MIN_PRICE, mlPriceFor, publishProductToML, type MLImage } from '@/lib/mercadolivre';
+import { ML_MIN_PRICE, mlPriceFor, publishProductToML, setMLListingStatus, type MLImage } from '@/lib/mercadolivre';
 import { PRODUCTS_TAG, listCatalogEntries, listProductsUncached } from '@/lib/products';
 import { ensureProductBucket, storageConfigured, uploadProductImage } from '@/lib/storage';
 
@@ -147,12 +147,31 @@ export async function DELETE(request: Request) {
     const { rowCount } = await pool!.query('DELETE FROM st_products WHERE id = $1', [id]);
     if (!rowCount) return NextResponse.json({ error: 'Produto não encontrado.' }, { status: 404 });
     revalidateTag(PRODUCTS_TAG, { expire: 0 }); // mudança do admin aparece já no próximo acesso
-    // O anúncio no Mercado Livre não é encerrado aqui: o painel avisa para encerrar por lá.
+    // Produto fora do site não pode continuar à venda no ML: pausa o anúncio (reversível).
     const { rows } = await pool!.query(
-      `SELECT external_url FROM st_product_integrations WHERE product_id = $1 AND platform = 'mercadolivre'`,
+      `SELECT external_id, external_url, sync_status FROM st_product_integrations WHERE product_id = $1 AND platform = 'mercadolivre'`,
       [id],
     );
-    return NextResponse.json({ success: true, mlListingUrl: rows[0]?.external_url ?? null });
+    const listing = rows[0];
+    let mlPaused = false;
+    if (listing?.external_id && listing.sync_status !== 'paused') {
+      try {
+        await setMLListingStatus(listing.external_id, 'paused');
+        await pool!.query(
+          `UPDATE st_product_integrations SET sync_status = 'paused', last_sync = CURRENT_TIMESTAMP
+            WHERE product_id = $1 AND platform = 'mercadolivre'`,
+          [id],
+        );
+        mlPaused = true;
+      } catch (e) {
+        console.error('Não foi possível pausar o anúncio do ML:', (e as Error).message);
+      }
+    }
+    return NextResponse.json({
+      success: true,
+      mlListingUrl: listing?.external_url ?? null,
+      mlPaused: mlPaused || listing?.sync_status === 'paused',
+    });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
