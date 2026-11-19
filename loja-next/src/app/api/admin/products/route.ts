@@ -2,7 +2,7 @@ import { NextResponse, after } from 'next/server';
 import { revalidateTag } from 'next/cache';
 import { pool, ensureProductsTable } from '@/lib/db';
 import { isAdminRequest, unauthorized } from '@/lib/auth';
-import { publishProductToML, type MLImage } from '@/lib/mercadolivre';
+import { ML_MIN_PRICE, mlPriceFor, publishProductToML, type MLImage } from '@/lib/mercadolivre';
 import { PRODUCTS_TAG, listCatalogEntries, listProductsUncached } from '@/lib/products';
 import { ensureProductBucket, storageConfigured, uploadProductImage } from '@/lib/storage';
 
@@ -217,7 +217,9 @@ export async function POST(request: Request) {
     revalidateTag(PRODUCTS_TAG, { expire: 0 }); // mudança do admin aparece já no próximo acesso
 
     // Publica no Mercado Livre depois de responder ao admin (after() mantém a função viva até terminar)
-    if (images.files.length > 0) {
+    // Abaixo do preço mínimo o anúncio no ML dá prejuízo: só publica a partir dele.
+    const mlPrice = mlPriceFor({ name: name || '', price, priceUnpainted, type });
+    if (images.files.length > 0 && mlPrice !== null && mlPrice >= ML_MIN_PRICE) {
       after(async () => {
         try {
           const ml = await publishProductToML(
