@@ -779,7 +779,8 @@ export function Admin() {
                 if(fieldPacotes) fieldPacotes.classList.remove('hidden');
                 document.getElementById('edit-prod-price-pacote').value = p.price || '';
                 document.getElementById('edit-prod-price-original').value = p.price_original || '';
-                window.currentEditBundleItems = p.bundle_items || '[]';
+                document.getElementById('edit-prod-price-marketplace').value = p.price_marketplace || '';
+                window.currentEditBundleItems = typeof p.bundle_items === 'string' ? p.bundle_items : JSON.stringify(p.bundle_items || []);
                 if(window.loadMiniaturesForEditBundle) window.loadMiniaturesForEditBundle(window.currentEditBundleItems);
                 document.getElementById('edit-prod-modal-title').innerText = 'Editar Pacote';
             } else if (isMini) {
@@ -842,6 +843,7 @@ export function Admin() {
                 formData.append('category', 'pacotes');
                 formData.append('price', document.getElementById('edit-prod-price-pacote').value);
                 formData.append('price_original', document.getElementById('edit-prod-price-original').value);
+                formData.append('price_marketplace', document.getElementById('edit-prod-price-marketplace').value);
                 formData.append('bundle_items', window.currentEditBundleItems || '[]');
             } else if (isMini) {
                 formData.append('category', document.getElementById('edit-prod-category-mini').value);
@@ -910,6 +912,7 @@ export function Admin() {
                 formData.append('category', 'pacotes');
                 formData.append('price', document.getElementById('prod-price-pacote').value);
                 formData.append('price_original', document.getElementById('prod-price-original').value);
+                formData.append('price_marketplace', document.getElementById('prod-price-marketplace').value);
                 formData.append('bundle_items', window.currentBundleItems || '[]');
             } else {
                 formData.append('category', document.getElementById('prod-category-arsenal').value);
@@ -1454,6 +1457,11 @@ export function Admin() {
                                         <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor com Desconto do Pacote (R\$)</label>
                                         <input type="number" step="0.01" id="prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="Ex: 199.90">
                                     </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1" title="Vazio = usa o Valor Original (preço cheio)">Preço no Marketplace (R\$)</label>
+                                        <input type="number" step="0.01" id="prod-price-marketplace" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="Vazio = Valor Original">
+                                        <p class="text-[10px] text-zinc-500 mt-1">O desconto vale só no site. No Mercado Livre o kit vai pelo preço cheio, a não ser que você preencha outro valor aqui.</p>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -1960,6 +1968,10 @@ export function Admin() {
                     <div>
                         <label class="block text-xs font-bold uppercase text-amber-700 mb-1">Valor Final do Pacote (R\$)</label>
                         <input type="number" step="0.01" id="edit-prod-price-pacote" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="199.90">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-zinc-600 mb-1" title="Vazio = usa o Valor Original (preço cheio)">Preço no Marketplace (R\$)</label>
+                        <input type="number" step="0.01" id="edit-prod-price-marketplace" class="w-full p-2.5 bg-white text-zinc-900 border border-zinc-300 rounded-lg text-xs font-semibold focus:border-amber-600 focus:outline-none" placeholder="Vazio = Valor Original">
                     </div>
                 </div>
 

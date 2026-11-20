@@ -4,6 +4,7 @@ import { HOME_FAQ } from '@/lib/seo-content';
 import Link from 'next/link';
 import { HeroSlides } from '@/components/home/HeroSlides';
 import { CustomOrderPicker } from '@/components/home/CustomOrderPicker';
+import { KitsSection } from '@/components/home/KitsSection';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, pageMetadata } from '@/lib/site';
 
 export const metadata = {
@@ -46,6 +47,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <KitsSection />
 
       <section id="personalizada" className="bg-parchment text-black py-24 border-b border-black/10">
         <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-16 max-w-6xl">

@@ -143,6 +143,35 @@ export async function getProductByIdUncached(id: string): Promise<Product | null
     }
   }
 
+  // Kits (pacote): itens com o preço avulso atual de cada miniatura, para a página mostrar a economia.
+  if (product.type === 'pacote' && product.bundle_items) {
+    try {
+      const items = typeof product.bundle_items === 'string' ? JSON.parse(product.bundle_items) : product.bundle_items;
+      const ids: string[] = Array.isArray(items)
+        ? items.map((i: { id?: string }) => i?.id).filter((id): id is string => typeof id === 'string' && id !== '')
+        : [];
+      if (ids.length > 0) {
+        const { rows: found } = await pool.query(
+          `SELECT id, name, COALESCE(price_unpainted, price) AS price, image_url FROM st_products WHERE id = ANY($1)`,
+          [ids],
+        );
+        const byId = new Map(found.map((r: Product) => [r.id, r]));
+        product.bundle_details = ids.map((id: string) => {
+          const r = byId.get(id);
+          const first = r ? parseImageList(r.image_url)[0] : undefined;
+          return {
+            id,
+            name: r?.name ?? items.find((i: { id?: string }) => i?.id === id)?.name ?? id,
+            price: r ? Number(r.price) || 0 : null,
+            image: first && !first.includes('data:image') ? thumbUrl(first) : null,
+          };
+        });
+      }
+    } catch (e) {
+      console.error('Error fetching kit items', e);
+    }
+  }
+
   if (product.image_url) {
     const images = parseImageList(product.image_url).map((img, i) =>
       img && img.includes('data:image') ? `/api/product-image?id=${encodeURIComponent(product.id)}&index=${i}` : img,
@@ -237,7 +266,7 @@ export async function listProductsUncached(params: ProductListParams): Promise<P
   const { rows } = await pool.query(
     `
       SELECT id, name, type, category, price, price_unpainted, price_painted, price_painted_box,
-             price_original, bundle_items, description,
+             price_original, price_marketplace, bundle_items, description,
              CASE
                WHEN image_url LIKE '%data:image%' THEN '/api/product-image?id=' || id || '&thumb=1'
                ELSE COALESCE(image_url, '/assets/imagens/minis.webp')

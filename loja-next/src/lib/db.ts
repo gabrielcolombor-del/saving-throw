@@ -50,6 +50,8 @@ export async function ensureProductsTable() {
     `);
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_painted_box NUMERIC(10,2);`);
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_original NUMERIC(10,2);`);
+    // Preço nos marketplaces (cheio); vazio = kits usam o preço original, o resto o preço do site.
+    await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS price_marketplace NUMERIC(10,2);`);
     await pool.query(`ALTER TABLE st_products ADD COLUMN IF NOT EXISTS bundle_items JSONB;`);
     productsTableChecked = true;
   } catch (e) {
