@@ -167,21 +167,23 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                     {/* INFORMAÇÕES DO PRODUTO (RENDERIZADO NO SERVIDOR - Apenas movido para cima do painel usando flex order) */}
                     <div className="w-full lg:w-[55%] flex flex-col justify-start lg:absolute lg:top-24 lg:right-0 lg:pr-[max(1rem,calc((100vw-72rem)/2+1rem))] lg:pl-10 pointer-events-none">
                         <div className="pointer-events-auto">
-                            {/* Badges */}
-                            <div className="flex flex-wrap gap-2 mb-4">
+                            <h1 className="text-3xl md:text-5xl font-title text-zinc-900 mb-2 leading-tight">{product.name}</h1>
+                            <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-3">{profile.typeLabel}</p>
+
+                            {/* Badges: abaixo do título, para não encostarem no menu do topo */}
+                            <div className="flex flex-wrap gap-2 mb-6">
                                 <span className="bg-black text-[#EBE3CB] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-sm">{profile.categoryBadge}</span>
                                 <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-sm">{profile.tagBadge}</span>
                             </div>
-
-                            <h1 className="text-3xl md:text-5xl font-title text-zinc-900 mb-2 leading-tight">{product.name}</h1>
-                            <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-6">{profile.typeLabel}</p>
 
                             {/* Descrição */}
                             <div className="prose prose-sm md:prose-base prose-zinc max-w-none mb-8 text-zinc-600 leading-relaxed border-l-2 border-amber-500 pl-4">
                                 <p>{product.description || 'Peça produzida com altíssimo padrão de acabamento e fidelidade aos mínimos detalhes.'}</p>
                                 
                                 {product.type === 'pacote' && Array.isArray(product.bundle_details) && product.bundle_details.length > 0 ? (
-                                    <KitItems items={product.bundle_details} kitPrice={Number(product.price) || 0} />
+                                    <a href="#itens-do-kit" className="not-prose mt-3 inline-flex items-center gap-2 text-sm font-bold text-amber-700 hover:text-amber-800">
+                                        <i className="fa-solid fa-list-ul"></i> Ver as {product.bundle_details.length} miniaturas e o preço de cada uma
+                                    </a>
                                 ) : product.type === 'pacote' && product.bundle_items && product.bundle_items !== 'null' && product.bundle_items !== '[]' && (
                                     <div className="mt-4">
                                         <b>Itens inclusos no pacote:</b>
@@ -211,6 +213,13 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                     </div>
                 </div>
             </div>
+
+            {/* ITENS DO KIT: fora do bloco absoluto do topo, para a lista não invadir o painel de compra */}
+            {product.type === 'pacote' && Array.isArray(product.bundle_details) && product.bundle_details.length > 0 && (
+                <div id="itens-do-kit" className="container mx-auto px-4 max-w-6xl mt-16 scroll-mt-24">
+                    <KitItems items={product.bundle_details} kitPrice={Number(product.price) || 0} />
+                </div>
+            )}
 
             {/* FAIXA SEPARADORA */}
             <div className="w-full h-px bg-zinc-200 my-16 max-w-6xl mx-auto"></div>
