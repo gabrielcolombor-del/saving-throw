@@ -5,6 +5,7 @@ import { findDuplicateProductId } from '@/lib/products';
 import { getProductProfile } from '@/lib/product-profile';
 import { categoryByDb } from '@/lib/categories';
 import ProductInteractive from './ProductInteractive';
+import { KitItems } from './KitItems';
 import { EdgeFill } from '@/components/EdgeFill';
 import { notFound } from 'next/navigation';
 import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, pageMetadata, truncate } from '@/lib/site';
@@ -179,7 +180,9 @@ export default async function ProdutoPage({ params }: { params: Promise<{ id: st
                             <div className="prose prose-sm md:prose-base prose-zinc max-w-none mb-8 text-zinc-600 leading-relaxed border-l-2 border-amber-500 pl-4">
                                 <p>{product.description || 'Peça produzida com altíssimo padrão de acabamento e fidelidade aos mínimos detalhes.'}</p>
                                 
-                                {product.type === 'pacote' && product.bundle_items && product.bundle_items !== 'null' && product.bundle_items !== '[]' && (
+                                {product.type === 'pacote' && Array.isArray(product.bundle_details) && product.bundle_details.length > 0 ? (
+                                    <KitItems items={product.bundle_details} kitPrice={Number(product.price) || 0} />
+                                ) : product.type === 'pacote' && product.bundle_items && product.bundle_items !== 'null' && product.bundle_items !== '[]' && (
                                     <div className="mt-4">
                                         <b>Itens inclusos no pacote:</b>
                                         <ul className="ml-4 mt-2">

@@ -12,6 +12,8 @@ export type MiniCategory = {
   h1: string;
   description: string;
   intro: string[];
+  /** Tipo de produto listado na aba (padrão: miniatura). Kits são do tipo "pacote". */
+  type?: string;
 };
 
 export const MINI_CATEGORIES: MiniCategory[] = [
@@ -39,6 +41,20 @@ export const MINI_CATEGORIES: MiniCategory[] = [
     intro: [
       'Um bom monstro na mesa muda o clima do combate. Nosso bestiário reúne criaturas impressas em resina de alta definição, em tamanhos maiores que os heróis para marcar presença no mapa de batalha.',
       'Cada peça é entregue sem suportes, lavada e curada, em resina cinza pronta para pintar. Precisa de um monstro que não está no catálogo? Fazemos sob encomenda a partir da sua referência ou do arquivo STL.',
+    ],
+  },
+  {
+    slug: 'kits',
+    db: 'kits',
+    type: 'pacote',
+    label: 'Kits',
+    title: 'Kits de Miniaturas para RPG com Desconto',
+    h1: 'Kits',
+    description:
+      'Kits de miniaturas para RPG em resina 3D montados por tema: grupos de heróis, hordas, covis e chefes, mais baratos que as peças avulsas. Envio para todo o Brasil.',
+    intro: [
+      'Cada kit junta miniaturas que funcionam bem na mesma cena, como um grupo de aventureiros, uma horda orc ou o covil de um dragão, por um preço menor que a soma das peças compradas separadas.',
+      'Na página de cada kit você vê todas as miniaturas incluídas, o preço avulso de cada uma e quanto economiza levando o kit.',
     ],
   },
 ];

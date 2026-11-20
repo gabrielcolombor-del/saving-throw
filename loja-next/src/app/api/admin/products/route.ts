@@ -202,6 +202,7 @@ export async function POST(request: Request) {
     const pricePainted = field(form, 'price_painted');
     const pricePaintedBox = field(form, 'price_painted_box');
     const priceOriginal = field(form, 'price_original');
+    const priceMarketplace = field(form, 'price_marketplace');
     const bundleItems = field(form, 'bundle_items');
 
     // Gera um id legível a partir do nome, sem colidir com os existentes
@@ -214,8 +215,8 @@ export async function POST(request: Request) {
     const storedImages = await storeImages(productId, images, 0);
 
     const { rows } = await pool!.query(
-      `INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO st_products (id, type, category, name, price, price_unpainted, price_painted, price_painted_box, description, image_url, bundle_items, price_original, price_marketplace)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         productId,
@@ -230,6 +231,7 @@ export async function POST(request: Request) {
         JSON.stringify(storedImages),
         bundleItems || null,
         num(priceOriginal),
+        num(priceMarketplace),
       ],
     );
     const created = rows[0];
@@ -237,14 +239,15 @@ export async function POST(request: Request) {
 
     // Publica no Mercado Livre depois de responder ao admin (after() mantém a função viva até terminar)
     // Abaixo do preço mínimo o anúncio no ML dá prejuízo: só publica a partir dele.
-    const mlPrice = mlPriceFor({ name: name || '', price, priceUnpainted, type });
+    const mlProduct = {
+      name: name || '', price, priceUnpainted, type, description, category,
+      price_original: priceOriginal, price_marketplace: priceMarketplace, bundle_items: bundleItems || null,
+    };
+    const mlPrice = mlPriceFor(mlProduct);
     if (images.files.length > 0 && mlPrice !== null && mlPrice >= ML_MIN_PRICE) {
       after(async () => {
         try {
-          const ml = await publishProductToML(
-            { name: name || '', price, priceUnpainted, type, description, category },
-            images.files,
-          );
+          const ml = await publishProductToML(mlProduct, images.files);
           await pool!.query(
             `INSERT INTO st_product_integrations (product_id, platform, external_id, external_url, sync_status, last_sync, faq_image)
              VALUES ($1, 'mercadolivre', $2, $3, 'synced', CURRENT_TIMESTAMP, true)
@@ -298,7 +301,7 @@ export async function PUT(request: Request) {
     const { rows } = await pool!.query(
       `UPDATE st_products
           SET category = $1, name = $2, price = $3, price_unpainted = $4, price_painted = $5, description = $6,
-              image_url = $7, bundle_items = $9, price_painted_box = $10, price_original = $11
+              image_url = $7, bundle_items = $9, price_painted_box = $10, price_original = $11, price_marketplace = $12
         WHERE id = $8
         RETURNING *`,
       [
@@ -313,6 +316,7 @@ export async function PUT(request: Request) {
         field(form, 'bundle_items') || null,
         num(field(form, 'price_painted_box')),
         num(field(form, 'price_original')),
+        num(field(form, 'price_marketplace')),
       ],
     );
     if (rows.length === 0) return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });

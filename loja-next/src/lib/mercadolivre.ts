@@ -17,6 +17,25 @@ export type MLProductData = {
   type?: string;
   description?: string | null;
   category?: string | null;
+  /** Preço cheio para marketplaces (opcional). */
+  price_marketplace?: string | number | null;
+  priceMarketplace?: string | number | null;
+  /** Soma avulsa dos itens de um kit. */
+  price_original?: string | number | null;
+  priceOriginal?: string | number | null;
+  /** Itens de um kit, em JSON. */
+  bundle_items?: string | null;
+};
+
+const kitPieces = (p: MLProductData): number => {
+  try {
+    // bundle_items é jsonb: o pg devolve array; o formulário do painel manda string.
+    const raw = p.bundle_items as unknown;
+    const list = Array.isArray(raw) ? raw : JSON.parse(String(raw || '[]'));
+    return Array.isArray(list) ? list.length : 0;
+  } catch {
+    return 0;
+  }
 };
 
 export async function getMLToken(): Promise<string | null> {
@@ -83,15 +102,24 @@ export async function setMLListingStatus(externalId: string, status: 'paused' | 
  */
 export function mlTitleFor(productData: MLProductData): string {
   return (
-    productData.type === 'arsenal' ? `${productData.name} RPG de Mesa` : `Miniatura ${productData.name} RPG Resina 32mm`
+    productData.type === 'arsenal'
+      ? `${productData.name} RPG de Mesa`
+      : productData.type === 'pacote'
+        ? `${productData.name} ${kitPieces(productData)} Miniaturas RPG Resina`
+        : `Miniatura ${productData.name} RPG Resina 32mm`
   ).substring(0, 60);
 }
 
 /** Preço anunciado no ML: miniatura vai pelo preço sem pintura; o resto, pelo preço cheio. */
 export function mlPriceFor(productData: MLProductData): number | null {
   const priceUnpainted = productData.priceUnpainted ?? productData.price_unpainted;
+  const priceMarketplace = productData.priceMarketplace ?? productData.price_marketplace;
+  const priceOriginal = productData.priceOriginal ?? productData.price_original;
   let finalPrice: string | number | null | undefined = productData.price;
   if (productData.type === 'miniatura' && priceUnpainted) finalPrice = priceUnpainted;
+  // Kits vão aos marketplaces pelo preço cheio (soma avulsa); o desconto fica só no site.
+  if (productData.type === 'pacote' && Number(priceOriginal) > 0) finalPrice = priceOriginal;
+  if (Number(priceMarketplace) > 0) finalPrice = priceMarketplace;
   const priceNum = parseFloat(String(finalPrice));
   return finalPrice && !isNaN(priceNum) ? priceNum : null;
 }
@@ -210,6 +238,7 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
 
   // Arsenal (ex.: Escudo do Mestre) não é miniatura: vai em Jogos de Tabuleiro e Cartas, com os campos dessa categoria.
   const isArsenal = productData.type === 'arsenal';
+  const isKit = productData.type === 'pacote';
   const titleText = mlTitleFor(productData);
 
   const itemBody: Record<string, unknown> = {
@@ -234,9 +263,10 @@ export async function publishProductToML(productData: MLProductData, imageFiles:
       { id: 'LINE', value_name: 'Miniaturas RPG' },
       { id: 'COLLECTION', value_name: productData.category || 'Miniaturas RPG' },
       { id: 'MATERIALS', value_name: 'Resina' },
-      { id: 'PIECES_NUMBER', value_name: '1' },
+      { id: 'PIECES_NUMBER', value_name: String(isKit ? Math.max(1, kitPieces(productData)) : 1) },
       { id: 'IS_COLLECTIBLE', value_id: '242085' },
-      { id: 'IS_SET', value_id: '242084' },
+      // 242085 = Sim, 242084 = Não (mesmos ids do IS_COLLECTIBLE acima)
+      { id: 'IS_SET', value_id: isKit ? '242085' : '242084' },
       { id: 'REQUIRES_ASSEMBLY', value_id: '242084' },
       { id: 'IS_REALISTIC_REPLICA', value_id: '242084' },
       { id: 'IS_SURPRISE', value_id: '242084' },

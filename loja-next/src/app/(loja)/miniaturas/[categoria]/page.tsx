@@ -41,7 +41,7 @@ export default async function CategoriaPage(props: Props) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams?.page) || 1;
   const search = typeof searchParams?.search === 'string' ? searchParams.search : '';
-  const data = await fetchProducts({ type: 'miniatura', category: cat.db, page, limit: 12, search });
+  const data = await fetchProducts({ type: cat.type || 'miniatura', category: cat.db, page, limit: 12, search });
   const products = data.products || [];
   const url = `${SITE_URL}/miniaturas/${cat.slug}`;
 
