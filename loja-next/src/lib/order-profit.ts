@@ -17,7 +17,7 @@ export type OrderItem = {
   nome: string;
   porte: Porte;
   alturaMm: number;
-  /** Resina por peça, com suportes (g). */
+  /** Peso da miniatura sem suportes (g). O custo soma SUPORTE_PCT em cima. */
   resinaG: number;
   quantidade: number;
   precoUnit: number;
@@ -57,13 +57,19 @@ export const DEFAULT_COSTS: Omit<OrderCosts, 'impressoes' | 'pecasNasImpressoes'
 /** Pedidos a partir deste valor têm frete grátis por conta da loja. */
 export const FRETE_GRATIS_A_PARTIR = 149;
 
+/** Suportes: o custo de resina soma 170% em cima do peso da miniatura (peso x 2,7). */
+export const SUPORTE_PCT = 1.7;
+
+/** Resina gasta com os suportes, a partir do peso da miniatura sozinha. */
+export const resinaComSuportes = (pesoMiniG: number) => pesoMiniG * (1 + SUPORTE_PCT);
+
 const REF_ALTURA = 70; // Remorhaz: 70 mm...
 const REF_RESINA_G = 45; // ...e 45 g com suportes (miniatura oca, parede de 2,1 mm)
 
-/** Resina estimada (g, com suportes) pela altura: cresce com o quadrado da altura, como a superfície da peça. */
+/** Peso estimado da miniatura (g, sem suportes) pela altura: cresce com o quadrado da altura, como a superfície. */
 export function estimateResinG(alturaMm: number): number {
   const h = Math.max(0, Number(alturaMm) || 0);
-  return Math.round(REF_RESINA_G * (h / REF_ALTURA) ** 2 * 10) / 10;
+  return Math.round((REF_RESINA_G / (1 + SUPORTE_PCT)) * (h / REF_ALTURA) ** 2 * 10) / 10;
 }
 
 /** Porte sugerido pela altura da descrição do produto. */
@@ -138,7 +144,7 @@ export function computeOrder(items: OrderItem[], costs: OrderCosts): OrderResult
   const receitaBruta = items.reduce((s, i) => s + i.quantidade * i.precoUnit, 0);
   const receita = Math.max(0, receitaBruta - costs.desconto);
 
-  const resina = items.reduce((s, i) => s + i.quantidade * i.resinaG, 0) * (costs.resinaKg / 1000);
+  const resina = items.reduce((s, i) => s + i.quantidade * resinaComSuportes(i.resinaG), 0) * (costs.resinaKg / 1000);
   // Energia e trabalho da impressão são divididos entre todas as peças que estavam na mesa.
   const pecasNaMesa = Math.max(pecas, costs.pecasNasImpressoes, 1);
   const impressao = pecas > 0
