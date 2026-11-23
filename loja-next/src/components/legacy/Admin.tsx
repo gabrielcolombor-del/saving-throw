@@ -334,7 +334,7 @@ export function Admin() {
                         </select></div>
                     <div class="col-span-5 sm:col-span-3"><label class="${lbl}">Altura (mm)</label>
                         <input type="number" min="0" step="1" id="sale-item-altura-${i}" value="${it.alturaMm}" oninput="updateSaleItem(${i}, 'alturaMm', this.value)" class="${inp}"></div>
-                    <div class="col-span-4 sm:col-span-3"><label class="${lbl}" title="Peso da miniatura sem suportes. O cálculo soma 170% para os suportes. Estimado pela altura; troque pelo peso do fatiador.">Peso da mini (g)</label>
+                    <div class="col-span-4 sm:col-span-3"><label class="${lbl}" title="Peso da miniatura sem suportes. O cálculo conta 170% desse peso para incluir os suportes. Estimado pela altura; troque pelo peso do fatiador.">Peso da mini (g)</label>
                         <input type="number" min="0" step="0.1" id="sale-item-resina-${i}" value="${it.resinaG}" oninput="updateSaleItem(${i}, 'resinaG', this.value)" class="${inp}"></div>
                     <div class="col-span-3 sm:col-span-2"><label class="${lbl}">Qtd</label>
                         <input type="number" min="1" step="1" value="${it.quantidade}" oninput="updateSaleItem(${i}, 'quantidade', this.value)" class="${inp}"></div>
@@ -404,7 +404,7 @@ export function Admin() {
             document.getElementById('sale-summary').innerHTML = `
                 ${row(`Receita (${r.pecas} ${r.pecas === 1 ? 'peça' : 'peças'})`, r.receita, 'font-bold text-black')}
                 <div class="border-t border-zinc-200 my-1.5"></div>
-                ${row('Resina (+170% de suportes)', r.custos.resina)}
+                ${row('Resina (170% do peso, com suportes)', r.custos.resina)}
                 ${row('Energia', r.custos.impressao)}
                 ${row('Trabalho (impressão + acabamento)', r.custos.trabalhoPecas)}
                 ${r.custos.extras ? row('Extras (pintura etc.)', r.custos.extras) : ''}
@@ -1775,7 +1775,7 @@ export function Admin() {
                         <button type="button" onclick="addSaleItem()" class="text-[11px] font-bold uppercase text-amber-700 hover:text-amber-900 cursor-pointer"><i class="fa-solid fa-plus"></i> Adicionar item</button>
                     </div>
                     <div id="sale-items" class="space-y-2"></div>
-                    <p class="text-[10px] text-zinc-500 mt-1">Digite o peso da miniatura sem suportes (do fatiador); o cálculo soma 170% em cima para os suportes. Sem o peso, ele é estimado pela altura. O preço un. é o valor final, já com descontos.</p>
+                    <p class="text-[10px] text-zinc-500 mt-1">Digite o peso da miniatura sem suportes (do fatiador); o cálculo conta 170% desse peso para incluir os suportes (10 g viram 17 g). Sem o peso, ele é estimado pela altura. O preço un. é o valor final, já com descontos.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

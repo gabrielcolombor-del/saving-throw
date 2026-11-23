@@ -17,7 +17,7 @@ export type OrderItem = {
   nome: string;
   porte: Porte;
   alturaMm: number;
-  /** Peso da miniatura sem suportes (g). O custo soma SUPORTE_PCT em cima. */
+  /** Peso da miniatura sem suportes (g). O custo usa esse peso x FATOR_SUPORTES. */
   resinaG: number;
   quantidade: number;
   precoUnit: number;
@@ -57,11 +57,11 @@ export const DEFAULT_COSTS: Omit<OrderCosts, 'impressoes' | 'pecasNasImpressoes'
 /** Pedidos a partir deste valor têm frete grátis por conta da loja. */
 export const FRETE_GRATIS_A_PARTIR = 149;
 
-/** Suportes: o custo de resina soma 170% em cima do peso da miniatura (peso x 2,7). */
-export const SUPORTE_PCT = 1.7;
+/** Suportes: a resina gasta é 170% do peso da miniatura (peso x 1,7; uma mini de 10 g conta 17 g). */
+export const FATOR_SUPORTES = 1.7;
 
 /** Resina gasta com os suportes, a partir do peso da miniatura sozinha. */
-export const resinaComSuportes = (pesoMiniG: number) => pesoMiniG * (1 + SUPORTE_PCT);
+export const resinaComSuportes = (pesoMiniG: number) => pesoMiniG * FATOR_SUPORTES;
 
 const REF_ALTURA = 70; // Remorhaz: 70 mm...
 const REF_RESINA_G = 45; // ...e 45 g com suportes (miniatura oca, parede de 2,1 mm)
@@ -69,7 +69,7 @@ const REF_RESINA_G = 45; // ...e 45 g com suportes (miniatura oca, parede de 2,1
 /** Peso estimado da miniatura (g, sem suportes) pela altura: cresce com o quadrado da altura, como a superfície. */
 export function estimateResinG(alturaMm: number): number {
   const h = Math.max(0, Number(alturaMm) || 0);
-  return Math.round((REF_RESINA_G / (1 + SUPORTE_PCT)) * (h / REF_ALTURA) ** 2 * 10) / 10;
+  return Math.round((REF_RESINA_G / FATOR_SUPORTES) * (h / REF_ALTURA) ** 2 * 10) / 10;
 }
 
 /** Porte sugerido pela altura da descrição do produto. */
