@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { listProducts } from '@/lib/products';
+import { kitDiscountPct } from '@/lib/kit-discount';
 
 /* Vitrine dos kits (produtos do tipo "pacote") logo abaixo do banner da home. Some quando não há kits. */
 
@@ -42,7 +43,7 @@ export async function KitsSection() {
             const count = itemCount(k.bundle_items);
             const original = Number(k.price_original) || 0;
             const price = Number(k.price) || 0;
-            const saving = original > price ? original - price : 0;
+            const off = kitDiscountPct(k);
             return (
               <Link
                 key={k.id}
@@ -57,9 +58,9 @@ export async function KitsSection() {
                     alt={`${k.name} — miniaturas de RPG em resina`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  {saving > 0 && (
-                    <span className="absolute top-2 left-2 bg-amber-600 text-black text-[10px] font-black uppercase px-2 py-1 rounded">
-                      -R$ {brl(saving)}
+                  {off > 0 && (
+                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs md:text-sm font-black uppercase px-2.5 py-1 rounded shadow-md">
+                      {off}% OFF
                     </span>
                   )}
                 </div>
