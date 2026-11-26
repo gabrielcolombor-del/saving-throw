@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { EdgeFill } from '@/components/EdgeFill';
+import { kitDiscountPct } from '@/lib/kit-discount';
 
 /* Grade de cards + paginação do catálogo de miniaturas (página geral e páginas de categoria). */
 
@@ -55,6 +56,11 @@ export function MiniaturasGrid({
                   <EdgeFill src={firstImg} />
                   <img loading="lazy" decoding="async" src={firstImg} alt={`Miniatura de RPG ${p.name}`} className="relative w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                   <span className="absolute top-2 right-2 bg-black text-[#EBE3CB] text-[10px] font-bold uppercase px-2 py-1 rounded shadow-sm">{p.category}</span>
+                  {p.type === 'pacote' && kitDiscountPct(p) > 0 && (
+                    <span className="absolute bottom-2 left-2 bg-red-600 text-white text-xs md:text-sm font-black uppercase px-2.5 py-1 rounded shadow-md">
+                      {kitDiscountPct(p)}% OFF
+                    </span>
+                  )}
                 </div>
                 <div className="p-4 flex flex-col flex-1 justify-between">
                   <div>
