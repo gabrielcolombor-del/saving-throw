@@ -59,7 +59,7 @@ export async function KitsSection() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {off > 0 && (
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs md:text-sm font-black uppercase px-2.5 py-1 rounded shadow-md">
+                    <span className="absolute bottom-2 left-2 bg-red-600 text-white text-xs md:text-sm font-black uppercase px-2.5 py-1 rounded shadow-md">
                       {off}% OFF
                     </span>
                   )}
